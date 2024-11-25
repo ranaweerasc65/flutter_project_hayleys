@@ -3,6 +3,7 @@ import 'register_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'home_page.dart';
+import 'package:getwidget/getwidget.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -129,7 +130,7 @@ class InitState extends State<LoginScreen> {
               child: TextField(
                 controller: emailController,
                 obscureText: false,
-                cursorColor: Color(0xff2196F3),
+                cursorColor: const Color(0xff2196F3),
                 decoration: const InputDecoration(
                   icon: Icon(
                     Icons.email,
@@ -159,7 +160,7 @@ class InitState extends State<LoginScreen> {
               child: TextField(
                 controller: passwordController,
                 obscureText: true,
-                cursorColor: Color(0xff2196F3),
+                cursorColor: const Color(0xff2196F3),
                 decoration: const InputDecoration(
                   icon: Icon(
                     Icons.vpn_key,
@@ -172,33 +173,59 @@ class InitState extends State<LoginScreen> {
               ),
             ),
             // Login Button
+            // GestureDetector(
+            //   onTap: loginUser,
+            //   child: Container(
+            //     margin: const EdgeInsets.only(left: 20, right: 20, top: 60),
+            //     padding: const EdgeInsets.only(left: 20, right: 20),
+            //     alignment: Alignment.center,
+            //     height: 50,
+            //     decoration: BoxDecoration(
+            //       gradient: const LinearGradient(colors: [
+            //         Color(0xff2196F3),
+            //         Color(0xff42A5F5),
+            //         Color(0xffBBDEFB),
+            //       ], begin: Alignment.centerLeft, end: Alignment.centerRight),
+            //       borderRadius: BorderRadius.circular(50),
+            //       boxShadow: const [
+            //         BoxShadow(
+            //             offset: Offset(0, 10),
+            //             blurRadius: 50,
+            //             color: Color(0x0ffeeeee)),
+            //       ],
+            //     ),
+            //     child: const Text(
+            //       "LOGIN",
+            //       style: TextStyle(color: Colors.white),
+            //     ),
+            //   ),
+            // ),
+
+            // GFButton(
+            //   onPressed: () {},
+            //   text: "LOGIN NOW",
+            //   blockButton: true,
+            // ),
+
+            const SizedBox(height: 30),
+
             GestureDetector(
-              onTap: loginUser,
-              child: Container(
-                margin: const EdgeInsets.only(left: 20, right: 20, top: 60),
-                padding: const EdgeInsets.only(left: 20, right: 20),
-                alignment: Alignment.center,
-                height: 50,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: [
-                    Color(0xff2196F3),
-                    Color(0xff42A5F5),
-                    Color(0xffBBDEFB),
-                  ], begin: Alignment.centerLeft, end: Alignment.centerRight),
-                  borderRadius: BorderRadius.circular(50),
-                  boxShadow: const [
-                    BoxShadow(
-                        offset: Offset(0, 10),
-                        blurRadius: 50,
-                        color: Color(0x0ffeeeee)),
-                  ],
-                ),
-                child: const Text(
-                  "LOGIN",
-                  style: TextStyle(color: Colors.white),
-                ),
+              //onTap: loginUser,
+              child: GFButton(
+                onPressed: loginUser, // Triggering the same function
+                text: "LOGIN",
+                blockButton: true,
+                //type: GFButtonType.outline2x,
+                //color: const Color(0xff2196F3), // Set the primary button color
+                // textStyle: const TextStyle(
+                //   color: Colors.white,
+                //   fontSize: 16,
+                // ),
+                // shape: GFButtonShape.pills, // Rounded edges for the button
+                size: GFSize.LARGE, // Adjust size as needed
               ),
             ),
+
             // Register Link
             Container(
               margin: const EdgeInsets.only(top: 20, left: 90),
