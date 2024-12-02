@@ -101,7 +101,7 @@ class InitState extends State<LoginScreen> {
                   FadeInUp(
                       duration: Duration(milliseconds: 1300),
                       child: Text(
-                        "Welcome Back",
+                        "Welcome Back to Fentons Medical Bill Claim System",
                         style: TextStyle(color: Colors.white, fontSize: 18),
                       )),
                 ],
@@ -178,7 +178,7 @@ class InitState extends State<LoginScreen> {
                             style: TextStyle(color: Colors.grey),
                           )),
                       SizedBox(
-                        height: 40,
+                        height: 20,
                       ),
                       FadeInUp(
                           duration: Duration(milliseconds: 1600),
@@ -205,37 +205,50 @@ class InitState extends State<LoginScreen> {
                         height: 50,
                       ),
                       FadeInUp(
-                          duration: Duration(milliseconds: 1500),
-                          child: Text(
-                            "Already have an acocunt?",
-                            style: TextStyle(color: Colors.grey),
-                          )),
+                        duration: Duration(milliseconds: 1500),
+                        child: Text(
+                          "New to the system?",
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ),
                       SizedBox(
-                        height: 40,
+                        height: 20,
                       ),
                       FadeInUp(
-                          duration: Duration(milliseconds: 1600),
-                          child: MaterialButton(
-                            onPressed: () {},
-                            height: 50,
-                            // margin: EdgeInsets.symmetric(horizontal: 50),
-                            color: Colors.blue[900],
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(50),
+                        duration: Duration(milliseconds: 1600),
+                        child: MaterialButton(
+                          onPressed: () {
+                            // Navigate to the RegisterScreen when the button is clicked
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => RegisterScreen()),
+                            );
+                          },
+                          height: 50,
+                          color:
+                              Colors.white, // Set the background color to white
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
+                            side: BorderSide(
+                              color: Colors.blue[900]!, // Add a blue border
+                              width: 2, // Adjust the thickness of the border
                             ),
-                            // decoration: BoxDecoration(
-                            // ),
-                            child: Center(
-                              child: Text(
-                                "Register",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Register",
+                              style: TextStyle(
+                                color:
+                                    Colors.blue[900], // Set text color to blue
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          )),
+                          ),
+                        ),
+                      ),
                       SizedBox(
-                        height: 50,
+                        height: 20,
                       ),
                     ],
                   ),

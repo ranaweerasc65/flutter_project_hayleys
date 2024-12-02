@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project_hayleys/login_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:getwidget/getwidget.dart';
+import 'package:animate_do/animate_do.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -73,104 +74,177 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              height: 250,
-              decoration: const BoxDecoration(
-                borderRadius:
-                    BorderRadius.only(bottomLeft: Radius.circular(90)),
-                gradient: LinearGradient(colors: [
-                  Color(0xff2196F3),
-                  Color(0xff42A5F5),
-                  Color(0xffBBDEFB),
-                ], begin: Alignment.centerLeft, end: Alignment.centerRight),
-              ),
-              child: Center(
+        // Wrap the entire body in SingleChildScrollView
+        child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              colors: [
+                Colors.blue.shade900,
+                Colors.blue.shade800,
+                Colors.blue.shade400
+              ],
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              SizedBox(height: 80),
+              Padding(
+                padding: EdgeInsets.all(20),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(top: 50),
-                      height: 120,
-                      width: 120,
-                      child: Image.asset("assets/app_logo.png"),
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    FadeInUp(
+                      duration: Duration(milliseconds: 1000),
+                      child: Text(
+                        "Register",
+                        style: TextStyle(color: Colors.white, fontSize: 40),
+                      ),
                     ),
-                    const Text(
-                      "Register",
-                      style: TextStyle(fontSize: 20, color: Colors.white),
-                    )
+                    SizedBox(height: 10),
+                    FadeInUp(
+                      duration: Duration(milliseconds: 1300),
+                      child: Text(
+                        "Welcome to Fentons Medical Bill Claim System",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ),
-            _buildTextField(_phonenoController, Icons.phone, "Phone Number",
-                false, TextInputType.text),
-            _buildTextField(_passwordController, Icons.vpn_key, "Password",
-                true, TextInputType.visiblePassword),
-            _buildTextField(_confirmPasswordController, Icons.verified_user,
-                "Confirm Password", true, TextInputType.visiblePassword),
-            const SizedBox(height: 30),
-            GestureDetector(
-              child: GFButton(
-                onPressed: registerUser,
-                text: "REGISTER",
-                blockButton: true,
-                size: GFSize.LARGE,
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.only(top: 20, left: 90),
-              child: Row(
-                children: [
-                  const Text("Already have an account?"),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const LoginScreen()),
-                      );
-                    },
-                    child: const Text(
-                      " Login Now",
-                      style: TextStyle(color: Color(0xff2196F3)),
-                    ),
+              SizedBox(height: 20),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(60),
+                    topRight: Radius.circular(60),
                   ),
-                ],
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(30),
+                  child: Column(
+                    children: <Widget>[
+                      SizedBox(height: 20),
+                      FadeInUp(
+                        duration: Duration(milliseconds: 1400),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color.fromRGBO(27, 86, 225, 0.298),
+                                blurRadius: 20,
+                                offset: Offset(0, 10),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: <Widget>[
+                              buildTextField("Full Name"),
+                              buildTextField("Phone Number", obscureText: true),
+                              buildTextField("Email Address",
+                                  obscureText: true),
+                              buildTextField("Password", obscureText: true),
+                              buildTextField("Confirm Password",
+                                  obscureText: true),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 40),
+                      FadeInUp(
+                        duration: Duration(milliseconds: 1600),
+                        child: MaterialButton(
+                          onPressed:
+                              registerUser, // Use the registerUser function here
+                          height: 50,
+                          color: Colors.blue[900],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Register",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      FadeInUp(
+                        duration: Duration(milliseconds: 1500),
+                        child: Text(
+                          "Already have an account?",
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      FadeInUp(
+                        duration: Duration(milliseconds: 1600),
+                        child: MaterialButton(
+                          onPressed: () {
+                            Navigator.pop(
+                                context); // Navigate back to login screen
+                          },
+                          height: 50,
+                          color: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
+                            side: BorderSide(
+                              color: Colors.blue[900]!,
+                              width: 2,
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Login",
+                              style: TextStyle(
+                                color: Colors.blue[900],
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 50),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, IconData icon,
-      String hintText, bool obscureText, TextInputType keyboardType) {
+  // Helper function to create the text fields
+  Widget buildTextField(String hintText, {bool obscureText = false}) {
     return Container(
-      margin: const EdgeInsets.only(left: 20, right: 20, top: 20),
-      padding: const EdgeInsets.only(left: 20, right: 20),
+      padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(50),
-        color: Colors.grey[200],
-        boxShadow: const [
-          BoxShadow(
-              offset: Offset(0, 10), blurRadius: 50, color: Color(0x0ffeeeee)),
-        ],
+        border: Border(
+          bottom: BorderSide(color: Colors.grey.shade200),
+        ),
       ),
-      alignment: Alignment.center,
       child: TextField(
-        controller: controller,
         obscureText: obscureText,
-        keyboardType: keyboardType,
-        cursorColor: const Color(0xff2196F3),
+        controller: hintText == "Phone Number"
+            ? _phonenoController
+            : hintText == "Password"
+                ? _passwordController
+                : _confirmPasswordController,
         decoration: InputDecoration(
-          icon: Icon(icon, color: const Color(0xff2196F3)),
           hintText: hintText,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
+          hintStyle: TextStyle(color: Colors.grey),
+          border: InputBorder.none,
         ),
       ),
     );
