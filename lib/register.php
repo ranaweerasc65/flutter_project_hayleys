@@ -1,8 +1,7 @@
 <?php
-// Include the database connection
-include 'connect.php'; // Ensure this file sets up a valid `$conn`
+include 'connect.php'; 
 
-header('Content-Type: application/json'); // Set response type to JSON
+header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Collect data from POST request

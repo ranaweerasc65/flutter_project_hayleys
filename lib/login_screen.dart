@@ -172,57 +172,15 @@ class InitState extends State<LoginScreen> {
                 ),
               ),
             ),
-            // Login Button
-            // GestureDetector(
-            //   onTap: loginUser,
-            //   child: Container(
-            //     margin: const EdgeInsets.only(left: 20, right: 20, top: 60),
-            //     padding: const EdgeInsets.only(left: 20, right: 20),
-            //     alignment: Alignment.center,
-            //     height: 50,
-            //     decoration: BoxDecoration(
-            //       gradient: const LinearGradient(colors: [
-            //         Color(0xff2196F3),
-            //         Color(0xff42A5F5),
-            //         Color(0xffBBDEFB),
-            //       ], begin: Alignment.centerLeft, end: Alignment.centerRight),
-            //       borderRadius: BorderRadius.circular(50),
-            //       boxShadow: const [
-            //         BoxShadow(
-            //             offset: Offset(0, 10),
-            //             blurRadius: 50,
-            //             color: Color(0x0ffeeeee)),
-            //       ],
-            //     ),
-            //     child: const Text(
-            //       "LOGIN",
-            //       style: TextStyle(color: Colors.white),
-            //     ),
-            //   ),
-            // ),
-
-            // GFButton(
-            //   onPressed: () {},
-            //   text: "LOGIN NOW",
-            //   blockButton: true,
-            // ),
 
             const SizedBox(height: 30),
 
             GestureDetector(
-              //onTap: loginUser,
               child: GFButton(
-                onPressed: loginUser, // Triggering the same function
+                onPressed: loginUser,
                 text: "LOGIN",
                 blockButton: true,
-                //type: GFButtonType.outline2x,
-                //color: const Color(0xff2196F3), // Set the primary button color
-                // textStyle: const TextStyle(
-                //   color: Colors.white,
-                //   fontSize: 16,
-                // ),
-                // shape: GFButtonShape.pills, // Rounded edges for the button
-                size: GFSize.LARGE, // Adjust size as needed
+                size: GFSize.LARGE,
               ),
             ),
 

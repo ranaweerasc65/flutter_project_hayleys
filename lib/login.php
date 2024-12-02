@@ -1,11 +1,10 @@
 <?php
 include 'connect.php';
-
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Collect data from POST request
-    $email = $_POST['email'] ?? null;
+    $phoneno = $_POST['phoneno'] ?? null;
     $password = $_POST['password'] ?? null;
 
     // Check if required fields are provided
@@ -14,16 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // if (empty($email) || empty($password)) {
-    //     echo json_encode(['status' => 'error', 'message' => 'Email and password are required.']);
-    //     exit();
-    // }
-
-    // Fetch the hashed password from the database
-    // $stmt = $conn->prepare("SELECT * FROM users WHERE email = ? AND password = ?");
-    // $stmt->bind_param("ss", $email, $password);
-
-    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+    $stmt = $conn->prepare("SELECT * FROM users WHERE phoneno = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
