@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_project_hayleys/login_screen.dart';
 import 'package:http/http.dart' as http;
-import 'package:getwidget/getwidget.dart';
+
 import 'package:animate_do/animate_do.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -73,56 +73,53 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        // Wrap the entire body in SingleChildScrollView
-        child: Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              colors: [
-                Colors.blue.shade900,
-                Colors.blue.shade800,
-                Colors.blue.shade400
-              ],
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              SizedBox(height: 80),
-              Padding(
-                padding: EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    FadeInUp(
-                      duration: Duration(milliseconds: 1000),
-                      child: Text(
-                        "Register",
-                        style: TextStyle(color: Colors.white, fontSize: 40),
-                      ),
+      resizeToAvoidBottomInset: true,
+      body: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+            gradient: LinearGradient(begin: Alignment.topCenter, colors: [
+          Colors.blue.shade900,
+          Colors.blue.shade800,
+          Colors.blue.shade400
+        ])),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(height: 80),
+            Padding(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  FadeInUp(
+                    duration: Duration(milliseconds: 1000),
+                    child: Text(
+                      "Register",
+                      style: TextStyle(color: Colors.white, fontSize: 40),
                     ),
-                    SizedBox(height: 10),
-                    FadeInUp(
-                      duration: Duration(milliseconds: 1300),
-                      child: Text(
-                        "Welcome to Fentons Medical Bill Claim System",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 20),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(60),
-                    topRight: Radius.circular(60),
                   ),
-                ),
+                  SizedBox(height: 10),
+                  FadeInUp(
+                    duration: Duration(milliseconds: 1300),
+                    child: Text(
+                      "Welcome to Fentons Medical Bill Claim System",
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
+            Expanded(
+                child: SingleChildScrollView(
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(60),
+                        topRight: Radius.circular(60),
+                        bottomLeft: Radius.circular(60),
+                        bottomRight: Radius.circular(60))),
                 child: Padding(
                   padding: EdgeInsets.all(30),
                   child: Column(
@@ -144,8 +141,59 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           child: Column(
                             children: <Widget>[
-                              buildTextField("Full Name"),
                               buildTextField("Phone Number", obscureText: true),
+
+                              //buildTextField("Full Name" ),
+                              //buildTextField("Email Address",obscureText: true),
+                              //buildTextField("Password", obscureText: true),
+                              //buildTextField("Confirm Password",obscureText: true),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+
+                      // phone number verification button
+                      FadeInUp(
+                        duration: Duration(milliseconds: 1600),
+                        child: MaterialButton(
+                          onPressed: () {},
+                          height: 50,
+                          color: Colors.blue[600],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Verify",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: 20),
+
+                      FadeInUp(
+                        duration: Duration(milliseconds: 1400),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color.fromRGBO(27, 86, 225, 0.298),
+                                blurRadius: 20,
+                                offset: Offset(0, 10),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: <Widget>[
+                              buildTextField("Full Name"),
                               buildTextField("Email Address",
                                   obscureText: true),
                               buildTextField("Password", obscureText: true),
@@ -155,7 +203,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 40),
+                      SizedBox(height: 20),
                       FadeInUp(
                         duration: Duration(milliseconds: 1600),
                         child: MaterialButton(
@@ -218,8 +266,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
               ),
-            ],
-          ),
+            ))
+          ],
         ),
       ),
     );

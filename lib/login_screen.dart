@@ -70,6 +70,7 @@ class InitState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(
@@ -109,12 +110,15 @@ class InitState extends State<LoginScreen> {
             ),
             SizedBox(height: 20),
             Expanded(
+                child: SingleChildScrollView(
               child: Container(
                 decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(60),
-                        topRight: Radius.circular(60))),
+                        topRight: Radius.circular(60),
+                        bottomLeft: Radius.circular(60),
+                        bottomRight: Radius.circular(60))),
                 child: Padding(
                   padding: EdgeInsets.all(30),
                   child: Column(
@@ -256,7 +260,7 @@ class InitState extends State<LoginScreen> {
                   ),
                 ),
               ),
-            )
+            ))
           ],
         ),
       ),
