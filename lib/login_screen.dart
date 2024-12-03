@@ -35,7 +35,7 @@ class InitState extends State<LoginScreen> {
         // Navigate to HomePage if login is successful
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
       } else {
         // Show error message if login fails
@@ -183,15 +183,18 @@ class InitState extends State<LoginScreen> {
                       FadeInUp(
                           duration: Duration(milliseconds: 1600),
                           child: MaterialButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const HomeScreen()),
+                              );
+                            },
                             height: 50,
-                            // margin: EdgeInsets.symmetric(horizontal: 50),
                             color: Colors.blue[900],
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(50),
                             ),
-                            // decoration: BoxDecoration(
-                            // ),
                             child: Center(
                               child: Text(
                                 "Login",
@@ -202,7 +205,7 @@ class InitState extends State<LoginScreen> {
                             ),
                           )),
                       SizedBox(
-                        height: 50,
+                        height: 30,
                       ),
                       FadeInUp(
                         duration: Duration(milliseconds: 1500),
@@ -226,13 +229,12 @@ class InitState extends State<LoginScreen> {
                             );
                           },
                           height: 50,
-                          color:
-                              Colors.white, // Set the background color to white
+                          color: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(50),
                             side: BorderSide(
-                              color: Colors.blue[900]!, // Add a blue border
-                              width: 2, // Adjust the thickness of the border
+                              color: Colors.blue[900]!,
+                              width: 2,
                             ),
                           ),
                           child: Center(
@@ -260,148 +262,4 @@ class InitState extends State<LoginScreen> {
       ),
     );
   }
-  // Widget build(BuildContext context)
-  // {
-  //   return Scaffold(
-  //     body: SingleChildScrollView(
-  //       child: Column(
-  //         children: [
-  //           // Header Container
-  //           Container(
-  //             height: 250,
-  //             decoration: const BoxDecoration(
-  //               borderRadius: BorderRadius.only(
-  //                 bottomLeft: Radius.circular(90),
-  //               ),
-  //               color: Color(0xff2196F3),
-  //               gradient: LinearGradient(
-  //                 colors: [
-  //                   Color(0xff2196F3), // Blue shade
-  //                   Color(0xff42A5F5), // Lighter blue
-  //                   Color(0xffBBDEFB), // Very light blue
-  //                 ],
-  //                 begin: Alignment.topCenter,
-  //                 end: Alignment.bottomCenter,
-  //               ),
-  //             ),
-  //             child: Center(
-  //               child: Column(
-  //                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //                 crossAxisAlignment: CrossAxisAlignment.center,
-  //                 children: [
-  //                   SizedBox(
-  //                     height: 120,
-  //                     width: 120,
-  //                     child: Image.asset("assets/app_logo.png"),
-  //                   ),
-  //                   Container(
-  //                     alignment: Alignment.center,
-  //                     child: const Text(
-  //                       "Login",
-  //                       style: TextStyle(fontSize: 20, color: Colors.white),
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-  //           // Email Text Field
-  //           Container(
-  //             margin: const EdgeInsets.only(left: 20, right: 20, top: 70),
-  //             padding: const EdgeInsets.only(left: 20, right: 20),
-  //             decoration: BoxDecoration(
-  //               borderRadius: BorderRadius.circular(50),
-  //               color: Colors.grey[200],
-  //               boxShadow: const [
-  //                 BoxShadow(
-  //                     offset: Offset(0, 10),
-  //                     blurRadius: 50,
-  //                     color: Color(0x0ffeeeee)),
-  //               ],
-  //             ),
-  //             alignment: Alignment.center,
-  //             child: TextField(
-  //               controller: emailController,
-  //               obscureText: false,
-  //               cursorColor: const Color(0xff2196F3),
-  //               decoration: const InputDecoration(
-  //                 icon: Icon(
-  //                   Icons.email,
-  //                   color: Color(0xff2196F3),
-  //                 ),
-  //                 hintText: "Enter your email",
-  //                 enabledBorder: InputBorder.none,
-  //                 focusedBorder: InputBorder.none,
-  //               ),
-  //             ),
-  //           ),
-  //           // Password Text Field
-  //           Container(
-  //             margin: const EdgeInsets.only(left: 20, right: 20, top: 20),
-  //             padding: const EdgeInsets.only(left: 20, right: 20),
-  //             decoration: BoxDecoration(
-  //               borderRadius: BorderRadius.circular(50),
-  //               color: Colors.grey[200],
-  //               boxShadow: const [
-  //                 BoxShadow(
-  //                     offset: Offset(0, 10),
-  //                     blurRadius: 50,
-  //                     color: Color(0x0ffeeeee)),
-  //               ],
-  //             ),
-  //             alignment: Alignment.center,
-  //             child: TextField(
-  //               controller: passwordController,
-  //               obscureText: true,
-  //               cursorColor: const Color(0xff2196F3),
-  //               decoration: const InputDecoration(
-  //                 icon: Icon(
-  //                   Icons.vpn_key,
-  //                   color: Color(0xff2196F3),
-  //                 ),
-  //                 hintText: "Enter your password",
-  //                 enabledBorder: InputBorder.none,
-  //                 focusedBorder: InputBorder.none,
-  //               ),
-  //             ),
-  //           ),
-
-  //           const SizedBox(height: 30),
-
-  //           GestureDetector(
-  //             child: GFButton(
-  //               onPressed: loginUser,
-  //               text: "LOGIN",
-  //               blockButton: true,
-  //               size: GFSize.LARGE,
-  //             ),
-  //           ),
-
-  //           // Register Link
-  //           Container(
-  //             margin: const EdgeInsets.only(top: 20, left: 90),
-  //             child: Row(
-  //               children: [
-  //                 const Text("Don't have account?"),
-  //                 GestureDetector(
-  //                   onTap: () => {
-  //                     Navigator.push(
-  //                       context,
-  //                       MaterialPageRoute(
-  //                           builder: (context) => const RegisterScreen()),
-  //                     ),
-  //                   },
-  //                   child: const Text(
-  //                     " Register Now",
-  //                     style: TextStyle(color: Color(0xff2196F3)),
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           )
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 }
