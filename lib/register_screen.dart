@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project_hayleys/login_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:animate_do/animate_do.dart';
+import 'package:email_validator/email_validator.dart';
 
 class RegisterScreen extends StatefulWidget {
   final String userId;
-  //const RegisterScreen({super.key});
+
   const RegisterScreen({Key? key, required this.userId}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => _RegisterScreenState();
 }
@@ -20,6 +22,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
+  // Boolean variables to control password visibility
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
+
   Future<void> registerUser(String userId) async {
     if (_fullNameController.text.isEmpty ||
         _emailController.text.isEmpty ||
@@ -27,6 +33,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _confirmPasswordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('All fields are required')),
+      );
+      return;
+    }
+    if (!EmailValidator.validate(_emailController.text.trim())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid email address')),
       );
       return;
     }
@@ -50,14 +62,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         },
       );
 
-// $user_id = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['user_id']);
-
-// $name = mysqli_real_escape_string($conn_hayleys_medicalapp,$_POST['fullName']);
-// $email = mysqli_real_escape_string($conn_hayleys_medicalapp,$_POST['email']);
-// $password = mysqli_real_escape_string($conn_hayleys_medicalapp,$_POST['password']);
-
       if (response.statusCode == 200) {
-        debugPrint(response.body);
         final Map<String, dynamic> result = jsonDecode(response.body);
 
         if (result['status'] == 'success') {
@@ -157,12 +162,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   controller: _fullNameController),
                               buildTextField("Email Address",
                                   controller: _emailController),
-                              buildTextField("Password",
-                                  controller: _passwordController,
-                                  obscureText: true),
-                              buildTextField("Confirm Password",
-                                  controller: _confirmPasswordController,
-                                  obscureText: true),
+                              buildPasswordTextField("Password",
+                                  controller: _passwordController),
+                              buildPasswordTextField("Confirm Password",
+                                  controller: _confirmPasswordController),
                             ],
                           ),
                         ),
@@ -260,6 +263,51 @@ class _RegisterScreenState extends State<RegisterScreen> {
           hintText: hintText,
           hintStyle: TextStyle(color: Colors.grey),
           border: InputBorder.none,
+        ),
+      ),
+    );
+  }
+
+  Widget buildPasswordTextField(String hintText,
+      {required TextEditingController controller}) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Colors.grey.shade200),
+        ),
+      ),
+      child: TextField(
+        controller: controller,
+        obscureText: hintText == "Password"
+            ? !_isPasswordVisible
+            : !_isConfirmPasswordVisible,
+        keyboardType: TextInputType.text,
+        decoration: InputDecoration(
+          hintText: hintText,
+          hintStyle: TextStyle(color: Colors.grey),
+          border: InputBorder.none,
+          suffixIcon: IconButton(
+            icon: Icon(
+              hintText == "Password"
+                  ? (_isPasswordVisible
+                      ? Icons.visibility
+                      : Icons.visibility_off)
+                  : (_isConfirmPasswordVisible
+                      ? Icons.visibility
+                      : Icons.visibility_off),
+              color: Colors.grey,
+            ),
+            onPressed: () {
+              setState(() {
+                if (hintText == "Password") {
+                  _isPasswordVisible = !_isPasswordVisible;
+                } else {
+                  _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                }
+              });
+            },
+          ),
         ),
       ),
     );

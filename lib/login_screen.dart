@@ -16,6 +16,8 @@ class InitState extends State<LoginScreen> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
+  bool _isPasswordVisible = false;
+
   Future<void> loginUser() async {
     final phone_no = phoneController.text;
     final password = passwordController.text;
@@ -157,11 +159,26 @@ class InitState extends State<LoginScreen> {
                                 child: TextField(
                                   controller:
                                       passwordController, // Bind the passwordController here
-                                  obscureText: true,
+                                  obscureText: !_isPasswordVisible,
                                   decoration: InputDecoration(
-                                      hintText: "Password",
-                                      hintStyle: TextStyle(color: Colors.grey),
-                                      border: InputBorder.none),
+                                    hintText: "Password",
+                                    hintStyle: TextStyle(color: Colors.grey),
+                                    border: InputBorder.none,
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        _isPasswordVisible
+                                            ? Icons.visibility
+                                            : Icons.visibility_off,
+                                        color: Colors.grey,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _isPasswordVisible =
+                                              !_isPasswordVisible; // Toggle password visibility
+                                        });
+                                      },
+                                    ),
+                                  ),
                                 ),
                               ),
                             ],
