@@ -14,7 +14,6 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   // Separate TextEditingControllers for each field
-  final TextEditingController _phonenoController = TextEditingController();
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -45,7 +44,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         Uri.parse(
             'http://172.16.200.79/flutter_project_hayleys/php/register.php'),
         body: {
-          'phoneno': _phonenoController.text.trim(),
           'fullName': _fullNameController.text.trim(),
           'email': _emailController.text.trim(),
           'password': _passwordController.text.trim(),

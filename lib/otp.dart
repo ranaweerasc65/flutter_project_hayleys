@@ -22,16 +22,13 @@ class _OtpState extends State<Otp> {
   }
 
   void _verifyOtp() {
-    // Dummy logic to check if OTP is correct. Replace with your real verification logic.
     String otp = _otpController.map((controller) => controller.text).join();
 
     if (otp == "1234") {
-      // Replace with your actual OTP verification logic.
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Verification Successful")),
       );
 
-      // Navigate to the Register Screen
       Future.delayed(Duration(seconds: 1), () {
         Navigator.pushReplacement(
           context,

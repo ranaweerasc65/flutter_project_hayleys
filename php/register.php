@@ -3,7 +3,7 @@ include('connect.php');
 
 
 //$phone_no = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['phone_no']) ;  
-$name = mysqli_real_escape_string($conn_hayleys_medicalapp,$_POST['name']);                  
+$name = mysqli_real_escape_string($conn_hayleys_medicalapp,$_POST['fullName']);                  
 $email = mysqli_real_escape_string($conn_hayleys_medicalapp,$_POST['email']);                
 $password = mysqli_real_escape_string($conn_hayleys_medicalapp,$_POST['password']);         
 

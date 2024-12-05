@@ -29,10 +29,9 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.2.2/flutter_project_hayleys/lib/register.php'),
+        Uri.parse('http://172.16.200.79/flutter_project_hayleys/php/otp.php'),
         body: {
           'phoneno': _phonenoController.text.trim(),
-          'password': _passwordController.text.trim()
         },
       );
 
@@ -52,8 +51,9 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
           );
         } else if (result['status'] == 'not_exists') {
           // Phone number doesn't exist, proceed with registration
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(result['message'])),
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Otp(key: UniqueKey())),
           );
           // Proceed to OTP screen for registration
           // Optionally, you can trigger OTP request here if needed
@@ -67,11 +67,13 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Error connecting to the server')),
         );
+        debugPrint(response.statusCode.toString());
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Exception: $e')),
       );
+      debugPrint('Exception: $e');
     }
   }
 
@@ -157,11 +159,7 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
                         duration: Duration(milliseconds: 1600),
                         child: MaterialButton(
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Otp(key: UniqueKey())),
-                            );
+                            registerUser();
                           },
                           height: 50,
                           color: Colors.blue[600],
