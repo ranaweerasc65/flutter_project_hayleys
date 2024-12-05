@@ -10,7 +10,7 @@ class Otp extends StatefulWidget {
 }
 
 class _OtpState extends State<Otp> {
-  final _otpController = List.generate(4, (index) => TextEditingController());
+  final _otpController = List.generate(6, (index) => TextEditingController());
 
   @override
   void dispose() {
@@ -24,7 +24,7 @@ class _OtpState extends State<Otp> {
   void _verifyOtp() {
     String otp = _otpController.map((controller) => controller.text).join();
 
-    if (otp == "1234") {
+    if (otp == "123456") {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Verification Successful")),
       );
@@ -114,12 +114,12 @@ class _OtpState extends State<Otp> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: List.generate(
-                              4,
+                              6,
                               (index) => Flexible(
                                 child: _textFieldOTP(
                                   controller: _otpController[index],
                                   first: index == 0,
-                                  last: index == 3,
+                                  last: index == 5,
                                 ),
                               ),
                             ),

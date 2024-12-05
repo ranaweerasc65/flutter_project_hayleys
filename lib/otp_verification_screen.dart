@@ -22,7 +22,7 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
   Future<void> registerUser() async {
     if (_phonenoController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('All fields are required')),
+        const SnackBar(content: Text('Please enter the phone number.')),
       );
       return;
     }
@@ -45,20 +45,14 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
           );
           Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    const LoginScreen()), // Navigate to login screen
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
           );
         } else if (result['status'] == 'not_exists') {
-          // Phone number doesn't exist, proceed with registration
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => Otp(key: UniqueKey())),
           );
-          // Proceed to OTP screen for registration
-          // Optionally, you can trigger OTP request here if needed
         } else {
-          // Handle any other unexpected response
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Error processing the request')),
           );
