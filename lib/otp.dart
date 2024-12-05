@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter_project_hayleys/register_screen.dart';
+import 'dart:math';
 
 class Otp extends StatefulWidget {
-  const Otp({required Key key}) : super(key: key);
+  final String userId;
+
+  //const Otp({required Key key}) : super(key: key);
+  const Otp({Key? key, required this.userId}) : super(key: key);
 
   @override
   _OtpState createState() => _OtpState();
@@ -32,7 +36,10 @@ class _OtpState extends State<Otp> {
       Future.delayed(Duration(seconds: 1), () {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const RegisterScreen()),
+          //MaterialPageRoute(builder: (context) => const RegisterScreen(userId)),
+          MaterialPageRoute(
+            builder: (context) => RegisterScreen(userId: widget.userId),
+          ),
         );
       });
     } else {

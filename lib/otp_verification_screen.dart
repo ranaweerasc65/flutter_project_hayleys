@@ -48,9 +48,16 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
             MaterialPageRoute(builder: (context) => const LoginScreen()),
           );
         } else if (result['status'] == 'not_exists') {
+          // Save the user_id returned from otp.php
+          String userId = result['user_id'].toString();
+
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => Otp(key: UniqueKey())),
+            MaterialPageRoute(
+                builder: (context) => Otp(
+                      key: UniqueKey(),
+                      userId: userId,
+                    )),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(

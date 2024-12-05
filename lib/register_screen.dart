@@ -6,8 +6,9 @@ import 'package:flutter_project_hayleys/otp.dart';
 import 'package:animate_do/animate_do.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
-
+  final String userId;
+  //const RegisterScreen({super.key});
+  const RegisterScreen({Key? key, required this.userId}) : super(key: key);
   @override
   State<StatefulWidget> createState() => _RegisterScreenState();
 }
@@ -20,7 +21,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  Future<void> registerUser() async {
+  Future<void> registerUser(String userId) async {
     if (_fullNameController.text.isEmpty ||
         _emailController.text.isEmpty ||
         _passwordController.text.isEmpty ||
@@ -37,18 +38,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
       return;
     }
-
     // If validation passes, proceed to send data to the server
     try {
       final response = await http.post(
         Uri.parse(
             'http://172.16.200.79/flutter_project_hayleys/php/register.php'),
         body: {
+          'user_id': userId,
           'fullName': _fullNameController.text.trim(),
           'email': _emailController.text.trim(),
           'password': _passwordController.text.trim(),
         },
       );
+
+// $user_id = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['user_id']);
+
+// $name = mysqli_real_escape_string($conn_hayleys_medicalapp,$_POST['fullName']);
+// $email = mysqli_real_escape_string($conn_hayleys_medicalapp,$_POST['email']);
+// $password = mysqli_real_escape_string($conn_hayleys_medicalapp,$_POST['password']);
 
       if (response.statusCode == 200) {
         debugPrint(response.body);
@@ -165,8 +172,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       FadeInUp(
                         duration: Duration(milliseconds: 1600),
                         child: MaterialButton(
-                          onPressed:
-                              registerUser, // Use the registerUser function here
+                          onPressed: () {
+                            registerUser(widget.userId); // Pass the userId
+                          }, // Use the registerUser function here
                           height: 50,
                           color: Colors.blue[900],
                           shape: RoundedRectangleBorder(
