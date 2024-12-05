@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_project_hayleys/login_screen.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_project_hayleys/otp.dart';
 import 'package:animate_do/animate_do.dart';
 
 class RegisterScreen extends StatefulWidget {

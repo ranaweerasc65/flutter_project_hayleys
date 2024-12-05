@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter_project_hayleys/register_screen.dart';
-import 'dart:math';
 
 class Otp extends StatefulWidget {
   final String userId;

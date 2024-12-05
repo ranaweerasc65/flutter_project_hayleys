@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project_hayleys/login_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_project_hayleys/otp.dart';
-import 'login_screen.dart';
 import 'package:animate_do/animate_do.dart';
+//import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   const OtpVerificationScreen({super.key});
@@ -20,9 +20,19 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
       TextEditingController();
 
   Future<void> registerUser() async {
-    if (_phonenoController.text.isEmpty) {
+    String phone_no = _phonenoController.text.trim();
+
+    if (phone_no.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter the phone number.')),
+      );
+      return;
+    }
+
+    // Check if the phone number starts with '0' and has exactly 10 digits
+    if (!RegExp(r"^0\d{9}$").hasMatch(phone_no)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid phone number.')),
       );
       return;
     }
@@ -39,7 +49,6 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
         final Map<String, dynamic> result = jsonDecode(response.body);
 
         if (result['status'] == 'exists') {
-          // Phone number exists, proceed to login
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(result['message'])),
           );
@@ -48,7 +57,6 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
             MaterialPageRoute(builder: (context) => const LoginScreen()),
           );
         } else if (result['status'] == 'not_exists') {
-          // Save the user_id returned from otp.php
           String userId = result['user_id'].toString();
 
           Navigator.push(
