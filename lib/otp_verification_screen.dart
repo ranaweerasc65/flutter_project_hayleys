@@ -68,9 +68,11 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
                     )),
           );
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Error processing the request')),
-          );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(content: Text('Error processing the request'))
+
+          // );
+          debugPrint(response.body);
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -110,7 +112,7 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
                   FadeInUp(
                     duration: const Duration(milliseconds: 1000),
                     child: const Text(
-                      "OTP Verification",
+                      "Phone Number Verification",
                       style: TextStyle(color: Colors.white, fontSize: 40),
                     ),
                   ),
