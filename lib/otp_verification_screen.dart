@@ -20,9 +20,9 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
       TextEditingController();
 
   Future<void> registerUser() async {
-    String phone_no = _phonenoController.text.trim();
+    String phoneNo = _phonenoController.text.trim();
 
-    if (phone_no.isEmpty) {
+    if (phoneNo.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter the phone number.')),
       );
@@ -30,7 +30,7 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
     }
 
     // Check if the phone number starts with '0' and has exactly 10 digits
-    if (!RegExp(r"^0\d{9}$").hasMatch(phone_no)) {
+    if (!RegExp(r"^0\d{9}$").hasMatch(phoneNo)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter a valid phone number.')),
       );
@@ -101,23 +101,23 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(height: 80),
+            const SizedBox(height: 80),
             Padding(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   FadeInUp(
-                    duration: Duration(milliseconds: 1000),
-                    child: Text(
+                    duration: const Duration(milliseconds: 1000),
+                    child: const Text(
                       "OTP Verification",
                       style: TextStyle(color: Colors.white, fontSize: 40),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   FadeInUp(
-                    duration: Duration(milliseconds: 1300),
-                    child: Text(
+                    duration: const Duration(milliseconds: 1300),
+                    child: const Text(
                       // "Welcome to Fentons Medical Bill Claim System",
                       "We will send you an One Time Password for the entered mobile number for the registration.",
                       style: TextStyle(color: Colors.white, fontSize: 18),
@@ -126,11 +126,11 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Expanded(
                 child: SingleChildScrollView(
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(60),
@@ -138,17 +138,17 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
                         bottomLeft: Radius.circular(60),
                         bottomRight: Radius.circular(60))),
                 child: Padding(
-                  padding: EdgeInsets.all(30),
+                  padding: const EdgeInsets.all(30),
                   child: Column(
                     children: <Widget>[
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       FadeInUp(
-                        duration: Duration(milliseconds: 1400),
+                        duration: const Duration(milliseconds: 1400),
                         child: Container(
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
+                            boxShadow: const [
                               BoxShadow(
                                 color: Color.fromRGBO(27, 86, 225, 0.298),
                                 blurRadius: 20,
@@ -163,9 +163,9 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       FadeInUp(
-                        duration: Duration(milliseconds: 1600),
+                        duration: const Duration(milliseconds: 1600),
                         child: MaterialButton(
                           onPressed: () {
                             registerUser();
@@ -187,17 +187,17 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       FadeInUp(
-                        duration: Duration(milliseconds: 1500),
-                        child: Text(
+                        duration: const Duration(milliseconds: 1500),
+                        child: const Text(
                           "Already have an account?",
                           style: TextStyle(color: Colors.grey),
                         ),
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       FadeInUp(
-                        duration: Duration(milliseconds: 1600),
+                        duration: const Duration(milliseconds: 1600),
                         child: MaterialButton(
                           onPressed: () {
                             Navigator.pop(
@@ -223,7 +223,7 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 50),
+                      const SizedBox(height: 50),
                     ],
                   ),
                 ),
@@ -237,7 +237,7 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
 
   Widget buildTextField(String hintText, {bool obscureText = false}) {
     return Container(
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(color: Colors.grey.shade200),
@@ -255,7 +255,7 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
                 : _confirmPasswordController,
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(color: Colors.grey),
+          hintStyle: const TextStyle(color: Colors.grey),
           border: InputBorder.none,
         ),
       ),

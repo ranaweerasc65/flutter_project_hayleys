@@ -8,7 +8,7 @@ import 'package:email_validator/email_validator.dart';
 class RegisterScreen extends StatefulWidget {
   final String userId;
 
-  const RegisterScreen({Key? key, required this.userId}) : super(key: key);
+  const RegisterScreen({super.key, required this.userId});
 
   @override
   State<StatefulWidget> createState() => _RegisterScreenState();
@@ -69,7 +69,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(result['message'])),
           );
-          Navigator.pop(context); // Navigate back to login screen
+          // Navigate explicitly to the LoginScreen
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          );
+          //Navigator.pop(context); // Navigate back to login screen
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(result['message'])),
@@ -102,23 +107,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(height: 80),
+            const SizedBox(height: 80),
             Padding(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   FadeInUp(
-                    duration: Duration(milliseconds: 1000),
-                    child: Text(
+                    duration: const Duration(milliseconds: 1000),
+                    child: const Text(
                       "Register",
                       style: TextStyle(color: Colors.white, fontSize: 40),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   FadeInUp(
-                    duration: Duration(milliseconds: 1300),
-                    child: Text(
+                    duration: const Duration(milliseconds: 1300),
+                    child: const Text(
                       "Welcome to Fentons Medical Bill Claim System",
                       style: TextStyle(color: Colors.white, fontSize: 18),
                     ),
@@ -126,11 +131,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Expanded(
                 child: SingleChildScrollView(
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(60),
@@ -138,17 +143,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         bottomLeft: Radius.circular(60),
                         bottomRight: Radius.circular(60))),
                 child: Padding(
-                  padding: EdgeInsets.all(30),
+                  padding: const EdgeInsets.all(30),
                   child: Column(
                     children: <Widget>[
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       FadeInUp(
-                        duration: Duration(milliseconds: 1400),
+                        duration: const Duration(milliseconds: 1400),
                         child: Container(
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
+                            boxShadow: const [
                               BoxShadow(
                                 color: Color.fromRGBO(27, 86, 225, 0.298),
                                 blurRadius: 20,
@@ -170,9 +175,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       FadeInUp(
-                        duration: Duration(milliseconds: 1600),
+                        duration: const Duration(milliseconds: 1600),
                         child: MaterialButton(
                           onPressed: () {
                             registerUser(widget.userId); // Pass the userId
@@ -182,7 +187,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(50),
                           ),
-                          child: Center(
+                          child: const Center(
                             child: Text(
                               "Register",
                               style: TextStyle(
@@ -193,23 +198,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       FadeInUp(
-                        duration: Duration(milliseconds: 1500),
-                        child: Text(
+                        duration: const Duration(milliseconds: 1500),
+                        child: const Text(
                           "Already have an account?",
                           style: TextStyle(color: Colors.grey),
                         ),
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       FadeInUp(
-                        duration: Duration(milliseconds: 1600),
+                        duration: const Duration(milliseconds: 1600),
                         child: MaterialButton(
                           onPressed: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => LoginScreen()),
+                                  builder: (context) => const LoginScreen()),
                             ); // Navigate back to login screen
                           },
                           height: 50,
@@ -232,7 +237,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 50),
+                      const SizedBox(height: 50),
                     ],
                   ),
                 ),
@@ -247,7 +252,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget buildTextField(String hintText,
       {bool obscureText = false, required TextEditingController controller}) {
     return Container(
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(color: Colors.grey.shade200),
@@ -261,7 +266,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             : TextInputType.text,
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(color: Colors.grey),
+          hintStyle: const TextStyle(color: Colors.grey),
           border: InputBorder.none,
         ),
       ),
@@ -271,7 +276,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget buildPasswordTextField(String hintText,
       {required TextEditingController controller}) {
     return Container(
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(color: Colors.grey.shade200),
@@ -285,7 +290,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         keyboardType: TextInputType.text,
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(color: Colors.grey),
+          hintStyle: const TextStyle(color: Colors.grey),
           border: InputBorder.none,
           suffixIcon: IconButton(
             icon: Icon(

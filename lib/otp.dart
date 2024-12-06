@@ -6,7 +6,7 @@ class Otp extends StatefulWidget {
   final String userId;
 
   //const Otp({required Key key}) : super(key: key);
-  const Otp({Key? key, required this.userId}) : super(key: key);
+  const Otp({super.key, required this.userId});
 
   @override
   _OtpState createState() => _OtpState();
@@ -29,10 +29,10 @@ class _OtpState extends State<Otp> {
 
     if (otp == "123456") {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Verification Successful")),
+        const SnackBar(content: Text("Verification Successful")),
       );
 
-      Future.delayed(Duration(seconds: 1), () {
+      Future.delayed(const Duration(seconds: 1), () {
         Navigator.pushReplacement(
           context,
           //MaterialPageRoute(builder: (context) => const RegisterScreen(userId)),
@@ -43,7 +43,7 @@ class _OtpState extends State<Otp> {
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Invalid OTP, please try again")),
+        const SnackBar(content: Text("Invalid OTP, please try again")),
       );
     }
   }
@@ -77,14 +77,14 @@ class _OtpState extends State<Otp> {
                   children: [
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: Icon(
+                      child: const Icon(
                         Icons.arrow_back,
                         color: Colors.white,
                         size: 32,
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Text(
+                    const Text(
                       "OTP Verification",
                       style: TextStyle(color: Colors.white, fontSize: 40),
                     ),
@@ -137,11 +137,11 @@ class _OtpState extends State<Otp> {
                           child: ElevatedButton(
                             onPressed: _verifyOtp,
                             style: ButtonStyle(
-                              foregroundColor: MaterialStateProperty.all<Color>(
-                                  Colors.white),
-                              backgroundColor: MaterialStateProperty.all<Color>(
+                              foregroundColor:
+                                  WidgetStateProperty.all<Color>(Colors.white),
+                              backgroundColor: WidgetStateProperty.all<Color>(
                                   Colors.blue.shade900),
-                              shape: MaterialStateProperty.all<
+                              shape: WidgetStateProperty.all<
                                   RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(50),
@@ -174,7 +174,7 @@ class _OtpState extends State<Otp> {
     required bool last,
     required TextEditingController controller,
   }) {
-    return Container(
+    return SizedBox(
       height: 85,
       child: AspectRatio(
         aspectRatio: 1.0,
@@ -197,7 +197,7 @@ class _OtpState extends State<Otp> {
           decoration: InputDecoration(
             counter: const Offstage(),
             enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(width: 2, color: Colors.black12),
+              borderSide: const BorderSide(width: 2, color: Colors.black12),
               borderRadius: BorderRadius.circular(12),
             ),
             focusedBorder: OutlineInputBorder(
