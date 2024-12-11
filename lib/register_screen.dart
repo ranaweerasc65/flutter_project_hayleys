@@ -69,6 +69,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(result['message'])),
           );
+
           // Navigate explicitly to the LoginScreen
           Navigator.pushReplacement(
             context,
@@ -79,6 +80,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(result['message'])),
           );
+          debugPrint(response.body);
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

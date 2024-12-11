@@ -22,6 +22,8 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
   Future<void> registerUser() async {
     String phoneNo = _phonenoController.text.trim();
 
+    print("Phone No: $phoneNo");
+
     if (phoneNo.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter the phone number.')),
@@ -47,7 +49,7 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> result = jsonDecode(response.body);
-
+        debugPrint(response.body);
         if (result['status'] == 'exists') {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(result['message'])),
@@ -58,6 +60,10 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
           );
         } else if (result['status'] == 'not_exists') {
           String userId = result['user_id'].toString();
+          //String contact = result['phoneno'].toString();
+
+          print("User ID: $userId");
+          print("Contact: $phoneNo");
 
           Navigator.push(
             context,
@@ -65,6 +71,7 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
                 builder: (context) => Otp(
                       key: UniqueKey(),
                       userId: userId,
+                      phoneNo: phoneNo,
                     )),
           );
         } else {
@@ -72,7 +79,6 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
           //   const SnackBar(content: Text('Error processing the request'))
 
           // );
-          debugPrint(response.body);
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

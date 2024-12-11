@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter_project_hayleys/register_screen.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Otp extends StatefulWidget {
+  final String phoneNo;
   final String userId;
 
   //const Otp({required Key key}) : super(key: key);
-  const Otp({super.key, required this.userId});
+  const Otp({super.key, required this.phoneNo, required this.userId});
 
   @override
   _OtpState createState() => _OtpState();
@@ -14,6 +17,8 @@ class Otp extends StatefulWidget {
 
 class _OtpState extends State<Otp> {
   final _otpController = List.generate(6, (index) => TextEditingController());
+  final String apiUrlVerifyOtp =
+      'http://172.16.200.79/flutter_project_hayleys/php/otp.php';
 
   @override
   void dispose() {
@@ -24,26 +29,96 @@ class _OtpState extends State<Otp> {
     super.dispose();
   }
 
-  void _verifyOtp() {
-    String otp = _otpController.map((controller) => controller.text).join();
+  void _fetchOtp() async {
+    print("come to _fetchOtp");
 
-    if (otp == "123456") {
+    try {
+      final url =
+          Uri.parse('http://172.16.200.79/flutter_project_hayleys/php/otp.php');
+      print("Fetching OTP from $url");
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        if (data.containsKey('generated_otp')) {
+          final generatedOtp = data['generated_otp'];
+          print("Generated OTP: $generatedOtp");
+        } else {
+          print(
+              "Response JSON does not contain 'generated_otp': ${response.body}");
+        }
+      } else {
+        print("Failed to fetch OTP. Status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error fetching OTP: $e");
+    }
+  }
+
+  void _verifyOtp() async {
+    print("come to _verifyOtp");
+    // Combine OTP input
+    String userOtp = _otpController.map((controller) => controller.text).join();
+
+    if (userOtp.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Verification Successful")),
+        const SnackBar(content: Text("Please enter a 6-digit OTP")),
+      );
+      return;
+    }
+
+    try {
+      // Make a POST request to verify OTP
+      final response = await http.post(
+        Uri.parse(apiUrlVerifyOtp),
+        body: {
+          'phoneno': widget.phoneNo,
+          'otp': userOtp,
+          'user_id': widget.userId,
+        },
       );
 
-      Future.delayed(const Duration(seconds: 1), () {
-        Navigator.pushReplacement(
-          context,
-          //MaterialPageRoute(builder: (context) => const RegisterScreen(userId)),
-          MaterialPageRoute(
-            builder: (context) => RegisterScreen(userId: widget.userId),
-          ),
+      // Print the OTP to the terminal
+      print("User-entered OTP: $userOtp");
+      print("OTP sent to: ${widget.phoneNo}");
+
+      if (response.statusCode == 200) {
+        print("come to 200 status code");
+        // Parse the response
+        final result = json.decode(response.body);
+
+        if (result['status'] == 'success') {
+          print("come to success");
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Verification Successful")),
+          );
+
+          Future.delayed(const Duration(seconds: 1), () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => RegisterScreen(userId: widget.userId),
+              ),
+            );
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(result['message'] ?? "Invalid OTP, try again")),
+          );
+        }
+      } else {
+        // Handle non-200 HTTP responses
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed with status: ${response.statusCode}")),
         );
-      });
-    } else {
+      }
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Invalid OTP, please try again")),
+        const SnackBar(content: Text("An error occurred. Please try again.")),
       );
     }
   }
