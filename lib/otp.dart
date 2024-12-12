@@ -58,7 +58,7 @@ class _OtpState extends State<Otp> {
   }
 
   void _verifyOtp() async {
-    print("come to _verifyOtp");
+    print("come to _verifyOtp in the otp.dart");
     // Combine OTP input
     String userOtp = _otpController.map((controller) => controller.text).join();
 
@@ -76,31 +76,36 @@ class _OtpState extends State<Otp> {
         body: {
           'phoneno': widget.phoneNo,
           'otp': userOtp,
-          'user_id': widget.userId,
+          //'user_id': widget.userId,
         },
       );
 
-      // Print the OTP to the terminal
       print("User-entered OTP: $userOtp");
       print("OTP sent to: ${widget.phoneNo}");
+      //print("before OTP verification User ID: ${widget.userId}");
 
       if (response.statusCode == 200) {
         print("come to 200 status code");
         // Parse the response
         final result = json.decode(response.body);
 
-        if (result['status'] == 'success') {
-          print("come to success");
+        //final userId = result['last_id'];
+        final userId = result['last_id'].toString();
+        print("UserId: $userId");
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Verification Successful")),
-          );
+        if (result['status'] == 'not_exists') {
+          print(
+              "OTP verification successful with status = not_exists go to register page");
+
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(content: Text("Verification Successful")),
+          // );
 
           Future.delayed(const Duration(seconds: 1), () {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => RegisterScreen(userId: widget.userId),
+                builder: (context) => RegisterScreen(userId: userId),
               ),
             );
           });

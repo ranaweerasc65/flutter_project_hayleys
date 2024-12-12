@@ -2,48 +2,49 @@
 include('connect.php');
 
 
-$user_id = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['user_id']); 
-$phone_no = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['phone_no']); 
-$name = mysqli_real_escape_string($conn_hayleys_medicalapp,$_POST['fullName']);                  
-$email = mysqli_real_escape_string($conn_hayleys_medicalapp,$_POST['email']);                
-$password = mysqli_real_escape_string($conn_hayleys_medicalapp,$_POST['password']);         
+// print_r($_POST);
 
+// Retrieve and sanitize inputs
+$user_id = isset($_POST['user_id']) ? (int)$_POST['user_id'] : null;
+//$phone_no = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['phoneno']); 
+$name = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['fullName']);                  
+$email = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['email']);                
+$password = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['password']);         
+
+// Hash the password
 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-print("User ID: $user_id");
-// print("Name: $name ");
-// print("Email: $email");
-//print("User ID: $user_id");
-//print("User ID: $user_id");
-
-//$sql = "UPDATE users SET name = '". $name ."', email = '". $email ."', password = '". $hashed_password ."', datetime = '". date('Y-m-d H:i:s') ."' WHERE id = '". $user_id ."'";
-
-
-// $sql_insert = "INSERT INTO users (name, email, password, datetime) 
-//                VALUES ('$name', '$email', '$hashed_password', NOW())";
-
-// if ($conn_hayleys_medicalapp->query($sql_insert) === TRUE) {
-//     echo json_encode(array("status" => "success", "message" => "Registration successful"));
-// } else {
-//     echo json_encode(array("status" => "error", "message" => "Error: " . $conn_hayleys_medicalapp->error));
-// }
-
-// Update the user record with registration details
-$sql_update = "UPDATE users SET name = ?, email = ?, password = ?, datetime = NOW() WHERE id = ?";
-$stmt_update = $conn_hayleys_medicalapp->prepare($sql_update);
-$stmt_update->bind_param("sssi", $name, $email, $hashed_password, $user_id);
-
-if ($stmt_update->execute()) {
-    echo json_encode(array("status" => "success", "message" => "Registration updated successfully"));
-} else {
-    echo json_encode(array("status" => "error", "message" => "Failed to update registration"));
+// Debug: Check input values
+if (!$user_id) {
+    echo json_encode(array("status" => "error", "message" => "Invalid user ID.$user_id "));
+    exit;
 }
 
+// Prepare the SQL query to update user data
+$sql_update = "UPDATE users SET name = ?, email = ?, password = ?, datetime = NOW() WHERE id = ?";
+$stmt_update = $conn_hayleys_medicalapp->prepare($sql_update);
+
+// Check if the query preparation was successful
+if (!$stmt_update) {
+    echo json_encode(array("status" => "error", "message" => "Failed to prepare SQL statement: " . $conn_hayleys_medicalapp->error));
+    exit;
+}
+
+// Bind parameters
+$stmt_update->bind_param("sssi", $name, $email, $hashed_password, $user_id);
+
+// Execute the query and handle results
+if ($stmt_update->execute()) {
+    if ($stmt_update->affected_rows > 0) {
+        echo json_encode(array("status" => "success", "message" => "Registration updated successfully"));
+    } else {
+        echo json_encode(array("status" => "error", "message" => "No changes were made or user ID not found."));
+    }
+} else {
+    echo json_encode(array("status" => "error", "message" => "Failed to execute SQL query: " . $stmt_update->error));
+}
+
+// Close statement and connection
 $stmt_update->close();
-
-// Close the database connection
 $conn_hayleys_medicalapp->close();
-
-//echo json_encode(array("status" => "error", "message" => $sql));
 ?>
-

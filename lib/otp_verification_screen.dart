@@ -63,7 +63,7 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
           //String contact = result['phoneno'].toString();
 
           print("User ID: $userId");
-          print("Contact: $phoneNo");
+          //print("Contact: $phoneNo");
 
           Navigator.push(
             context,
