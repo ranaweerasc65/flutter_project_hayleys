@@ -202,7 +202,7 @@ function generateAndSendOtp($conn_hayleys_medicalapp, $phone_no)
 function sendOtpMessage($phone_no, $otp)
 {
     $alias = "Fentons"; // Sender ID
-    $message = "Dear User, Please use the following OTP: $otp to complete your online request. Fentons";
+    $message = "Dear User, Please use the following OTP: $otp to complete your online request. Fentons Medical System";
 
     // Placeholder for SMS Gateway API call
     $session = createSession('', 'esmsusr_168l', '2pr8jmh', '');
