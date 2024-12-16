@@ -128,7 +128,7 @@ class HomeContent extends StatelessWidget {
                         Text(
                           "Welcome!",
                           style: TextStyle(
-                            fontSize: 24,
+                            fontSize: 40,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

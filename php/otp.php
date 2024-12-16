@@ -128,13 +128,6 @@ function handleUserRegistration($conn_hayleys_medicalapp, $phone_no)
         
         $stmt->bind_param("s", $phone_no);
 
-
-
-
-
-
-
-
         if ($stmt->execute()) {
            
             $last_id = $conn_hayleys_medicalapp->insert_id;
@@ -166,34 +159,71 @@ function handleUserRegistration($conn_hayleys_medicalapp, $phone_no)
 }
 
 
-/**
- * Function to generate and send OTP
- */
+// /**
+//  * Function to generate and send OTP
+//  */
+// function generateAndSendOtp($conn_hayleys_medicalapp, $phone_no)
+// {
+//     $generated_otp = rand(100000, 999999); // Generate 6-digit OTP
+//     $timestamp = date('Y-m-d H:i:s');
+
+//     // Insert or update OTP
+//     $otp_sql = "INSERT INTO otp_table (phone_no, otp, timestamp) 
+//                 VALUES (?, ?, ?)
+//                 ON DUPLICATE KEY UPDATE otp = VALUES(otp), timestamp = VALUES(timestamp)";
+//     $stmt = $conn_hayleys_medicalapp->prepare($otp_sql);
+//     $stmt->bind_param("sss", $phone_no, $generated_otp, $timestamp);
+
+//     if ($stmt->execute()) {
+//         sendOtpMessage($phone_no, $generated_otp);
+//         echo json_encode([
+//             "status" => "not_exists",
+//             "message" => "OTP $generated_otp sent to $phone_no. Please verify."
+//         ]);
+//     } else {
+//         echo json_encode(["status" => "error", "message" => "Failed to generate OTP. Please try again."]);
+//     }
+// }
+
+
+
 function generateAndSendOtp($conn_hayleys_medicalapp, $phone_no)
 {
-    $generated_otp = rand(100000, 999999); // Generate 6-digit OTP
-    $timestamp = date('Y-m-d H:i:s');
+    // Check if phone number exists in the users table
+    $check_user_sql = "SELECT * FROM users WHERE phone_no = ?";
+    $stmt_check = $conn_hayleys_medicalapp->prepare($check_user_sql);
+    $stmt_check->bind_param("s", $phone_no);
+    $stmt_check->execute();
+    $user_result = $stmt_check->get_result();
 
-    // Insert or update OTP
-    $otp_sql = "INSERT INTO otp_table (phone_no, otp, timestamp) 
-                VALUES (?, ?, ?)
-                ON DUPLICATE KEY UPDATE otp = VALUES(otp), timestamp = VALUES(timestamp)";
-    $stmt = $conn_hayleys_medicalapp->prepare($otp_sql);
-    $stmt->bind_param("sss", $phone_no, $generated_otp, $timestamp);
-
-    if ($stmt->execute()) {
-        sendOtpMessage($phone_no, $generated_otp);
+    if ($user_result->num_rows > 0) {
+        // Phone number exists, no need to send OTP
         echo json_encode([
-            "status" => "not_exists",
-            "message" => "OTP $generated_otp sent to $phone_no. Please verify."
+            "status" => "exists",
+            "message" => "Phone number already exists. Please proceed to login."
         ]);
     } else {
-        echo json_encode(["status" => "error", "message" => "Failed to generate OTP. Please try again."]);
+        // Phone number does not exist, generate and send OTP
+        $generated_otp = rand(100000, 999999); // Generate 6-digit OTP
+        $timestamp = date('Y-m-d H:i:s');
+
+        $otp_sql = "INSERT INTO otp_table (phone_no, otp, timestamp) 
+                    VALUES (?, ?, ?)
+                    ON DUPLICATE KEY UPDATE otp = VALUES(otp), timestamp = VALUES(timestamp)";
+        $stmt = $conn_hayleys_medicalapp->prepare($otp_sql);
+        $stmt->bind_param("sss", $phone_no, $generated_otp, $timestamp);
+
+        if ($stmt->execute()) {
+            sendOtpMessage($phone_no, $generated_otp);
+            echo json_encode([
+                "status" => "not_exists",
+                "message" => "OTP $generated_otp sent to $phone_no. Please verify."
+            ]);
+        } else {
+            echo json_encode(["status" => "error", "message" => "Failed to generate OTP. Please try again."]);
+        }
     }
 }
-
-
-
 
 
 /**echo json_encode(array("status" => "error", "message" => "Invalid user ID.$user_id "));

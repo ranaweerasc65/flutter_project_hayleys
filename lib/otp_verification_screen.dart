@@ -1,10 +1,14 @@
+// this is the phone number verification dart file
+// check whether
+// 1. enter a correct format phone number
+// 2. check that the phone number exsits in the database
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_project_hayleys/login_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_project_hayleys/otp.dart';
 import 'package:animate_do/animate_do.dart';
-//import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   const OtpVerificationScreen({super.key});
