@@ -148,9 +148,9 @@ class HomeContent extends StatelessWidget {
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          userName, // Display the user's name
+                          userName, // Display the user's name in the homescreen
                           style: const TextStyle(
-                            fontSize: 18,
+                            fontSize: 28,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -158,7 +158,7 @@ class HomeContent extends StatelessWidget {
                         const Text(
                           "How is it going today?",
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 20,
                             color: Colors.grey,
                           ),
                         ),
