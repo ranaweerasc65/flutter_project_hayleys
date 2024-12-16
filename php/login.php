@@ -39,7 +39,7 @@ $user = $result->fetch_assoc();
 // Verify the password (assuming password is hashed using password_hash)
 if (password_verify($password, $user['password'])) {
     // Password is correct, login successful
-    echo json_encode(array("status" => "success", "message" => "Login successful", "user_id" => $user['id']));
+    echo json_encode(array("status" => "success", "message" => "Login successful", "user_id" => $user['id'], "name" => $user['name']));
 } else {
     // Password is incorrect
     echo json_encode(array("status" => "error", "message" => "Incorrect password"));

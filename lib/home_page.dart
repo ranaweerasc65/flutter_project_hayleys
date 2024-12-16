@@ -1,10 +1,14 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'login_screen.dart';
 import 'profile.dart';
 import 'approvals.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final String userName;
+
+  const HomeScreen({super.key, required this.userName});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -13,12 +17,18 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   final PageController _pageController = PageController();
+  late final List<Widget> _pages;
 
-  final List<Widget> _pages = [
-    const HomeContent(),
-    const ProfilePage(),
-    const ApprovalsPage(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    // Initialize _pages after widget.userName is accessible
+    _pages = [
+      HomeContent(userName: widget.userName), // Use widget.userName here
+      const ProfilePage(),
+      const ApprovalsPage(),
+    ];
+  }
 
   void _onPageChanged(int index) {
     setState(() {
@@ -88,7 +98,11 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class HomeContent extends StatelessWidget {
-  const HomeContent({super.key});
+  final String userName; // Declare the userName variable
+
+  const HomeContent(
+      {super.key,
+      required this.userName}); // Accept the userName in the constructor
 
   @override
   Widget build(BuildContext context) {
@@ -122,26 +136,26 @@ class HomeContent extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Column(
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           "Welcome!",
                           style: TextStyle(
                             fontSize: 40,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         Text(
-                          "Sara",
-                          style: TextStyle(
+                          userName, // Display the user's name
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        SizedBox(height: 5),
-                        Text(
+                        const SizedBox(height: 5),
+                        const Text(
                           "How is it going today?",
                           style: TextStyle(
                             fontSize: 16,

@@ -132,16 +132,6 @@ function handleUserRegistration($conn_hayleys_medicalapp, $phone_no)
            
             $last_id = $conn_hayleys_medicalapp->insert_id;
 
-
-            //echo json_encode(array("status" => "success", "message" => "Phone number registered successfully. $last_id "));
-
-            //echo json_encode(array("status" => "not_exists", "message" => "Phone number registered successfully. $last_id "));
-            // echo json_encode([
-            //     "status" => "success",
-            //     "user_id" => $last_id,
-            //     "message" => "Phone number registered successfully."
-            // ]);
-
             echo json_encode([
                 "status" => "not_exists",
                 "last_id" => $last_id, 

@@ -18,6 +18,8 @@ class InitState extends State<LoginScreen> {
 
   bool _isPasswordVisible = false;
 
+  String? userName;
+
   Future<void> loginUser() async {
     final phoneNo = phoneController.text;
     final password = passwordController.text;
@@ -38,9 +40,15 @@ class InitState extends State<LoginScreen> {
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
       if (jsonResponse['status'] == 'success') {
+        userName = jsonResponse['name'];
+
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(
+              userName: userName!, // Pass the name to the HomeScreen
+            ),
+          ),
         );
       } else {
         _showErrorDialog(jsonResponse['message']);
