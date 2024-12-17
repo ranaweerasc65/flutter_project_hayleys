@@ -1,9 +1,9 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'login_screen.dart';
 import 'profile.dart';
 import 'approvals.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -19,15 +19,30 @@ class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController();
   late final List<Widget> _pages;
 
+  //17/12/2024 FOR IMAGE UPLOAD FEATURE
+  // To store the selected image
+  XFile? _selectedImage;
+
   @override
   void initState() {
     super.initState();
-    // Initialize _pages after widget.userName is accessible
+
     _pages = [
-      HomeContent(userName: widget.userName), // Use widget.userName here
+      HomeContent(
+        userName: widget.userName,
+        onImageSelected: _updateSelectedImage,
+        selectedImage: _selectedImage,
+      ),
       const ProfilePage(),
       const ApprovalsPage(),
     ];
+  }
+
+//17/12/2024 FOR IMAGE UPLOAD FEATURE
+  void _updateSelectedImage(XFile? image) {
+    setState(() {
+      _selectedImage = image;
+    });
   }
 
   void _onPageChanged(int index) {
@@ -98,11 +113,30 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class HomeContent extends StatelessWidget {
-  final String userName; // Declare the userName variable
+  final String userName;
 
-  const HomeContent(
-      {super.key,
-      required this.userName}); // Accept the userName in the constructor
+  // 17/12/2024 FOR IMAGE UPLOAD FEATURE
+  final Function(XFile?) onImageSelected;
+  final XFile? selectedImage;
+
+  const HomeContent({
+    super.key,
+    required this.userName,
+
+    // 17/12/2024 FOR IMAGE UPLOAD FEATURE
+    required this.onImageSelected,
+    required this.selectedImage,
+  });
+
+// 17/12/2024 FOR IMAGE UPLOAD FEATURE
+  Future<void> _pickImage(BuildContext context) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      onImageSelected(XFile(pickedFile.path));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +152,6 @@ class HomeContent extends StatelessWidget {
             ),
             elevation: 4,
             child: Container(
-              // Gradient Background for the Welcome Card
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
@@ -166,14 +199,52 @@ class HomeContent extends StatelessWidget {
                         ),
                       ],
                     ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.network(
-                        'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
-                        width: 200,
-                        height: 200,
-                        fit: BoxFit.cover,
-                      ),
+
+                    //17/12/2024 MODIFIED TO ADD THE GALLERY ACCESS TO UPLOAD THE IMAGE
+                    Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: selectedImage != null
+                              ? Image.file(
+                                  File(selectedImage!.path),
+                                  width: 200,
+                                  height: 200,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.network(
+                                  'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
+                                  width: 200,
+                                  height: 200,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
+                        Positioned(
+                          bottom: 8,
+                          right: 8,
+                          child: GestureDetector(
+                            onTap: () => _pickImage(context),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    blurRadius: 4,
+                                  ),
+                                ],
+                              ),
+                              padding: const EdgeInsets.all(8),
+                              child: const Icon(
+                                Icons.camera_alt,
+                                size: 20,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
