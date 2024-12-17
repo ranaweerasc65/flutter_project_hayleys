@@ -22,9 +22,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize _pages after widget.userName is accessible
+
     _pages = [
-      HomeContent(userName: widget.userName), // Use widget.userName here
+      HomeContent(userName: widget.userName),
       const ProfilePage(),
       const ApprovalsPage(),
     ];
@@ -97,12 +97,34 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class HomeContent extends StatelessWidget {
-  final String userName; // Declare the userName variable
+class HomeContent extends StatefulWidget {
+  final String userName;
 
-  const HomeContent(
-      {super.key,
-      required this.userName}); // Accept the userName in the constructor
+  const HomeContent({super.key, required this.userName});
+
+  @override
+  _HomeContentState createState() => _HomeContentState();
+}
+
+class _HomeContentState extends State<HomeContent> {
+  // Lists to hold connection placeholders
+  final List<String> firstConnections = [
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
+  ];
+
+  final List<String> otherConnections = [
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
+  ];
+
+  // Add a new connection to the desired list
+  void addConnection(List<String> connectionList) {
+    setState(() {
+      connectionList.add(
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,12 +170,15 @@ class HomeContent extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 5),
-                        Text(
-                          userName,
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.w600,
-                            color: Color.fromARGB(255, 223, 234, 242),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: Text(
+                            '${getGreeting()}, ${widget.userName}',
+                            style: const TextStyle(
+                              color: Color.fromARGB(255, 223, 234, 242),
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 5),
@@ -181,46 +206,202 @@ class HomeContent extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
+
+          // FLOW TREE CONNECTION
+          // 17/12/2024
+
+          const SizedBox(height: 10),
+
+          Container(
+            height: 100,
+            width: 100,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.grey.shade300,
+                width: 2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.network(
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // "First Connections"
+
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: const Text(
+              "My First Connections",
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
           SizedBox(
-            height: 120,
+            height: 100,
+            child: Center(
+              child: ListView(scrollDirection: Axis.horizontal, children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ...List.generate(
+                      firstConnections.length,
+                      (index) => Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.grey.shade300,
+                              width: 2,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Image.network(
+                              firstConnections[index],
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    // 17/12/2024 MODIFIED WITH THE PLUS BUTTON
+                    GestureDetector(
+                      onTap: () => addConnection(firstConnections),
+                      child: Container(
+                        width: 100,
+                        height: 100,
+                        margin: const EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child:
+                            const Icon(Icons.add, size: 50, color: Colors.blue),
+                      ),
+                    ),
+                  ],
+                ),
+              ]),
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // Display "Other Connections"
+
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: const Text(
+              "My Other Connections",
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          // 17/12/2024 MODIFIED WITH THE PLUS BUTTON
+          SizedBox(
+            height: 100,
             child: ListView(
               scrollDirection: Axis.horizontal,
-              children: List.generate(
-                4,
-                (index) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: Colors.grey.shade300,
-                        width: 2,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
+              children: [
+                ...List.generate(
+                  otherConnections.length,
+                  (index) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                          width: 2,
                         ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.network(
-                        'https://via.placeholder.com/80?text=User${index + 1}',
-                        fit: BoxFit.cover,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.network(
+                          otherConnections[index],
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
+                // Add a "plus" button to add new connections
+                GestureDetector(
+                  onTap: () => addConnection(otherConnections),
+                  child: Container(
+                    width: 100,
+                    height: 100,
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Icon(Icons.add, size: 50, color: Colors.blue),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
+  }
+}
+
+String getGreeting() {
+  final hour = DateTime.now().hour;
+
+  if (hour >= 0 && hour < 12) {
+    return 'Good Morning';
+  } else if (hour >= 12 && hour < 17) {
+    return 'Good Afternoon';
+  } else {
+    return 'Good Evening';
   }
 }
