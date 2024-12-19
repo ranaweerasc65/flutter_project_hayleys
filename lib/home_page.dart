@@ -1,9 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'login_screen.dart';
 import 'profile.dart';
 import 'approvals.dart';
+import 'customer_details.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -107,7 +106,6 @@ class HomeContent extends StatefulWidget {
 }
 
 class _HomeContentState extends State<HomeContent> {
-  // Lists to hold connection placeholders
   final List<String> firstConnections = [
     'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
     'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
@@ -117,7 +115,6 @@ class _HomeContentState extends State<HomeContent> {
     'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
   ];
 
-  // Add a new connection to the desired list
   void addConnection(List<String> connectionList) {
     setState(() {
       connectionList.add(
@@ -133,14 +130,12 @@ class _HomeContentState extends State<HomeContent> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Welcome Card
           Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
             elevation: 4,
             child: Container(
-              // Gradient Background for the Welcome Card
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
@@ -207,34 +202,67 @@ class _HomeContentState extends State<HomeContent> {
           ),
           const SizedBox(height: 20),
 
-          // FLOW TREE CONNECTION
-          // 17/12/2024
+          // FLOW TREE CONNECTION UI SETUP - 17/12/2024
 
           const SizedBox(height: 10),
 
-          Container(
-            height: 100,
-            width: 100,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: Colors.grey.shade300,
-                width: 2,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
+          // Container(
+          //   height: 100,
+          //   width: 100,
+          //   decoration: BoxDecoration(
+          //     color: Colors.white,
+          //     borderRadius: BorderRadius.circular(20),
+          //     border: Border.all(
+          //       color: Colors.grey.shade300,
+          //       width: 2,
+          //     ),
+          //     boxShadow: [
+          //       BoxShadow(
+          //         color: Colors.black.withOpacity(0.1),
+          //         blurRadius: 10,
+          //         offset: const Offset(0, 5),
+          //       ),
+          //     ],
+          //   ),
+          //   child: ClipRRect(
+          //     borderRadius: BorderRadius.circular(20),
+          //     child: Image.network(
+          //       'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
+          //       fit: BoxFit.cover,
+          //     ),
+          //   ),
+          // ),
+
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CustomerDetails()),
+              );
+            },
+            child: Container(
+              height: 100,
+              width: 100,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  width: 2,
                 ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.network(
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
-                fit: BoxFit.cover,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image.network(
+                  'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
@@ -371,7 +399,8 @@ class _HomeContentState extends State<HomeContent> {
                     ),
                   ),
                 ),
-                // Add a "plus" button to add new connections
+
+                // plus button to add new connections
                 GestureDetector(
                   onTap: () => addConnection(otherConnections),
                   child: Container(
