@@ -46,7 +46,7 @@ class InitState extends State<LoginScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => HomeScreen(
-              userName: userName!, // Pass the name to the HomeScreen
+              userName: userName!,
             ),
           ),
         );
@@ -82,179 +82,231 @@ class InitState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-            gradient: LinearGradient(begin: Alignment.topCenter, colors: [
-          Colors.blue.shade900,
-          Colors.blue.shade800,
-          Colors.blue.shade400
-        ])),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            const SizedBox(height: 80),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  FadeInUp(
-                      duration: const Duration(milliseconds: 1000),
-                      child: const Text("Login",
-                          style: TextStyle(color: Colors.white, fontSize: 40))),
-                  const SizedBox(height: 10),
-                  FadeInUp(
-                      duration: const Duration(milliseconds: 1300),
-                      child: const Text(
-                          "Welcome Back to Fentons Medical Bill Claim System",
-                          style: TextStyle(color: Colors.white, fontSize: 18))),
+      body: RefreshIndicator(
+        onRefresh: _refreshLoginScreen,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                colors: [
+                  Colors.blue.shade900,
+                  Colors.blue.shade800,
+                  Colors.blue.shade400,
                 ],
               ),
             ),
-            const SizedBox(height: 20),
-            Expanded(
-                child: SingleChildScrollView(
-              child: Container(
-                decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(60),
-                        topRight: Radius.circular(60),
-                        bottomLeft: Radius.circular(60),
-                        bottomRight: Radius.circular(60))),
-                child: Padding(
-                  padding: const EdgeInsets.all(30),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(height: 80),
+                Padding(
+                  padding: const EdgeInsets.all(20),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      const SizedBox(height: 60),
                       FadeInUp(
-                        duration: const Duration(milliseconds: 1400),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: const [
-                                BoxShadow(
-                                    color: Color.fromRGBO(27, 86, 225, 0.298),
-                                    blurRadius: 20,
-                                    offset: Offset(0, 10))
-                              ]),
-                          child: Column(
-                            children: <Widget>[
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                        bottom: BorderSide(
-                                            color: Colors.grey.shade200))),
-                                child: TextField(
-                                  controller:
-                                      phoneController, // Bind the phoneController here
-                                  keyboardType: TextInputType.phone,
-                                  decoration: const InputDecoration(
-                                      hintText: "Phone number",
-                                      hintStyle: TextStyle(color: Colors.grey),
-                                      border: InputBorder.none),
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                        bottom: BorderSide(
-                                            color: Colors.grey.shade200))),
-                                child: TextField(
-                                  controller:
-                                      passwordController, // Bind the passwordController here
-                                  obscureText: !_isPasswordVisible,
-                                  decoration: InputDecoration(
-                                    hintText: "Password",
-                                    hintStyle:
-                                        const TextStyle(color: Colors.grey),
-                                    border: InputBorder.none,
-                                    suffixIcon: IconButton(
-                                      icon: Icon(
-                                        _isPasswordVisible
-                                            ? Icons.visibility
-                                            : Icons.visibility_off,
-                                        color: Colors.grey,
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          _isPasswordVisible =
-                                              !_isPasswordVisible; // Toggle password visibility
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                        duration: const Duration(milliseconds: 1000),
+                        child: const Text(
+                          "Login",
+                          style: TextStyle(color: Colors.white, fontSize: 40),
                         ),
                       ),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 10),
                       FadeInUp(
-                          duration: const Duration(milliseconds: 1500),
-                          child: const Text("Forgot Password?",
-                              style: TextStyle(color: Colors.grey))),
-                      const SizedBox(height: 20),
-                      FadeInUp(
-                          duration: const Duration(milliseconds: 1600),
-                          child: MaterialButton(
-                            onPressed:
-                                loginUser, // Ensure loginUser is called when login button is pressed
-                            height: 50,
-                            color: Colors.blue[900],
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(50)),
-                            child: const Center(
-                              child: Text("Login",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold)),
-                            ),
-                          )),
-                      const SizedBox(height: 30),
-                      FadeInUp(
-                          duration: const Duration(milliseconds: 1500),
-                          child: const Text("New to the system?",
-                              style: TextStyle(color: Colors.grey))),
-                      const SizedBox(height: 20),
-                      FadeInUp(
-                        duration: const Duration(milliseconds: 1600),
-                        child: MaterialButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const OtpVerificationScreen()));
-                          },
-                          height: 50,
-                          color: Colors.white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(50),
-                              side: BorderSide(
-                                  color: Colors.blue[900]!, width: 2)),
-                          child: Center(
-                            child: Text("Register",
-                                style: TextStyle(
-                                    color: Colors.blue[900],
-                                    fontWeight: FontWeight.bold)),
-                          ),
+                        duration: const Duration(milliseconds: 1300),
+                        child: const Text(
+                          "Welcome Back to Fentons Medical Bill Claim System",
+                          style: TextStyle(color: Colors.white, fontSize: 18),
                         ),
                       ),
-                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
-              ),
-            )),
-          ],
+                const SizedBox(height: 20),
+                Expanded(
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(60),
+                        topRight: Radius.circular(60),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(30),
+                      child: Column(
+                        children: <Widget>[
+                          const SizedBox(height: 60),
+                          FadeInUp(
+                            duration: const Duration(milliseconds: 1400),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Color.fromRGBO(27, 86, 225, 0.298),
+                                    blurRadius: 20,
+                                    offset: Offset(0, 10),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                children: <Widget>[
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: Colors.grey.shade200,
+                                        ),
+                                      ),
+                                    ),
+                                    child: TextField(
+                                      controller: phoneController,
+                                      keyboardType: TextInputType.phone,
+                                      decoration: const InputDecoration(
+                                        hintText: "Phone number",
+                                        hintStyle:
+                                            TextStyle(color: Colors.grey),
+                                        border: InputBorder.none,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: Colors.grey.shade200,
+                                        ),
+                                      ),
+                                    ),
+                                    child: TextField(
+                                      controller: passwordController,
+                                      obscureText: !_isPasswordVisible,
+                                      decoration: InputDecoration(
+                                        hintText: "Password",
+                                        hintStyle:
+                                            const TextStyle(color: Colors.grey),
+                                        border: InputBorder.none,
+                                        suffixIcon: IconButton(
+                                          icon: Icon(
+                                            _isPasswordVisible
+                                                ? Icons.visibility
+                                                : Icons.visibility_off,
+                                            color: Colors.grey,
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              _isPasswordVisible =
+                                                  !_isPasswordVisible;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 40),
+                          FadeInUp(
+                            duration: const Duration(milliseconds: 1500),
+                            child: const Text(
+                              "Forgot Password?",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          FadeInUp(
+                            duration: const Duration(milliseconds: 1600),
+                            child: MaterialButton(
+                              onPressed: loginUser,
+                              height: 50,
+                              color: Colors.blue[900],
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "Login",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 30),
+                          FadeInUp(
+                            duration: const Duration(milliseconds: 1500),
+                            child: const Text(
+                              "New to the system?",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          FadeInUp(
+                            duration: const Duration(milliseconds: 1600),
+                            child: MaterialButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const OtpVerificationScreen(),
+                                  ),
+                                );
+                              },
+                              height: 50,
+                              color: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50),
+                                side: BorderSide(
+                                  color: Colors.blue[900]!,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "Register",
+                                  style: TextStyle(
+                                    color: Colors.blue[900],
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
+
+  Future<void> _refreshLoginScreen() async {
+    phoneController.clear();
+    passwordController.clear();
+    setState(() {});
+    await Future.delayed(const Duration(seconds: 1));
+  }
 }
+
+
+
+// 20/12/2024 ADD THE PULL DOWN REFRESH FEATURE 
