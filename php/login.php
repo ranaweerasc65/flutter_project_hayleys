@@ -30,7 +30,7 @@ $result = $stmt->get_result();
 // Check if the phone number exists
 if ($result->num_rows == 0) {
     echo json_encode(array("status" => "error", "message" => "Phone number not registered"));
-    exit(); // Stop further execution if the phone number does not exist
+    exit(); 
 }
 
 // Fetch the user record
@@ -39,11 +39,18 @@ $user = $result->fetch_assoc();
 // Verify the password (assuming password is hashed using password_hash)
 if (password_verify($password, $user['password'])) {
     // Password is correct, login successful
-    echo json_encode(array("status" => "success", "message" => "Login successful", "user_id" => $user['id'], "name" => $user['name']));
+
+
+    //12/31/2024 ADD PHONE NO FOR THE BELOW LINE ---> FOR THE USAGE OF USER_DETAILS.PHP
+
+    echo json_encode(array("status" => "success", "message" => "Login successful", "user_id" => $user['id'], "name" => $user['name'], "phone_no" => $user['phone_no']));
 } else {
     // Password is incorrect
     echo json_encode(array("status" => "error", "message" => "Incorrect password"));
 }
+
+error_log(print_r($_POST, true));
+
 
 // Close the database connection
 $stmt->close();
