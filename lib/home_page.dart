@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'login_screen.dart';
 import 'profile.dart';
 import 'approvals.dart';
-import 'customer_details.dart';
+import 'primary_user_details.dart';
+import 'user_details.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -106,14 +107,9 @@ class HomeContent extends StatefulWidget {
 }
 
 class _HomeContentState extends State<HomeContent> {
-  final List<String> firstConnections = [
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
-  ];
+  final List<String> firstConnections = [];
 
-  final List<String> otherConnections = [
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
-  ];
+  final List<String> otherConnections = [];
 
   void addConnection(List<String> connectionList) {
     setState(() {
@@ -206,38 +202,15 @@ class _HomeContentState extends State<HomeContent> {
 
           const SizedBox(height: 10),
 
-          // Container(
-          //   height: 100,
-          //   width: 100,
-          //   decoration: BoxDecoration(
-          //     color: Colors.white,
-          //     borderRadius: BorderRadius.circular(20),
-          //     border: Border.all(
-          //       color: Colors.grey.shade300,
-          //       width: 2,
-          //     ),
-          //     boxShadow: [
-          //       BoxShadow(
-          //         color: Colors.black.withOpacity(0.1),
-          //         blurRadius: 10,
-          //         offset: const Offset(0, 5),
-          //       ),
-          //     ],
-          //   ),
-          //   child: ClipRRect(
-          //     borderRadius: BorderRadius.circular(20),
-          //     child: Image.network(
-          //       'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
-          //       fit: BoxFit.cover,
-          //     ),
-          //   ),
-          // ),
-
           GestureDetector(
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => UserDetails()),
+                MaterialPageRoute(
+                    builder: (context) =>
+
+                        // MOVE TO THE PRIMARY USER DETAILS FORM
+                        const PrimaryUserDetails()),
               );
             },
             child: Container(
@@ -323,9 +296,38 @@ class _HomeContentState extends State<HomeContent> {
                         ),
                       ),
                     ),
+
                     // 17/12/2024 MODIFIED WITH THE PLUS BUTTON
+                    // 24/12/2024 COMMENT ======== TO APPEAR THE USER DETAILS FORM
+                    //                             NEED TO IMPLEMENT THE MAN IMAGE APPEAR WHEN SUBMIT THE USER DETAILS FORM
+
+                    // GestureDetector(
+                    //   onTap: () => addConnection(firstConnections),
+                    //   child: Container(
+                    //     width: 100,
+                    //     height: 100,
+                    //     margin: const EdgeInsets.symmetric(horizontal: 10),
+                    //     decoration: BoxDecoration(
+                    //       color: Colors.grey.shade300,
+                    //       borderRadius: BorderRadius.circular(20),
+                    //     ),
+                    //     child:
+                    //         const Icon(Icons.add, size: 50, color: Colors.blue),
+                    //   ),
+                    // ),
+
+                    // 24/12/2024 WHEN PRESSING THE PLUS BUTTON APPEARS THE USER DETAILS FORM
+                    //            BUT DO NOT APPEAR THE MAN IMAGE FOR THAT
+
                     GestureDetector(
-                      onTap: () => addConnection(firstConnections),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const UserDetails(),
+                          ),
+                        );
+                      },
                       child: Container(
                         width: 100,
                         height: 100,
@@ -362,6 +364,7 @@ class _HomeContentState extends State<HomeContent> {
           const SizedBox(height: 10),
 
           // 17/12/2024 MODIFIED WITH THE PLUS BUTTON
+
           SizedBox(
             height: 100,
             child: ListView(
