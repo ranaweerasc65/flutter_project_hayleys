@@ -1,4 +1,5 @@
 <?php
+
 // Include the database connection
 include('connect.php');
 
@@ -43,9 +44,24 @@ if (password_verify($password, $user['password'])) {
 
     //12/31/2024 ADD PHONE NO FOR THE BELOW LINE ---> FOR THE USAGE OF USER_DETAILS.PHP
 
-    echo json_encode(array("status" => "success", "message" => "Login successful", "user_id" => $user['id'], "name" => $user['name'], "phone_no" => $user['phone_no']));
+    // echo json_encode(array(
+    //     "status" => "success", 
+    //     "message" => "Login successful", 
+    //     "user_id" => $user['id'], 
+    //     "name" => $user['name'], 
+    //     "phone_no" => $user['phone_no']));
+
+    echo json_encode([
+        "status" => "success",
+        "message" => "Login successful",
+        "user_id" => $user['id'],
+        "name" => $user['name'],
+        "phone_no" => $user['phone_no']
+    ]);
+
+
 } else {
-    // Password is incorrect
+
     echo json_encode(array("status" => "error", "message" => "Incorrect password"));
 }
 

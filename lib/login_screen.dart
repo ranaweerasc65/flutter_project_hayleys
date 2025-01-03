@@ -47,6 +47,7 @@ class InitState extends State<LoginScreen> {
           MaterialPageRoute(
             builder: (context) => HomeScreen(
               userName: userName!,
+              phoneNo: phoneNo,
             ),
           ),
         );

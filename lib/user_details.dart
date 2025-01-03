@@ -1,7 +1,6 @@
 // ADD THE DETAILS OF THE USER FOR THE OTHER MEMBERS TO THE SYSTEM
 
 import 'dart:convert';
-//import 'package:shared_preferences/shared_preferences.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 
@@ -9,7 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class UserDetails extends StatefulWidget {
-  const UserDetails({super.key});
+  // To accept the phone number - 03/01/2024
+  final String phoneNo;
+
+  //const UserDetails({super.key});
+
+  // Modify constructor - 03/01/2024
+  const UserDetails({super.key, required this.phoneNo});
 
   @override
   State<UserDetails> createState() => _UserDetailsFormState();
@@ -35,128 +40,15 @@ class _UserDetailsFormState extends State<UserDetails> {
   String? relationship;
   String? gender;
 
-  String? phoneNo; // 31/12/2024 Holds the phone number of the logged-in user
+  String? phoneNo;
 
   @override
+  void initState() {
+    super.initState();
 
-//31/12/2024
-  // Future<void> _fetchLoggedUserPhoneNo() async {
-  //   print('come to _fetchLoggedUserPhoneNo');
-  //   try {
-  //     print('come to _fetchLoggedUserPhoneNo - try block');
-
-  //     final response = await http.get(
-  //       Uri.parse("http://172.16.200.79/flutter_project_hayleys/php/login.php"),
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       print('come to _fetchLoggedUserPhoneNo - try block - if');
-
-  //       final data = jsonDecode(response.body);
-  //       print(
-  //           'come to _fetchLoggedUserPhoneNo - try block - if - after jsondecode');
-  //       setState(() {
-  //         phoneNo = data['phone_no']; // Assume the response contains `phone_no`
-  //         print('Logged-in user phone number: ${data['phone_no']}');
-  //       });
-  //     } else {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text("Error: Unable to fetch phone number.")),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     print('come to _fetchLoggedUserPhoneNo - catch block');
-
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text("Error: $e")),
-  //     );
-  //   }
-  // }
-
-  // Future<void> _loadAndFetchPhoneNo() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final phoneNumber = prefs.getString('loggedUserPhoneNo');
-  //   final password = prefs.getString('loggedUserPassword');
-
-  //   if (phoneNumber != null && password != null) {
-  //     await _fetchLoggedUserPhoneNo(phoneNumber, password);
-  //   } else {
-  //     print('No saved login credentials found.');
-  //   }
-  // }
-
-  // Future<void> _fetchLoggedUserPhoneNo(
-  //     String phoneNumber, String password) async {
-  //   print('Fetching logged-in user phone number...');
-  //   try {
-  //     final response = await http.post(
-  //       Uri.parse("http://172.16.200.79/flutter_project_hayleys/php/login.php"),
-  //       body: {
-  //         'phone_no': phoneNumber,
-  //         'password': password,
-  //       },
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       final data = jsonDecode(response.body);
-  //       if (data['status'] == 'success' && data.containsKey('phone_no')) {
-  //         setState(() {
-  //           phoneNo = data['phone_no'];
-  //         });
-  //         print('Logged-in user phone number: ${data['phone_no']}');
-  //       } else {
-  //         print('Error: ${data['message']}');
-  //       }
-  //     } else {
-  //       print(
-  //           'Error: Unable to fetch phone number. Status code: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     print('Error: $e');
-  //   }
-  // }
-  // Future<void> _fetchLoggedUserPhoneNo() async {
-  //   print('come to _fetchLoggedUserPhoneNo');
-  //   try {
-  //     print('come to _fetchLoggedUserPhoneNo - try block');
-
-  //     final response = await http.post(
-  //       Uri.parse("http://172.16.200.79/flutter_project_hayleys/php/login.php"),
-  //       body: {
-  //         'phone_no': '0710998878', // Replace with the actual phone number
-  //         'password': 'qwerty', // Replace with the actual password
-  //       },
-  //     );
-
-  //     print('Response status: ${response.statusCode}');
-  //     print('Response body: ${response.body}'); // Log the raw response
-
-  //     if (response.statusCode == 200) {
-  //       final data = jsonDecode(response.body); // Decode JSON response
-  //       print('Decoded JSON: $data');
-
-  //       if (data['status'] == 'success' && data.containsKey('phone_no')) {
-  //         setState(() {
-  //           phoneNo = data['phone_no']; // Save phone number
-  //         });
-  //         print('Logged-in user phone number: ${data['phone_no']}');
-  //       } else {
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           SnackBar(content: Text(data['message'] ?? "Unknown error")),
-  //         );
-  //       }
-  //     } else {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text("Error: Unable to fetch phone number.")),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     print('Error: $e');
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text("Error: $e")),
-  //     );
-  //   }
-  // }
+    // Print phone number to the terminal - 03/01/2024
+    print('Logged in user phone number (user_details.dart): ${widget.phoneNo}');
+  }
 
   Future<void> _refreshForm() async {
     setState(() {
@@ -164,7 +56,6 @@ class _UserDetailsFormState extends State<UserDetails> {
       streetController.clear();
       homeNoController.clear();
       cityController.clear();
-
       nicController.clear();
       dobController.clear();
       contact1Controller.clear();
@@ -448,6 +339,7 @@ class _UserDetailsFormState extends State<UserDetails> {
   Future<void> _addMember() async {
     if (_formKey.currentState!.validate()) {
       final userDetails = {
+        "phone_no": widget.phoneNo, // Add phone number here
         "customers_name": nameController.text,
         "customers_home_no": homeNoController.text,
         "customers_street_name": streetController.text,
@@ -464,23 +356,28 @@ class _UserDetailsFormState extends State<UserDetails> {
         "customers_relationship": relationship,
       };
 
+      // Print the user-entered details to the terminal for debugging
+      print('User Details: $userDetails');
+
       try {
         final response = await http.post(
           Uri.parse(
               "http://172.16.200.79/flutter_project_hayleys/php/user_details.php"),
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode(userDetails),
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: userDetails, // Use `body` instead of `jsonEncode()`
         );
+
+        // Print response body to terminal for debugging
+        print('Response: ${response.body}');
 
         if (response.statusCode == 200) {
           final jsonResponse = jsonDecode(response.body);
           if (jsonResponse['status'] == 'success') {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Form Submitted Successfully!")),
+              const SnackBar(content: Text("Member Added Successfully!")),
             );
-
-            // After successful form submission, fetch phone number of logged-in user
-            _fetchPhoneNumber();
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Error: ${jsonResponse['message']}")),
@@ -495,6 +392,7 @@ class _UserDetailsFormState extends State<UserDetails> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Error: $e")),
         );
+        print("Error: $e"); // Print error message to terminal
       }
 
       // ScaffoldMessenger.of(context).showSnackBar(
@@ -580,7 +478,7 @@ class _UserDetailsFormState extends State<UserDetails> {
     );
   }
 
-  // Build text fields, dropdowns, and date pickers (existing code)
+  // Build text fields
   Widget buildTextField(
     String label,
     TextEditingController controller,
@@ -634,6 +532,7 @@ class _UserDetailsFormState extends State<UserDetails> {
     );
   }
 
+// Build text date pickers
   Widget buildDatePickerField(
     String label,
     TextEditingController controller,
@@ -701,6 +600,7 @@ class _UserDetailsFormState extends State<UserDetails> {
     );
   }
 
+// Build text dropdowns
   Widget buildDropdownField(
     String label,
     String? currentValue,
@@ -773,32 +673,5 @@ class _UserDetailsFormState extends State<UserDetails> {
         ],
       ),
     );
-  }
-}
-
-// Function to fetch the phone number of the logged-in user
-Future<void> _fetchPhoneNumber() async {
-  print('come to _fetchPhoneNumber');
-
-  try {
-    final response = await http.get(Uri.parse(
-        "http://172.16.200.79/flutter_project_hayleys/php/login.php"));
-
-    if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
-
-      // Check if phone number is available in the response
-      if (jsonResponse.containsKey('phone_no')) {
-        final phoneNumber = jsonResponse['phone_no'];
-        print(
-            'Logged-in user phone number: $phoneNumber'); // Print phone number in the terminal
-      } else {
-        print('Error: Phone number not found.');
-      }
-    } else {
-      print('Error: Unable to fetch phone number.');
-    }
-  } catch (e) {
-    print('Error fetching phone number: $e');
   }
 }

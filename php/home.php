@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
+    
     try {
         // Query to fetch the name based on phone number
         $stmt = $pdo->prepare("SELECT name FROM users WHERE phone_no = :phone_no");
@@ -24,9 +25,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($result) {
+
+            // Log phone number and username to the terminal or log file
+            error_log("Phone Number: $phone_number, User Name: {$result['name']}");
+
+
             // Return the name as JSON
             echo json_encode(['name' => $result['name']]);
         } else {
+            error_log("Phone Number: $phone_number, User not found.");
             echo json_encode(['error' => 'User not found']);
         }
     } catch (PDOException $e) {

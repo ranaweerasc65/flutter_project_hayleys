@@ -4,11 +4,13 @@ import 'profile.dart';
 import 'approvals.dart';
 import 'primary_user_details.dart';
 import 'user_details.dart';
+import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
   final String userName;
+  final String phoneNo; // Add this line to accept the phone number
 
-  const HomeScreen({super.key, required this.userName});
+  const HomeScreen({super.key, required this.userName, required this.phoneNo});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -24,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     _pages = [
-      HomeContent(userName: widget.userName),
+      HomeContent(userName: widget.userName, phoneNo: widget.phoneNo),
       const ProfilePage(),
       const ApprovalsPage(),
     ];
@@ -99,8 +101,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class HomeContent extends StatefulWidget {
   final String userName;
+  final String phoneNo; // Add this line to accept the phone number
 
-  const HomeContent({super.key, required this.userName});
+  const HomeContent({super.key, required this.userName, required this.phoneNo});
 
   @override
   _HomeContentState createState() => _HomeContentState();
@@ -110,6 +113,18 @@ class _HomeContentState extends State<HomeContent> {
   final List<String> firstConnections = [];
 
   final List<String> otherConnections = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Print phone number to the terminal
+    print(
+        'Logged in user phone number (home_page.dart): ${widget.phoneNo}'); // This will print the phone number
+
+    // Print the username to the terminal
+    print('Logged in user Username (home_page.dart): ${widget.userName}');
+  }
 
   void addConnection(List<String> connectionList) {
     setState(() {
@@ -324,7 +339,9 @@ class _HomeContentState extends State<HomeContent> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const UserDetails(),
+                            //builder: (context) => const UserDetails(),
+                            builder: (context) =>
+                                UserDetails(phoneNo: widget.phoneNo),
                           ),
                         );
                       },
