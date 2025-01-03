@@ -1,5 +1,5 @@
 // ADD THE DETAILS OF THE USER FOR THE OTHER MEMBERS TO THE SYSTEM
-
+import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +27,6 @@ class _UserDetailsFormState extends State<UserDetails> {
   final TextEditingController streetController = TextEditingController();
   final TextEditingController homeNoController = TextEditingController();
   final TextEditingController cityController = TextEditingController();
-
   final TextEditingController nicController = TextEditingController();
   final TextEditingController dobController = TextEditingController();
   final TextEditingController contact1Controller = TextEditingController();
@@ -582,8 +581,9 @@ class _UserDetailsFormState extends State<UserDetails> {
                 );
                 if (selectedDate != null) {
                   setState(() {
+                    // Ensure the date is formatted as yyyy-MM-dd
                     controller.text =
-                        "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
+                        DateFormat('yyyy-MM-dd').format(selectedDate);
                   });
                 }
               },
@@ -599,6 +599,72 @@ class _UserDetailsFormState extends State<UserDetails> {
       ),
     );
   }
+  // Widget buildDatePickerField(
+  //   String label,
+  //   TextEditingController controller,
+  //   String hint, {
+  //   Color hintColor = Colors.grey,
+  //   Color focusedBorderColor = const Color.fromARGB(255, 2, 99, 178),
+  // }) {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(vertical: 10),
+  //     child: Row(
+  //       children: [
+  //         Expanded(
+  //           flex: 2,
+  //           child: Text(
+  //             label,
+  //             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+  //           ),
+  //         ),
+  //         Expanded(
+  //           flex: 3,
+  //           child: TextFormField(
+  //             controller: controller,
+  //             readOnly: true,
+  //             decoration: InputDecoration(
+  //               hintText: hint,
+  //               hintStyle: TextStyle(
+  //                 color: hintColor,
+  //               ),
+  //               border: OutlineInputBorder(
+  //                 borderRadius: BorderRadius.circular(10),
+  //               ),
+  //               focusedBorder: OutlineInputBorder(
+  //                 borderRadius: BorderRadius.circular(10),
+  //                 borderSide: BorderSide(
+  //                   color: focusedBorderColor,
+  //                   width: 2.0,
+  //                 ),
+  //               ),
+  //               suffixIcon: const Icon(Icons.calendar_today),
+  //             ),
+  //             onTap: () async {
+  //               DateTime? selectedDate = await showDatePicker(
+  //                 context: context,
+  //                 initialDate: DateTime.now(),
+  //                 firstDate: DateTime(1900),
+  //                 lastDate: DateTime.now(),
+  //               );
+  //               if (selectedDate != null) {
+  //                 setState(() {
+  //                   controller.text =
+  //                       "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
+  //                 });
+  //               }
+  //             },
+  //             validator: (value) {
+  //               if (value == null || value.isEmpty) {
+  //                 return "Please select $label.";
+  //               }
+  //               return null;
+  //             },
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
 // Build text dropdowns
   Widget buildDropdownField(
