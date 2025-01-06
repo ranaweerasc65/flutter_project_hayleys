@@ -125,124 +125,243 @@ class _UserDetailsFormState extends State<UserDetails> {
               child: Padding(
                 padding: const EdgeInsets.only(left: 16.0),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    buildTextField("1. First Name", firstnameController,
-                        "Enter your first name"),
-                    buildTextField("2. Last Name", lastnameController,
-                        "Enter your last name"),
-                    buildDatePickerField(
-                        "2. Date of Birth", dobController, "Select your DOB"),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              "3. Address",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                    // Name title
+                    const Text(
+                      "Name",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+
+                    Row(
+                      children: [
+                        // First Name
+                        Expanded(
+                          child: buildTextField(
+                            "First Name",
+                            firstnameController,
+                            "",
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: buildTextField(
+                            "Last Name",
+                            lastnameController,
+                            "",
+                          ),
+                        ),
+                      ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 32.0),
-                      child: buildTextField("(a) Home No.", homeNoController,
-                          "Enter your home no."),
+
+                    const Text(
+                      "Date of Birth",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 32.0),
-                      child: buildTextField("(b) Street Name", streetController,
-                          "Enter your street name"),
+                    const SizedBox(height: 8),
+
+                    Row(
+                      children: [
+                        // DOB
+                        Expanded(
+                          child: buildDatePickerField(
+                            "Date of Birth",
+                            dobController,
+                            "",
+                          ),
+                        ),
+                      ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 32.0),
-                      child: buildTextField(
-                          "(c) City", cityController, "Enter your city"),
+
+                    const Text(
+                      "Address",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 32.0),
-                      child: buildDropdownField(
-                        "(d) District",
-                        district,
-                        [
-                          'Ampara',
-                          'Anuradhapura',
-                          'Badulla',
-                          'Batticaloa',
-                          'Colombo',
-                          'Galle',
-                          'Gampaha',
-                          'Hambantota',
-                          'Jaffna',
-                          'Kalutara',
-                          'Kandy',
-                          'Kegalle',
-                          'Kilinochchi',
-                          'Kurunegala',
-                          'Mannar',
-                          'Matale',
-                          'Matara',
-                          'Monaragala',
-                          'Mullaitivu',
-                          'Nuwara Eliya',
-                          'Polonnaruwa',
-                          'Puttalam',
-                          'Ratnapura',
-                          'Trincomalee',
-                          'Vavuniya',
-                        ],
-                        (value) => district = value,
-                        hintText: "Please select your district",
-                      ),
+                    const SizedBox(height: 8),
+
+                    Row(
+                      children: [
+                        // First Name
+                        Expanded(
+                          child: buildTextField(
+                            "Home No",
+                            homeNoController,
+                            "",
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: buildTextField(
+                            "Street Name",
+                            streetController,
+                            "",
+                          ),
+                        ),
+                      ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 32.0),
-                      child: buildDropdownField(
-                        "(e) Province",
-                        province,
-                        [
-                          'Central ',
-                          'Eastern ',
-                          'North Central ',
-                          'Northern ',
-                          'North Western ',
-                          'Sabaragamuwa ',
-                          'Southern ',
-                          'Uva ',
-                          'Western ',
-                        ],
-                        (value) => province = value,
-                        hintText: "Please select your province",
-                      ),
+
+                    Row(
+                      children: [
+                        // City
+                        Expanded(
+                          child: buildTextField(
+                            "City",
+                            cityController,
+                            "",
+                          ),
+                        ),
+                      ],
                     ),
-                    buildTextField("4. Identification", nicController,
-                        "Enter your NIC number"),
+
+                    Row(
+                      children: [
+                        // Contact Number 1
+                        Expanded(
+                          child: buildDropdownField(
+                            "District",
+                            district,
+                            [
+                              'Ampara',
+                              'Anuradhapura',
+                              'Badulla',
+                              'Batticaloa',
+                              'Colombo',
+                              'Galle',
+                              'Gampaha',
+                              'Hambantota',
+                              'Jaffna',
+                              'Kalutara',
+                              'Kandy',
+                              'Kegalle',
+                              'Kilinochchi',
+                              'Kurunegala',
+                              'Mannar',
+                              'Matale',
+                              'Matara',
+                              'Monaragala',
+                              'Mullaitivu',
+                              'Nuwara Eliya',
+                              'Polonnaruwa',
+                              'Puttalam',
+                              'Ratnapura',
+                              'Trincomalee',
+                              'Vavuniya',
+                            ],
+                            (value) => district = value,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        // Province
+                        Expanded(
+                          child: buildDropdownField(
+                            "Province",
+                            province,
+                            [
+                              'Central ',
+                              'Eastern ',
+                              'North Central ',
+                              'Northern ',
+                              'North Western ',
+                              'Sabaragamuwa ',
+                              'Southern ',
+                              'Uva ',
+                              'Western ',
+                            ],
+                            (value) => province = value,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const Text(
+                      "Identification",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+
+                    Row(
+                      children: [
+                        // NIC
+                        Expanded(
+                          child: buildTextField(
+                            "NIC",
+                            nicController,
+                            "",
+                          ),
+                        ),
+                      ],
+                    ),
+
                     buildDropdownField(
                       "5. Gender",
                       gender,
                       ['Male', 'Female', 'Not prefer to say'],
                       (value) => gender = value,
-                      hintText: "Please select your gender",
                     ),
                     buildDropdownField(
                       "6. Blood Group",
                       customers_blood_group,
                       ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
                       (value) => customers_blood_group = value,
-                      hintText: "Please select your blood group",
                     ),
-                    buildTextField("7. Contact Number 1", contact1Controller,
-                        "Enter your primary contact number",
-                        keyboardType: TextInputType.phone),
-                    buildTextField("8. Contact Number 2", contact2Controller,
-                        "Enter your secondary contact number",
-                        keyboardType: TextInputType.phone),
-                    buildTextField("9. Occupation", occupationController,
-                        "Enter your occupation"),
+
+                    // Contact
+                    const Text(
+                      "Contact",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+
+                    Row(
+                      children: [
+                        // Contact Number 1
+                        Expanded(
+                          child: buildTextField(
+                            "Contact Number 1",
+                            contact1Controller,
+                            "",
+                            keyboardType: TextInputType.phone,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        // Contact Number 2
+                        Expanded(
+                          child: buildTextField(
+                            "Contact Number 2",
+                            contact2Controller,
+                            keyboardType: TextInputType.phone,
+                            "",
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const Text(
+                      "Occupation",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+
+                    Row(
+                      children: [
+                        // Occupation
+                        Expanded(
+                          child: buildTextField(
+                            "Occupation",
+                            occupationController,
+                            "",
+                          ),
+                        ),
+                      ],
+                    ),
+
                     buildDropdownField(
                       "10. Relationship",
                       relationship,
@@ -274,7 +393,6 @@ class _UserDetailsFormState extends State<UserDetails> {
                         'Other',
                       ],
                       (value) => relationship = value,
-                      hintText: "Please select relationship",
                     ),
                     const SizedBox(height: 20),
                     FadeInUp(
@@ -487,80 +605,62 @@ class _UserDetailsFormState extends State<UserDetails> {
     );
   }
 
-  // Build text fields
+// Build text fields
   Widget buildTextField(
     String label,
     TextEditingController controller,
     String hint, {
     TextInputType keyboardType = TextInputType.text,
-    Color hintColor = Colors.grey,
-    Color focusedBorderColor = const Color.fromARGB(255, 2, 99, 178),
+    Color hintColor = const Color(0xFFB0BEC5), // Light grey for hint text
+    Color borderColor = const Color(0xFFCFD8DC), // Light border color
+    Color labelColor = const Color(0xFF78909C), // Subtle grey for label below
+    Color focusedBorderColor = const Color(0xFF607D8B), // Slightly darker focus
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            flex: 2,
-            child: Text(
-              label,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: FadeInUp(
-              duration: const Duration(milliseconds: 600),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color:
-                          Color.fromRGBO(27, 86, 225, 0.298).withOpacity(0.3),
-                      spreadRadius: 3,
-                      blurRadius: 8,
-                      offset: const Offset(0, 4), // Shadow position
-                    ),
-                  ],
-                ),
-                child: TextFormField(
-                  controller: controller,
-                  decoration: InputDecoration(
-                    hintText: hint,
-                    hintStyle: TextStyle(
-                      color: hintColor,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: focusedBorderColor,
-                        width: 2.0,
-                      ),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: 15.0,
-                      horizontal: 10.0,
-                    ),
-                  ),
-                  keyboardType: keyboardType,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Please enter $label.";
-                    }
-                    return null;
-                  },
-                ),
+          // Input field
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(
+                color: borderColor, // Border color matching uploaded image
+                width: 1.0,
               ),
             ),
+            child: TextFormField(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: hint,
+                hintStyle: TextStyle(
+                  color: hintColor, // Light grey hint text
+                  fontWeight: FontWeight.w500,
+                ),
+                border: InputBorder.none, // Remove inner default border
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 12.0,
+                  horizontal: 10.0,
+                ),
+              ),
+              keyboardType: keyboardType,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Please enter $label.";
+                }
+                return null;
+              },
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Label below the input field
+          Text(
+            label,
+            style: TextStyle(fontSize: 12, color: labelColor),
           ),
         ],
       ),
@@ -571,419 +671,153 @@ class _UserDetailsFormState extends State<UserDetails> {
     String label,
     TextEditingController controller,
     String hint, {
-    Color hintColor = Colors.grey,
-    Color focusedBorderColor = const Color.fromARGB(255, 2, 99, 178),
+    Color hintColor = const Color(0xFFB0BEC5), // Light grey for hint text
+    Color borderColor = const Color(0xFFCFD8DC), // Light border color
+    Color labelColor = const Color(0xFF78909C), // Subtle grey for label below
+    Color focusedBorderColor = const Color(0xFF607D8B), // Slightly darker focus
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            flex: 2,
-            child: Text(
-              label,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: GestureDetector(
-              onTap: () async {
-                DateTime? selectedDate = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(1900),
-                  lastDate: DateTime.now(),
-                );
-                if (selectedDate != null) {
-                  controller.text =
-                      DateFormat('yyyy-MM-dd').format(selectedDate);
-                }
-              },
-              child: AbsorbPointer(
-                // Prevents TextFormField from directly handling taps
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color.fromRGBO(27, 86, 225, 0.298)
-                            .withOpacity(0.3),
-                        spreadRadius: 3,
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
+          // Date picker field
+          GestureDetector(
+            onTap: () async {
+              DateTime? selectedDate = await showDatePicker(
+                context: context,
+                initialDate: DateTime.now(),
+                firstDate: DateTime(1900),
+                lastDate: DateTime.now(),
+              );
+              if (selectedDate != null) {
+                controller.text = DateFormat('yyyy-MM-dd').format(selectedDate);
+              }
+            },
+            child: AbsorbPointer(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(
+                    color: borderColor, // Border color matching the text field
+                    width: 1.0,
                   ),
-                  child: TextFormField(
-                    controller: controller,
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      hintText: hint,
-                      hintStyle: TextStyle(
-                        color: hintColor,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: focusedBorderColor,
-                          width: 2.0,
-                        ),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        vertical: 15.0,
-                        horizontal: 10.0,
-                      ),
-                      suffixIcon: const Icon(
-                        Icons.calendar_today,
-                        color: Colors.grey,
-                      ),
+                ),
+                child: TextFormField(
+                  controller: controller,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    hintText: hint,
+                    hintStyle: TextStyle(
+                      color: hintColor,
+                      fontWeight: FontWeight.w500,
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Please select $label.";
-                      }
-                      return null;
-                    },
+                    border: InputBorder.none, // Remove inner default border
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 12.0,
+                      horizontal: 10.0,
+                    ),
+                    suffixIcon: const Icon(
+                      Icons.calendar_today,
+                      color: Colors.grey,
+                    ),
                   ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please select $label.";
+                    }
+                    return null;
+                  },
                 ),
               ),
             ),
+          ),
+          const SizedBox(height: 8),
+          // Label below the input field
+          Text(
+            label,
+            style: TextStyle(fontSize: 12, color: labelColor),
           ),
         ],
       ),
     );
   }
 
-// Build drop down fields
   Widget buildDropdownField(
     String label,
     String? currentValue,
     List<String> options,
     Function(String?) onChanged, {
-    Color focusedBorderColor = const Color.fromARGB(255, 2, 99, 178),
-    String hintText = "Please select",
+    Color focusedBorderColor = const Color(0xFF607D8B), // Slightly darker focus
+
+    Color borderColor = const Color(0xFFCFD8DC), // Light border color
+    Color labelColor = const Color(0xFF78909C), // Subtle grey for label below
+    Color hintColor = const Color(0xFFB0BEC5), // Light grey for hint text
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            flex: 2,
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+          // Dropdown field
+          GestureDetector(
+            onTap: () {
+              // Optional: Add animation or custom behavior here if needed
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(
+                  color: borderColor,
+                  width: 1.0,
+                ),
+              ),
+              child: DropdownButtonFormField<String>(
+                value: currentValue,
+                decoration: InputDecoration(
+                  hintStyle: TextStyle(
+                    color: hintColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 12.0,
+                    horizontal: 10.0,
+                  ),
+                ),
+                items: options.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(
+                      value,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.black,
+                      ),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  onChanged(value);
+                },
               ),
             ),
           ),
-          Expanded(
-            flex: 3,
-            child: GestureDetector(
-              onTap: () {
-                // Optional: Add animation or custom behavior here if needed
-              },
-              child: FadeInUp(
-                duration: const Duration(milliseconds: 600),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color:
-                            Color.fromRGBO(27, 86, 225, 0.298).withOpacity(0.3),
-                        spreadRadius: 3,
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: DropdownButtonFormField<String>(
-                    value: currentValue,
-                    decoration: InputDecoration(
-                      hintText: hintText,
-                      hintStyle: const TextStyle(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: focusedBorderColor,
-                          width: 2.0,
-                        ),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        vertical: 15.0,
-                        horizontal: 10.0,
-                      ),
-                    ),
-                    items: options.map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(
-                          value,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.normal,
-                            color: Colors.black,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      onChanged(value);
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Please select $label.";
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-              ),
-            ),
+          const SizedBox(height: 8),
+          // Label below the dropdown field
+          Text(
+            label,
+            style: TextStyle(fontSize: 12, color: labelColor),
           ),
         ],
       ),
     );
   }
-
-  // Widget buildDatePickerField(
-  //   String label,
-  //   TextEditingController controller,
-  //   String hint, {
-  //   Color hintColor = Colors.grey,
-  //   Color focusedBorderColor = const Color.fromARGB(255, 2, 99, 178),
-  // }) {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(vertical: 10),
-  //     child: Row(
-  //       children: [
-  //         Expanded(
-  //           flex: 2,
-  //           child: Text(
-  //             label,
-  //             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-  //           ),
-  //         ),
-  //         Expanded(
-  //           flex: 3,
-  //           child: TextFormField(
-  //             controller: controller,
-  //             readOnly: true,
-  //             decoration: InputDecoration(
-  //               hintText: hint,
-  //               hintStyle: TextStyle(
-  //                 color: hintColor,
-  //               ),
-  //               border: OutlineInputBorder(
-  //                 borderRadius: BorderRadius.circular(10),
-  //               ),
-  //               focusedBorder: OutlineInputBorder(
-  //                 borderRadius: BorderRadius.circular(10),
-  //                 borderSide: BorderSide(
-  //                   color: focusedBorderColor,
-  //                   width: 2.0,
-  //                 ),
-  //               ),
-  //               suffixIcon: const Icon(Icons.calendar_today),
-  //             ),
-  //             onTap: () async {
-  //               DateTime? selectedDate = await showDatePicker(
-  //                 context: context,
-  //                 initialDate: DateTime.now(),
-  //                 firstDate: DateTime(1900),
-  //                 lastDate: DateTime.now(),
-  //               );
-  //               if (selectedDate != null) {
-  //                 setState(() {
-  //                   // Ensure the date is formatted as yyyy-MM-dd
-  //                   controller.text =
-  //                       DateFormat('yyyy-MM-dd').format(selectedDate);
-  //                 });
-  //               }
-  //             },
-  //             validator: (value) {
-  //               if (value == null || value.isEmpty) {
-  //                 return "Please select $label.";
-  //               }
-  //               return null;
-  //             },
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-//   Widget buildTextField(
-//   String label,
-//   TextEditingController controller,
-//   String hint, {
-//   TextInputType keyboardType = TextInputType.text,
-//   Color hintColor = Colors.grey,
-//   Color focusedBorderColor = const Color.fromARGB(255, 2, 99, 178),
-// }) {
-//   return Padding(
-//     padding: const EdgeInsets.symmetric(vertical: 10),
-//     child: Row(
-//       children: [
-//         Expanded(
-//           flex: 2,
-//           child: Text(
-//             label,
-//             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-//           ),
-//         ),
-//         Expanded(
-//           flex: 3,
-//           child: FadeInUp(
-//             duration: const Duration(milliseconds: 600),
-//             child: AnimatedContainer(
-//               duration: const Duration(milliseconds: 300),
-//               curve: Curves.easeInOut,
-//               decoration: BoxDecoration(
-//                 color: Colors.white,
-//                 borderRadius: BorderRadius.circular(10),
-//                 boxShadow: [
-//                   BoxShadow(
-//                     color: Colors.grey.withOpacity(0.3),
-//                     spreadRadius: 3,
-//                     blurRadius: 8,
-//                     offset: const Offset(0, 4), // Shadow position
-//                   ),
-//                 ],
-//               ),
-//               child: TextFormField(
-//                 controller: controller,
-//                 decoration: InputDecoration(
-//                   hintText: hint,
-//                   hintStyle: TextStyle(
-//                     color: hintColor,
-//                     fontWeight: FontWeight.w500,
-//                   ),
-//                   border: OutlineInputBorder(
-//                     borderRadius: BorderRadius.circular(10),
-//                     borderSide: BorderSide.none,
-//                   ),
-//                   focusedBorder: OutlineInputBorder(
-//                     borderRadius: BorderRadius.circular(10),
-//                     borderSide: BorderSide(
-//                       color: focusedBorderColor,
-//                       width: 2.0,
-//                     ),
-//                   ),
-//                   contentPadding: const EdgeInsets.symmetric(
-//                     vertical: 15.0,
-//                     horizontal: 10.0,
-//                   ),
-//                 ),
-//                 keyboardType: keyboardType,
-//                 validator: (value) {
-//                   if (value == null || value.isEmpty) {
-//                     return "Please enter $label.";
-//                   }
-//                   return null;
-//                 },
-//               ),
-//             ),
-//           ),
-//         ),
-//       ],
-//     ),
-//   );
-// }
-
-// // Build text dropdowns
-//   Widget buildDropdownField(
-//     String label,
-//     String? currentValue,
-//     List<String> options,
-//     Function(String?) onChanged, {
-//     Color focusedBorderColor = const Color.fromARGB(255, 2, 99, 178),
-//     String hintText = "Please select",
-//   }) {
-//     return Padding(
-//       padding: const EdgeInsets.symmetric(vertical: 10),
-//       child: Row(
-//         children: [
-//           Expanded(
-//             flex: 2,
-//             child: Text(
-//               label,
-//               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-//             ),
-//           ),
-//           Expanded(
-//             flex: 3,
-//             child: DropdownButtonFormField<String>(
-//               value: currentValue,
-//               decoration: InputDecoration(
-//                 hintText: hintText,
-//                 hintStyle: const TextStyle(
-//                   color: Colors.grey,
-//                 ),
-//                 border: OutlineInputBorder(
-//                   borderRadius: BorderRadius.circular(10),
-//                 ),
-//                 focusedBorder: OutlineInputBorder(
-//                   borderRadius: BorderRadius.circular(10),
-//                   borderSide: BorderSide(
-//                     color: focusedBorderColor,
-//                     width: 2.0,
-//                   ),
-//                 ),
-//                 contentPadding: const EdgeInsets.symmetric(
-//                   vertical: 15.0,
-//                   horizontal: 10.0,
-//                 ),
-//               ),
-//               items: options.map((String value) {
-//                 return DropdownMenuItem<String>(
-//                   value: value,
-//                   child: Text(
-//                     value,
-//                     style: const TextStyle(
-//                       fontSize: 16,
-//                       fontWeight: FontWeight.normal,
-//                       color: Colors.black,
-//                     ),
-//                   ),
-//                 );
-//               }).toList(),
-//               onChanged: (value) {
-//                 setState(() {
-//                   onChanged(value);
-//                 });
-//               },
-//               validator: (value) {
-//                 if (value == null || value.isEmpty) {
-//                   return "Please select $label.";
-//                 }
-//                 return null;
-//               },
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
 }
