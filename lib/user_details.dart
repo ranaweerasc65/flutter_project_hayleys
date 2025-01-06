@@ -297,8 +297,15 @@ class _UserDetailsFormState extends State<UserDetails> {
                       ],
                     ),
 
+                    const Text(
+                      "Gender",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+
                     buildDropdownField(
-                      "5. Gender",
+                      "Gender",
                       gender,
                       ['Male', 'Female', 'Not prefer to say'],
                       (value) => gender = value,
