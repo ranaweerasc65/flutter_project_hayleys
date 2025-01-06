@@ -4,11 +4,10 @@ import 'profile.dart';
 import 'approvals.dart';
 import 'primary_user_details.dart';
 import 'user_details.dart';
-import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
   final String userName;
-  final String phoneNo; // Add this line to accept the phone number
+  final String phoneNo; // To accept the phone number
 
   const HomeScreen({super.key, required this.userName, required this.phoneNo});
 
@@ -138,306 +137,309 @@ class _HomeContentState extends State<HomeContent> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            elevation: 4,
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.blue.shade900,
-                    Colors.blue.shade800,
-                    Colors.blue.shade400,
-                  ],
-                ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Card(
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Welcome!",
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 196, 222, 241),
-                            fontSize: 40,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: Text(
-                            '${getGreeting()}, ${widget.userName}',
-                            style: const TextStyle(
-                              color: Color.fromARGB(255, 223, 234, 242),
-                              fontSize: 28,
+              elevation: 4,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.blue.shade900,
+                      Colors.blue.shade800,
+                      Colors.blue.shade400,
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Welcome!",
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 196, 222, 241),
+                              fontSize: 40,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 5),
-                        const Text(
-                          "How is it going today?",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Color.fromARGB(255, 199, 195, 195),
-                          ),
-                        ),
-                      ],
-                    ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.network(
-                        'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
-                        width: 200,
-                        height: 200,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          // FLOW TREE CONNECTION UI SETUP - 17/12/2024
-
-          const SizedBox(height: 10),
-
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-
-                        // MOVE TO THE PRIMARY USER DETAILS FORM
-                        const PrimaryUserDetails()),
-              );
-            },
-            child: Container(
-              height: 100,
-              width: 100,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  width: 2,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.network(
-                  'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          // "First Connections"
-
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: const Text(
-              "My First Connections",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 10),
-
-          SizedBox(
-            height: 100,
-            child: Center(
-              child: ListView(scrollDirection: Axis.horizontal, children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ...List.generate(
-                      firstConnections.length,
-                      (index) => Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: Colors.grey.shade300,
-                              width: 2,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 5),
+                          const SizedBox(height: 5),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16),
+                            child: Text(
+                              '${getGreeting()}, ${widget.userName}',
+                              style: const TextStyle(
+                                color: Color.fromARGB(255, 223, 234, 242),
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
                               ),
-                            ],
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: Image.network(
-                              firstConnections[index],
-                              fit: BoxFit.cover,
                             ),
                           ),
-                        ),
-                      ),
-                    ),
-
-                    // 17/12/2024 MODIFIED WITH THE PLUS BUTTON
-                    // 24/12/2024 COMMENT ======== TO APPEAR THE USER DETAILS FORM
-                    //                             NEED TO IMPLEMENT THE MAN IMAGE APPEAR WHEN SUBMIT THE USER DETAILS FORM
-
-                    // GestureDetector(
-                    //   onTap: () => addConnection(firstConnections),
-                    //   child: Container(
-                    //     width: 100,
-                    //     height: 100,
-                    //     margin: const EdgeInsets.symmetric(horizontal: 10),
-                    //     decoration: BoxDecoration(
-                    //       color: Colors.grey.shade300,
-                    //       borderRadius: BorderRadius.circular(20),
-                    //     ),
-                    //     child:
-                    //         const Icon(Icons.add, size: 50, color: Colors.blue),
-                    //   ),
-                    // ),
-
-                    // 24/12/2024 WHEN PRESSING THE PLUS BUTTON APPEARS THE USER DETAILS FORM
-                    //            BUT DO NOT APPEAR THE MAN IMAGE FOR THAT
-
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            //builder: (context) => const UserDetails(),
-                            builder: (context) =>
-                                UserDetails(phoneNo: widget.phoneNo),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        width: 100,
-                        height: 100,
-                        margin: const EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child:
-                            const Icon(Icons.add, size: 50, color: Colors.blue),
-                      ),
-                    ),
-                  ],
-                ),
-              ]),
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          // Display "Other Connections"
-
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: const Text(
-              "My Other Connections",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 10),
-
-          // 17/12/2024 MODIFIED WITH THE PLUS BUTTON
-
-          SizedBox(
-            height: 100,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                ...List.generate(
-                  otherConnections.length,
-                  (index) => Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: Colors.grey.shade300,
-                          width: 2,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
+                          const SizedBox(height: 5),
+                          const Text(
+                            "How is it going today?",
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Color.fromARGB(255, 199, 195, 195),
+                            ),
                           ),
                         ],
                       ),
-                      child: ClipRRect(
+                      ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: Image.network(
-                          otherConnections[index],
+                          'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
+                          width: 200,
+                          height: 200,
                           fit: BoxFit.cover,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // FLOW TREE CONNECTION UI SETUP - 17/12/2024
+
+            const SizedBox(height: 10),
+
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+
+                          // MOVE TO THE PRIMARY USER DETAILS FORM
+                          const PrimaryUserDetails()),
+                );
+              },
+              child: Container(
+                height: 100,
+                width: 100,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    width: 2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.network(
+                    'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // "First Connections"
+
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: const Text(
+                "My First Connections",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            SizedBox(
+              height: 100,
+              child: Center(
+                child: ListView(scrollDirection: Axis.horizontal, children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ...List.generate(
+                        firstConnections.length,
+                        (index) => Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: Colors.grey.shade300,
+                                width: 2,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Image.network(
+                                firstConnections[index],
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      // 17/12/2024 MODIFIED WITH THE PLUS BUTTON
+                      // 24/12/2024 COMMENT ======== TO APPEAR THE USER DETAILS FORM
+                      //                             NEED TO IMPLEMENT THE MAN IMAGE APPEAR WHEN SUBMIT THE USER DETAILS FORM
+
+                      // GestureDetector(
+                      //   onTap: () => addConnection(firstConnections),
+                      //   child: Container(
+                      //     width: 100,
+                      //     height: 100,
+                      //     margin: const EdgeInsets.symmetric(horizontal: 10),
+                      //     decoration: BoxDecoration(
+                      //       color: Colors.grey.shade300,
+                      //       borderRadius: BorderRadius.circular(20),
+                      //     ),
+                      //     child:
+                      //         const Icon(Icons.add, size: 50, color: Colors.blue),
+                      //   ),
+                      // ),
+
+                      // 24/12/2024 WHEN PRESSING THE PLUS BUTTON APPEARS THE USER DETAILS FORM
+                      //            BUT DO NOT APPEAR THE MAN IMAGE FOR THAT
+
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              //builder: (context) => const UserDetails(),
+                              builder: (context) =>
+                                  UserDetails(phoneNo: widget.phoneNo),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Icon(Icons.add,
+                              size: 50, color: Colors.blue),
+                        ),
+                      ),
+                    ],
+                  ),
+                ]),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Display "Other Connections"
+
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: const Text(
+                "My Other Connections",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            // 17/12/2024 MODIFIED WITH THE PLUS BUTTON
+
+            SizedBox(
+              height: 100,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  ...List.generate(
+                    otherConnections.length,
+                    (index) => Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: Colors.grey.shade300,
+                            width: 2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.network(
+                            otherConnections[index],
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
 
-                // plus button to add new connections
-                GestureDetector(
-                  onTap: () => addConnection(otherConnections),
-                  child: Container(
-                    width: 100,
-                    height: 100,
-                    margin: const EdgeInsets.symmetric(horizontal: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(20),
+                  // plus button to add new connections
+                  GestureDetector(
+                    onTap: () => addConnection(otherConnections),
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      margin: const EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child:
+                          const Icon(Icons.add, size: 50, color: Colors.blue),
                     ),
-                    child: const Icon(Icons.add, size: 50, color: Colors.blue),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

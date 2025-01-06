@@ -17,7 +17,7 @@ $missingFields = [];
 
 // Check if required fields are provided
 $requiredFields = [
-    'phone_no', 'customers_name', 'customers_dob', 'customers_city', 
+    'phone_no', 'customers_first_name','customers_last_name', 'customers_dob', 'customers_city', 
     'customers_district', 'customers_province', 'customers_identification', 
     'customers_gender', 'customers_blood_group', 'customers_contact_no1', 
     'customers_contact_no2', 'customers_occupation', 'customers_relationship'
@@ -37,7 +37,8 @@ if (!empty($missingFields)) {
 
 // Get POST data from the Flutter app
 $phone_no = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['phone_no']);
-$customers_name = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_name']);
+$customers_first_name = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_first_name']);
+$customers_last_name = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_last_name']);
 $customers_dob = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_dob']);
 
 // Check if the date format is correct (yyyy-MM-dd)
@@ -62,8 +63,8 @@ $customers_relationship = mysqli_real_escape_string($conn_hayleys_medicalapp, $_
 
 
 // Use prepared statements to prevent SQL injection
-$sql = "INSERT INTO customers (phone_no, customers_name, customers_dob, customers_home_no, customers_street_name, customers_city, customers_district, customers_province, customers_identification, customers_gender, customers_blood_group, customers_contact_no1, customers_contact_no2, customers_occupation, customers_relationship) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+$sql = "INSERT INTO customers (phone_no, customers_first_name, customers_last_name, customers_dob, customers_home_no, customers_street_name, customers_city, customers_district, customers_province, customers_identification, customers_gender, customers_blood_group, customers_contact_no1, customers_contact_no2, customers_occupation, customers_relationship) 
+        VALUES (?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 $stmt = $conn_hayleys_medicalapp->prepare($sql);
 
 // Check if the prepared statement was successful
@@ -74,9 +75,10 @@ if ($stmt === false) {
 
 // Bind the parameters to the prepared statement
 $stmt->bind_param(
-    "sssssssssssssss",
+    "ssssssssssssssss",
     $phone_no,
-    $customers_name,
+    $customers_first_name,
+    $customers_last_name,
     $customers_dob,
     $customers_home_no,
     $customers_street_name,

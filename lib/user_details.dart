@@ -23,7 +23,8 @@ class UserDetails extends StatefulWidget {
 class _UserDetailsFormState extends State<UserDetails> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController nameController = TextEditingController();
+  final TextEditingController firstnameController = TextEditingController();
+  final TextEditingController lastnameController = TextEditingController();
   final TextEditingController streetController = TextEditingController();
   final TextEditingController homeNoController = TextEditingController();
   final TextEditingController cityController = TextEditingController();
@@ -51,7 +52,8 @@ class _UserDetailsFormState extends State<UserDetails> {
 
   Future<void> _refreshForm() async {
     setState(() {
-      nameController.clear();
+      firstnameController.clear();
+      lastnameController.clear();
       streetController.clear();
       homeNoController.clear();
       cityController.clear();
@@ -113,219 +115,225 @@ class _UserDetailsFormState extends State<UserDetails> {
       ),
       body: RefreshIndicator(
         onRefresh: _refreshForm,
-        color: Colors.blue,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(40),
-          child: Form(
-            key: _formKey,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: Column(
-                children: [
-                  buildTextField("1. Name", nameController, "Enter your name"),
-                  buildDatePickerField(
-                      "2. Date of Birth", dobController, "Select your DOB"),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            "3. Address",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+        color: const Color.fromARGB(255, 8, 120, 212),
+        child: Container(
+          color: Colors.white,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(40),
+            child: Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: Column(
+                  children: [
+                    buildTextField("1. First Name", firstnameController,
+                        "Enter your first name"),
+                    buildTextField("2. Last Name", lastnameController,
+                        "Enter your last name"),
+                    buildDatePickerField(
+                        "2. Date of Birth", dobController, "Select your DOB"),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "3. Address",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 32.0),
-                    child: buildTextField("(a) Home No.", homeNoController,
-                        "Enter your home no."),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 32.0),
-                    child: buildTextField("(b) Street Name", streetController,
-                        "Enter your street name"),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 32.0),
-                    child: buildTextField(
-                        "(c) City", cityController, "Enter your city"),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 32.0),
-                    child: buildDropdownField(
-                      "(d) District",
-                      district,
+                    Padding(
+                      padding: const EdgeInsets.only(left: 32.0),
+                      child: buildTextField("(a) Home No.", homeNoController,
+                          "Enter your home no."),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 32.0),
+                      child: buildTextField("(b) Street Name", streetController,
+                          "Enter your street name"),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 32.0),
+                      child: buildTextField(
+                          "(c) City", cityController, "Enter your city"),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 32.0),
+                      child: buildDropdownField(
+                        "(d) District",
+                        district,
+                        [
+                          'Ampara',
+                          'Anuradhapura',
+                          'Badulla',
+                          'Batticaloa',
+                          'Colombo',
+                          'Galle',
+                          'Gampaha',
+                          'Hambantota',
+                          'Jaffna',
+                          'Kalutara',
+                          'Kandy',
+                          'Kegalle',
+                          'Kilinochchi',
+                          'Kurunegala',
+                          'Mannar',
+                          'Matale',
+                          'Matara',
+                          'Monaragala',
+                          'Mullaitivu',
+                          'Nuwara Eliya',
+                          'Polonnaruwa',
+                          'Puttalam',
+                          'Ratnapura',
+                          'Trincomalee',
+                          'Vavuniya',
+                        ],
+                        (value) => district = value,
+                        hintText: "Please select your district",
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 32.0),
+                      child: buildDropdownField(
+                        "(e) Province",
+                        province,
+                        [
+                          'Central ',
+                          'Eastern ',
+                          'North Central ',
+                          'Northern ',
+                          'North Western ',
+                          'Sabaragamuwa ',
+                          'Southern ',
+                          'Uva ',
+                          'Western ',
+                        ],
+                        (value) => province = value,
+                        hintText: "Please select your province",
+                      ),
+                    ),
+                    buildTextField("4. Identification", nicController,
+                        "Enter your NIC number"),
+                    buildDropdownField(
+                      "5. Gender",
+                      gender,
+                      ['Male', 'Female', 'Not prefer to say'],
+                      (value) => gender = value,
+                      hintText: "Please select your gender",
+                    ),
+                    buildDropdownField(
+                      "6. Blood Group",
+                      customers_blood_group,
+                      ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+                      (value) => customers_blood_group = value,
+                      hintText: "Please select your blood group",
+                    ),
+                    buildTextField("7. Contact Number 1", contact1Controller,
+                        "Enter your primary contact number",
+                        keyboardType: TextInputType.phone),
+                    buildTextField("8. Contact Number 2", contact2Controller,
+                        "Enter your secondary contact number",
+                        keyboardType: TextInputType.phone),
+                    buildTextField("9. Occupation", occupationController,
+                        "Enter your occupation"),
+                    buildDropdownField(
+                      "10. Relationship",
+                      relationship,
                       [
-                        'Ampara',
-                        'Anuradhapura',
-                        'Badulla',
-                        'Batticaloa',
-                        'Colombo',
-                        'Galle',
-                        'Gampaha',
-                        'Hambantota',
-                        'Jaffna',
-                        'Kalutara',
-                        'Kandy',
-                        'Kegalle',
-                        'Kilinochchi',
-                        'Kurunegala',
-                        'Mannar',
-                        'Matale',
-                        'Matara',
-                        'Monaragala',
-                        'Mullaitivu',
-                        'Nuwara Eliya',
-                        'Polonnaruwa',
-                        'Puttalam',
-                        'Ratnapura',
-                        'Trincomalee',
-                        'Vavuniya',
+                        // First Connections
+
+                        'Mother',
+                        'Father',
+                        'Spouse',
+                        'Sister',
+                        'Brother',
+                        'Daughter',
+                        'Son',
+
+                        // Second Connections
+                        'Grandmother',
+                        'Grandfather',
+                        'Aunt',
+                        'Uncle',
+                        'Niece',
+                        'Nephew',
+                        'Cousin',
+
+                        // Others
+                        'Friend',
+                        'Colleague',
+                        'Neighbor',
+                        'Guardian',
+                        'Other',
                       ],
-                      (value) => district = value,
-                      hintText: "Please select your district",
+                      (value) => relationship = value,
+                      hintText: "Please select relationship",
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 32.0),
-                    child: buildDropdownField(
-                      "(e) Province",
-                      province,
-                      [
-                        'Central ',
-                        'Eastern ',
-                        'North Central ',
-                        'Northern ',
-                        'North Western ',
-                        'Sabaragamuwa ',
-                        'Southern ',
-                        'Uva ',
-                        'Western ',
-                      ],
-                      (value) => province = value,
-                      hintText: "Please select your province",
-                    ),
-                  ),
-                  buildTextField("4. Identification", nicController,
-                      "Enter your NIC number"),
-                  buildDropdownField(
-                    "5. Gender",
-                    gender,
-                    ['Male', 'Female', 'Not prefer to say'],
-                    (value) => gender = value,
-                    hintText: "Please select your gender",
-                  ),
-                  buildDropdownField(
-                    "6. Blood Group",
-                    customers_blood_group,
-                    ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
-                    (value) => customers_blood_group = value,
-                    hintText: "Please select your blood group",
-                  ),
-                  buildTextField("7. Contact Number 1", contact1Controller,
-                      "Enter your primary contact number",
-                      keyboardType: TextInputType.phone),
-                  buildTextField("8. Contact Number 2", contact2Controller,
-                      "Enter your secondary contact number",
-                      keyboardType: TextInputType.phone),
-                  buildTextField("9. Occupation", occupationController,
-                      "Enter your occupation"),
-                  buildDropdownField(
-                    "10. Relationship",
-                    relationship,
-                    [
-                      // First Connections
-
-                      'Mother',
-                      'Father',
-                      'Spouse',
-                      'Sister',
-                      'Brother',
-                      'Daughter',
-                      'Son',
-
-                      // Second Connections
-                      'Grandmother',
-                      'Grandfather',
-                      'Aunt',
-                      'Uncle',
-                      'Niece',
-                      'Nephew',
-                      'Cousin',
-
-                      // Others
-                      'Friend',
-                      'Colleague',
-                      'Neighbor',
-                      'Guardian',
-                      'Other',
-                    ],
-                    (value) => relationship = value,
-                    hintText: "Please select relationship",
-                  ),
-                  const SizedBox(height: 20),
-                  FadeInUp(
-                    duration: const Duration(milliseconds: 1600),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: MaterialButton(
-                            onPressed: _addMember,
-                            height: 50,
-                            minWidth: MediaQuery.of(context).size.width * 0.4,
-                            color: Colors.blue[800],
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            child: const Center(
-                              child: Text(
-                                "Add Member",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                    const SizedBox(height: 20),
+                    FadeInUp(
+                      duration: const Duration(milliseconds: 1600),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: MaterialButton(
+                              onPressed: _addMember,
+                              height: 50,
+                              minWidth: MediaQuery.of(context).size.width * 0.4,
+                              color: Colors.blue[800],
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "Add Member",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: MaterialButton(
-                            onPressed: () => _showClearFormDialog(context),
-                            height: 50,
-                            minWidth: MediaQuery.of(context).size.width * 0.4,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(50),
-                              side: BorderSide(
-                                color: Colors.blue[800]!,
-                                width: 2.0,
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: MaterialButton(
+                              onPressed: () => _showClearFormDialog(context),
+                              height: 50,
+                              minWidth: MediaQuery.of(context).size.width * 0.4,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50),
+                                side: BorderSide(
+                                  color: Colors.blue[800]!,
+                                  width: 2.0,
+                                ),
                               ),
-                            ),
-                            child: const Center(
-                              child: Text(
-                                "Clear Form",
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 2, 99, 178),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                              child: const Center(
+                                child: Text(
+                                  "Clear Form",
+                                  style: TextStyle(
+                                    color: Color.fromARGB(255, 2, 99, 178),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -339,7 +347,8 @@ class _UserDetailsFormState extends State<UserDetails> {
     if (_formKey.currentState!.validate()) {
       final userDetails = {
         "phone_no": widget.phoneNo, // Add phone number here
-        "customers_name": nameController.text,
+        "customers_first_name": firstnameController.text,
+        "customers_last_name": lastnameController.text,
         "customers_home_no": homeNoController.text,
         "customers_street_name": streetController.text,
         "customers_city": cityController.text,
@@ -431,7 +440,8 @@ class _UserDetailsFormState extends State<UserDetails> {
 
   // This function clears all form fields
   void _clearForm() {
-    nameController.clear();
+    firstnameController.clear();
+    lastnameController.clear();
     streetController.clear();
     homeNoController.clear();
     cityController.clear();
@@ -499,31 +509,57 @@ class _UserDetailsFormState extends State<UserDetails> {
           ),
           Expanded(
             flex: 3,
-            child: TextFormField(
-              controller: controller,
-              decoration: InputDecoration(
-                hintText: hint,
-                hintStyle: TextStyle(
-                  color: hintColor,
-                ),
-                border: OutlineInputBorder(
+            child: FadeInUp(
+              duration: const Duration(milliseconds: 600),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                decoration: BoxDecoration(
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color:
+                          Color.fromRGBO(27, 86, 225, 0.298).withOpacity(0.3),
+                      spreadRadius: 3,
+                      blurRadius: 8,
+                      offset: const Offset(0, 4), // Shadow position
+                    ),
+                  ],
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: focusedBorderColor,
-                    width: 2.0,
+                child: TextFormField(
+                  controller: controller,
+                  decoration: InputDecoration(
+                    hintText: hint,
+                    hintStyle: TextStyle(
+                      color: hintColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: focusedBorderColor,
+                        width: 2.0,
+                      ),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 15.0,
+                      horizontal: 10.0,
+                    ),
                   ),
+                  keyboardType: keyboardType,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter $label.";
+                    }
+                    return null;
+                  },
                 ),
               ),
-              keyboardType: keyboardType,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Please enter $label.";
-                }
-                return null;
-              },
             ),
           ),
         ],
@@ -531,7 +567,6 @@ class _UserDetailsFormState extends State<UserDetails> {
     );
   }
 
-// Build text date pickers
   Widget buildDatePickerField(
     String label,
     TextEditingController controller,
@@ -552,26 +587,7 @@ class _UserDetailsFormState extends State<UserDetails> {
           ),
           Expanded(
             flex: 3,
-            child: TextFormField(
-              controller: controller,
-              readOnly: true,
-              decoration: InputDecoration(
-                hintText: hint,
-                hintStyle: TextStyle(
-                  color: hintColor,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: focusedBorderColor,
-                    width: 2.0,
-                  ),
-                ),
-                suffixIcon: const Icon(Icons.calendar_today),
-              ),
+            child: GestureDetector(
               onTap: () async {
                 DateTime? selectedDate = await showDatePicker(
                   context: context,
@@ -580,25 +596,176 @@ class _UserDetailsFormState extends State<UserDetails> {
                   lastDate: DateTime.now(),
                 );
                 if (selectedDate != null) {
-                  setState(() {
-                    // Ensure the date is formatted as yyyy-MM-dd
-                    controller.text =
-                        DateFormat('yyyy-MM-dd').format(selectedDate);
-                  });
+                  controller.text =
+                      DateFormat('yyyy-MM-dd').format(selectedDate);
                 }
               },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Please select $label.";
-                }
-                return null;
-              },
+              child: AbsorbPointer(
+                // Prevents TextFormField from directly handling taps
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color.fromRGBO(27, 86, 225, 0.298)
+                            .withOpacity(0.3),
+                        spreadRadius: 3,
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: TextFormField(
+                    controller: controller,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      hintText: hint,
+                      hintStyle: TextStyle(
+                        color: hintColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: focusedBorderColor,
+                          width: 2.0,
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 15.0,
+                        horizontal: 10.0,
+                      ),
+                      suffixIcon: const Icon(
+                        Icons.calendar_today,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Please select $label.";
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ),
             ),
           ),
         ],
       ),
     );
   }
+
+// Build drop down fields
+  Widget buildDropdownField(
+    String label,
+    String? currentValue,
+    List<String> options,
+    Function(String?) onChanged, {
+    Color focusedBorderColor = const Color.fromARGB(255, 2, 99, 178),
+    String hintText = "Please select",
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: GestureDetector(
+              onTap: () {
+                // Optional: Add animation or custom behavior here if needed
+              },
+              child: FadeInUp(
+                duration: const Duration(milliseconds: 600),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color:
+                            Color.fromRGBO(27, 86, 225, 0.298).withOpacity(0.3),
+                        spreadRadius: 3,
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: DropdownButtonFormField<String>(
+                    value: currentValue,
+                    decoration: InputDecoration(
+                      hintText: hintText,
+                      hintStyle: const TextStyle(
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: focusedBorderColor,
+                          width: 2.0,
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 15.0,
+                        horizontal: 10.0,
+                      ),
+                    ),
+                    items: options.map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(
+                          value,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                            color: Colors.black,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      onChanged(value);
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Please select $label.";
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   // Widget buildDatePickerField(
   //   String label,
   //   TextEditingController controller,
@@ -648,8 +815,9 @@ class _UserDetailsFormState extends State<UserDetails> {
   //               );
   //               if (selectedDate != null) {
   //                 setState(() {
+  //                   // Ensure the date is formatted as yyyy-MM-dd
   //                   controller.text =
-  //                       "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
+  //                       DateFormat('yyyy-MM-dd').format(selectedDate);
   //                 });
   //               }
   //             },
@@ -666,78 +834,156 @@ class _UserDetailsFormState extends State<UserDetails> {
   //   );
   // }
 
-// Build text dropdowns
-  Widget buildDropdownField(
-    String label,
-    String? currentValue,
-    List<String> options,
-    Function(String?) onChanged, {
-    Color focusedBorderColor = const Color.fromARGB(255, 2, 99, 178),
-    String hintText = "Please select",
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 2,
-            child: Text(
-              label,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: DropdownButtonFormField<String>(
-              value: currentValue,
-              decoration: InputDecoration(
-                hintText: hintText,
-                hintStyle: const TextStyle(
-                  color: Colors.grey,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                    color: focusedBorderColor,
-                    width: 2.0,
-                  ),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 15.0,
-                  horizontal: 10.0,
-                ),
-              ),
-              items: options.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(
-                    value,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.black,
-                    ),
-                  ),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  onChanged(value);
-                });
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Please select $label.";
-                }
-                return null;
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+//   Widget buildTextField(
+//   String label,
+//   TextEditingController controller,
+//   String hint, {
+//   TextInputType keyboardType = TextInputType.text,
+//   Color hintColor = Colors.grey,
+//   Color focusedBorderColor = const Color.fromARGB(255, 2, 99, 178),
+// }) {
+//   return Padding(
+//     padding: const EdgeInsets.symmetric(vertical: 10),
+//     child: Row(
+//       children: [
+//         Expanded(
+//           flex: 2,
+//           child: Text(
+//             label,
+//             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+//           ),
+//         ),
+//         Expanded(
+//           flex: 3,
+//           child: FadeInUp(
+//             duration: const Duration(milliseconds: 600),
+//             child: AnimatedContainer(
+//               duration: const Duration(milliseconds: 300),
+//               curve: Curves.easeInOut,
+//               decoration: BoxDecoration(
+//                 color: Colors.white,
+//                 borderRadius: BorderRadius.circular(10),
+//                 boxShadow: [
+//                   BoxShadow(
+//                     color: Colors.grey.withOpacity(0.3),
+//                     spreadRadius: 3,
+//                     blurRadius: 8,
+//                     offset: const Offset(0, 4), // Shadow position
+//                   ),
+//                 ],
+//               ),
+//               child: TextFormField(
+//                 controller: controller,
+//                 decoration: InputDecoration(
+//                   hintText: hint,
+//                   hintStyle: TextStyle(
+//                     color: hintColor,
+//                     fontWeight: FontWeight.w500,
+//                   ),
+//                   border: OutlineInputBorder(
+//                     borderRadius: BorderRadius.circular(10),
+//                     borderSide: BorderSide.none,
+//                   ),
+//                   focusedBorder: OutlineInputBorder(
+//                     borderRadius: BorderRadius.circular(10),
+//                     borderSide: BorderSide(
+//                       color: focusedBorderColor,
+//                       width: 2.0,
+//                     ),
+//                   ),
+//                   contentPadding: const EdgeInsets.symmetric(
+//                     vertical: 15.0,
+//                     horizontal: 10.0,
+//                   ),
+//                 ),
+//                 keyboardType: keyboardType,
+//                 validator: (value) {
+//                   if (value == null || value.isEmpty) {
+//                     return "Please enter $label.";
+//                   }
+//                   return null;
+//                 },
+//               ),
+//             ),
+//           ),
+//         ),
+//       ],
+//     ),
+//   );
+// }
+
+// // Build text dropdowns
+//   Widget buildDropdownField(
+//     String label,
+//     String? currentValue,
+//     List<String> options,
+//     Function(String?) onChanged, {
+//     Color focusedBorderColor = const Color.fromARGB(255, 2, 99, 178),
+//     String hintText = "Please select",
+//   }) {
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(vertical: 10),
+//       child: Row(
+//         children: [
+//           Expanded(
+//             flex: 2,
+//             child: Text(
+//               label,
+//               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+//             ),
+//           ),
+//           Expanded(
+//             flex: 3,
+//             child: DropdownButtonFormField<String>(
+//               value: currentValue,
+//               decoration: InputDecoration(
+//                 hintText: hintText,
+//                 hintStyle: const TextStyle(
+//                   color: Colors.grey,
+//                 ),
+//                 border: OutlineInputBorder(
+//                   borderRadius: BorderRadius.circular(10),
+//                 ),
+//                 focusedBorder: OutlineInputBorder(
+//                   borderRadius: BorderRadius.circular(10),
+//                   borderSide: BorderSide(
+//                     color: focusedBorderColor,
+//                     width: 2.0,
+//                   ),
+//                 ),
+//                 contentPadding: const EdgeInsets.symmetric(
+//                   vertical: 15.0,
+//                   horizontal: 10.0,
+//                 ),
+//               ),
+//               items: options.map((String value) {
+//                 return DropdownMenuItem<String>(
+//                   value: value,
+//                   child: Text(
+//                     value,
+//                     style: const TextStyle(
+//                       fontSize: 16,
+//                       fontWeight: FontWeight.normal,
+//                       color: Colors.black,
+//                     ),
+//                   ),
+//                 );
+//               }).toList(),
+//               onChanged: (value) {
+//                 setState(() {
+//                   onChanged(value);
+//                 });
+//               },
+//               validator: (value) {
+//                 if (value == null || value.isEmpty) {
+//                   return "Please select $label.";
+//                 }
+//                 return null;
+//               },
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
 }
