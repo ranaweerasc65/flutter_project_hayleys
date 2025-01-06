@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'home_page.dart';
 
 // 31/12/2024 CONNECT WITH THE USER_DETAILS.PHP CODE
 import 'package:http/http.dart' as http;
@@ -310,8 +311,16 @@ class _UserDetailsFormState extends State<UserDetails> {
                       ['Male', 'Female', 'Not prefer to say'],
                       (value) => gender = value,
                     ),
+
+                    const Text(
+                      "Blood Group",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+
                     buildDropdownField(
-                      "6. Blood Group",
+                      "Blood Group",
                       customers_blood_group,
                       ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
                       (value) => customers_blood_group = value,
@@ -369,8 +378,15 @@ class _UserDetailsFormState extends State<UserDetails> {
                       ],
                     ),
 
+                    const Text(
+                      "Relationship",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+
                     buildDropdownField(
-                      "10. Relationship",
+                      "Relationship",
                       relationship,
                       [
                         // First Connections
