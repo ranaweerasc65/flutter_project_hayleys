@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
-import 'home_page.dart';
 
 // 31/12/2024 CONNECT WITH THE USER_DETAILS.PHP CODE
 import 'package:http/http.dart' as http;
@@ -120,7 +119,7 @@ class _UserDetailsFormState extends State<UserDetails> {
         child: Container(
           color: Colors.white,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(40),
+            padding: const EdgeInsets.all(30),
             child: Form(
               key: _formKey,
               child: Padding(
@@ -285,6 +284,19 @@ class _UserDetailsFormState extends State<UserDetails> {
                     ),
                     const SizedBox(height: 8),
 
+                    // Row(
+                    //   children: [
+                    //     // NIC
+                    //     Expanded(
+                    //       child: buildTextField(
+                    //         "NIC",
+                    //         nicController,
+                    //         "",
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
+
                     Row(
                       children: [
                         // NIC
@@ -292,7 +304,24 @@ class _UserDetailsFormState extends State<UserDetails> {
                           child: buildTextField(
                             "NIC",
                             nicController,
-                            "",
+                            "Enter your NIC",
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Please enter your NIC.";
+                              }
+
+                              // Check NIC format (Old or New format)
+                              RegExp oldFormat = RegExp(
+                                  r'^\d{9}[Vv]$'); // Old format: 9 digits followed by 'V' or 'v'
+                              RegExp newFormat =
+                                  RegExp(r'^\d{12}$'); // New format: 12 digits
+
+                              if (!oldFormat.hasMatch(value) &&
+                                  !newFormat.hasMatch(value)) {
+                                return "Invalid NIC format.";
+                              }
+                              return null; // NIC is valid
+                            },
                           ),
                         ),
                       ],
@@ -487,7 +516,7 @@ class _UserDetailsFormState extends State<UserDetails> {
   Future<void> _addMember() async {
     if (_formKey.currentState!.validate()) {
       final userDetails = {
-        "phone_no": widget.phoneNo, // Add phone number here
+        "phone_no": widget.phoneNo,
         "customers_first_name": firstnameController.text,
         "customers_last_name": lastnameController.text,
         "customers_home_no": homeNoController.text,
@@ -515,7 +544,7 @@ class _UserDetailsFormState extends State<UserDetails> {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
           },
-          body: userDetails, // Use `body` instead of `jsonEncode()`
+          body: userDetails,
         );
 
         // Print response body to terminal for debugging
@@ -524,9 +553,8 @@ class _UserDetailsFormState extends State<UserDetails> {
         if (response.statusCode == 200) {
           final jsonResponse = jsonDecode(response.body);
           if (jsonResponse['status'] == 'success') {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Member Added Successfully!")),
-            );
+            // Show success dialog
+            _showSuccessDialog();
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Error: ${jsonResponse['message']}")),
@@ -541,14 +569,78 @@ class _UserDetailsFormState extends State<UserDetails> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Error: $e")),
         );
-        print("Error: $e"); // Print error message to terminal
+        print("Error: $e");
       }
-
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   const SnackBar(content: Text("Form Submitted Successfully!")),
-      // );
-      // print("User Details: $userDetails");
     }
+  }
+
+  void _showSuccessDialog() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF00C853), // Green color
+                      shape: BoxShape.circle,
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: const Icon(
+                      Icons.check_circle,
+                      size: 60,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Success!!!",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF00C853), // Green color
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Member Added Successfully!",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF00C853), // Green color
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                    child: const Text(
+                      "Ok",
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(content: Text("Form Submitted Successfully!")),
+          // );
+          // print("User Details: $userDetails");
+        });
   }
 
   // Helper function to show a clear form dialog
@@ -628,16 +720,17 @@ class _UserDetailsFormState extends State<UserDetails> {
     );
   }
 
-// Build text fields
   Widget buildTextField(
     String label,
     TextEditingController controller,
     String hint, {
     TextInputType keyboardType = TextInputType.text,
-    Color hintColor = const Color(0xFFB0BEC5), // Light grey for hint text
-    Color borderColor = const Color(0xFFCFD8DC), // Light border color
-    Color labelColor = const Color(0xFF78909C), // Subtle grey for label below
-    Color focusedBorderColor = const Color(0xFF607D8B), // Slightly darker focus
+    Color hintColor = const Color(0xFFB0BEC5),
+    Color borderColor = const Color(0xFFCFD8DC),
+    Color labelColor = const Color(0xFF78909C),
+    Color focusedBorderColor = const Color(0xFF607D8B),
+    String? Function(String?)? validator,
+    String? errorMessage,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -652,7 +745,7 @@ class _UserDetailsFormState extends State<UserDetails> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(4),
               border: Border.all(
-                color: borderColor, // Border color matching uploaded image
+                color: borderColor,
                 width: 1.0,
               ),
             ),
@@ -661,22 +754,25 @@ class _UserDetailsFormState extends State<UserDetails> {
               decoration: InputDecoration(
                 hintText: hint,
                 hintStyle: TextStyle(
-                  color: hintColor, // Light grey hint text
+                  color: hintColor,
                   fontWeight: FontWeight.w500,
                 ),
-                border: InputBorder.none, // Remove inner default border
+                border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(
                   vertical: 12.0,
                   horizontal: 10.0,
                 ),
+                // Show error message if exists
+                errorText: errorMessage,
               ),
               keyboardType: keyboardType,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Please enter $label.";
-                }
-                return null;
-              },
+              validator: validator,
+              // validator: (value) {
+              //   if (value == null || value.isEmpty) {
+              //     return "Please enter $label.";
+              //   }
+              //   return null;
+              // },
             ),
           ),
           const SizedBox(height: 8),
@@ -694,10 +790,12 @@ class _UserDetailsFormState extends State<UserDetails> {
     String label,
     TextEditingController controller,
     String hint, {
-    Color hintColor = const Color(0xFFB0BEC5), // Light grey for hint text
-    Color borderColor = const Color(0xFFCFD8DC), // Light border color
-    Color labelColor = const Color(0xFF78909C), // Subtle grey for label below
-    Color focusedBorderColor = const Color(0xFF607D8B), // Slightly darker focus
+    Color hintColor = const Color(0xFFB0BEC5),
+    Color borderColor = const Color(0xFFCFD8DC),
+    Color labelColor = const Color(0xFF78909C),
+    Color focusedBorderColor = const Color(0xFF607D8B),
+    Color selectedColor =
+        const Color.fromARGB(255, 5, 101, 180), // Blue color for selection
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -712,6 +810,24 @@ class _UserDetailsFormState extends State<UserDetails> {
                 initialDate: DateTime.now(),
                 firstDate: DateTime(1900),
                 lastDate: DateTime.now(),
+                builder: (BuildContext context, Widget? child) {
+                  return Theme(
+                    data: Theme.of(context).copyWith(
+                      colorScheme: ColorScheme.light(
+                        primary:
+                            selectedColor, // Header background color (blue)
+                        onPrimary: Colors.white, // Header text color
+                        onSurface: Colors.black, // Body text color
+                      ),
+                      textButtonTheme: TextButtonThemeData(
+                        style: TextButton.styleFrom(
+                          foregroundColor: selectedColor, // Button text color
+                        ),
+                      ),
+                    ),
+                    child: child!,
+                  );
+                },
               );
               if (selectedDate != null) {
                 controller.text = DateFormat('yyyy-MM-dd').format(selectedDate);
@@ -725,7 +841,7 @@ class _UserDetailsFormState extends State<UserDetails> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(4),
                   border: Border.all(
-                    color: borderColor, // Border color matching the text field
+                    color: borderColor,
                     width: 1.0,
                   ),
                 ),
@@ -738,7 +854,7 @@ class _UserDetailsFormState extends State<UserDetails> {
                       color: hintColor,
                       fontWeight: FontWeight.w500,
                     ),
-                    border: InputBorder.none, // Remove inner default border
+                    border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
                       vertical: 12.0,
                       horizontal: 10.0,
@@ -774,11 +890,10 @@ class _UserDetailsFormState extends State<UserDetails> {
     String? currentValue,
     List<String> options,
     Function(String?) onChanged, {
-    Color focusedBorderColor = const Color(0xFF607D8B), // Slightly darker focus
-
-    Color borderColor = const Color(0xFFCFD8DC), // Light border color
-    Color labelColor = const Color(0xFF78909C), // Subtle grey for label below
-    Color hintColor = const Color(0xFFB0BEC5), // Light grey for hint text
+    Color focusedBorderColor = const Color(0xFF607D8B),
+    Color borderColor = const Color(0xFFCFD8DC),
+    Color labelColor = const Color(0xFF78909C),
+    Color hintColor = const Color(0xFFB0BEC5),
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -787,9 +902,7 @@ class _UserDetailsFormState extends State<UserDetails> {
         children: [
           // Dropdown field
           GestureDetector(
-            onTap: () {
-              // Optional: Add animation or custom behavior here if needed
-            },
+            onTap: () {},
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
@@ -830,11 +943,14 @@ class _UserDetailsFormState extends State<UserDetails> {
                 onChanged: (value) {
                   onChanged(value);
                 },
+                dropdownColor: const Color.fromARGB(255, 255, 255, 255),
+                elevation: 8,
+                menuMaxHeight: 500,
               ),
             ),
           ),
           const SizedBox(height: 8),
-          // Label below the dropdown field
+          // Label
           Text(
             label,
             style: TextStyle(fontSize: 12, color: labelColor),
