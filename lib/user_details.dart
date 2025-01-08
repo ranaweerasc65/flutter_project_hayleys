@@ -1,4 +1,5 @@
 // ADD THE DETAILS OF THE USER FOR THE OTHER MEMBERS TO THE SYSTEM
+
 import 'package:flutter_project_hayleys/home_page.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
@@ -581,7 +582,6 @@ class _UserDetailsFormState extends State<UserDetails> {
     );
   }
 
-  // This method submits the form
   Future<void> _addMember() async {
 // Mandatory fields to check
     final mandatoryFields = {
@@ -754,7 +754,6 @@ class _UserDetailsFormState extends State<UserDetails> {
         });
   }
 
-  // Helper function to show a clear form dialog
   void _showClearFormDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -782,7 +781,6 @@ class _UserDetailsFormState extends State<UserDetails> {
     );
   }
 
-  // This function clears all form fields
   void _clearForm() {
     firstnameController.clear();
     lastnameController.clear();

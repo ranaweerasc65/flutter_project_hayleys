@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_project_hayleys/dashboard.dart';
 import 'login_screen.dart';
 import 'profile.dart';
 import 'approvals.dart';
@@ -214,7 +215,6 @@ class _HomeContentState extends State<HomeContent> {
               ),
             ),
             const SizedBox(height: 20),
-
             // FLOW TREE CONNECTION UI SETUP - 17/12/2024
 
             const SizedBox(height: 10),
@@ -224,47 +224,84 @@ class _HomeContentState extends State<HomeContent> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>
-
-                          // MOVE TO THE PRIMARY USER DETAILS FORM
-                          const PrimaryUserDetails()),
+                    builder: (context) => const Dashboard(),
+                  ),
                 );
               },
               child: Container(
-                height: 100,
-                width: 100,
+                width: 120, // Adjust the width as needed
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    width: 2,
-                  ),
-                  boxShadow: [
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: const [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
+                      color: Color.fromRGBO(27, 86, 225, 0.298),
+                      blurRadius: 20,
+                      offset: Offset(0, 10),
                     ),
                   ],
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.network(
-                    'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
-                    fit: BoxFit.cover,
-                  ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Profile Picture
+                    Container(
+                      height: 100,
+                      width: 100,
+                      margin: const EdgeInsets.only(top: 16),
+                      child: ClipOval(
+                        child: Image.network(
+                          'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    // Buttons
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const PrimaryUserDetails(
+                                  phoneNo: '',
+                                  userName: '',
+                                ),
+                              ),
+                            );
+                          },
+                          icon: const Icon(
+                            Icons.edit,
+                            color: Colors.black,
+                          ),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            side: const BorderSide(color: Colors.black),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),
 
             const SizedBox(height: 20),
 
-            // "First Connections"
+            // "Connections"
 
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
               child: const Text(
-                "My First Connections",
+                "My Connections",
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -370,77 +407,77 @@ class _HomeContentState extends State<HomeContent> {
 
             // Display "Other Connections"
 
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: const Text(
-                "My Other Connections",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+            // Container(
+            //   padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            //   child: const Text(
+            //     "My Other Connections",
+            //     style: TextStyle(
+            //       fontSize: 22,
+            //       fontWeight: FontWeight.bold,
+            //     ),
+            //   ),
+            // ),
 
             const SizedBox(height: 10),
 
             // 17/12/2024 MODIFIED WITH THE PLUS BUTTON
 
-            SizedBox(
-              height: 100,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  ...List.generate(
-                    otherConnections.length,
-                    (index) => Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Colors.grey.shade300,
-                            width: 2,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 10,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Image.network(
-                            otherConnections[index],
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+            // SizedBox(
+            //   height: 100,
+            //   child: ListView(
+            //     scrollDirection: Axis.horizontal,
+            //     children: [
+            //       ...List.generate(
+            //         otherConnections.length,
+            //         (index) => Padding(
+            //           padding: const EdgeInsets.symmetric(horizontal: 10),
+            //           child: Container(
+            //             width: 100,
+            //             height: 100,
+            //             decoration: BoxDecoration(
+            //               color: Colors.white,
+            //               borderRadius: BorderRadius.circular(20),
+            //               border: Border.all(
+            //                 color: Colors.grey.shade300,
+            //                 width: 2,
+            //               ),
+            //               boxShadow: [
+            //                 BoxShadow(
+            //                   color: Colors.black.withOpacity(0.1),
+            //                   blurRadius: 10,
+            //                   offset: const Offset(0, 5),
+            //                 ),
+            //               ],
+            //             ),
+            //             child: ClipRRect(
+            //               borderRadius: BorderRadius.circular(20),
+            //               child: Image.network(
+            //                 otherConnections[index],
+            //                 fit: BoxFit.cover,
+            //               ),
+            //             ),
+            //           ),
+            //         ),
+            //       ),
 
-                  // plus button to add new connections
-                  GestureDetector(
-                    onTap: () => addConnection(otherConnections),
-                    child: Container(
-                      width: 100,
-                      height: 100,
-                      margin: const EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child:
-                          const Icon(Icons.add, size: 50, color: Colors.blue),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            //       // plus button to add new connections
+            //       GestureDetector(
+            //         onTap: () => addConnection(otherConnections),
+            //         child: Container(
+            //           width: 100,
+            //           height: 100,
+            //           margin: const EdgeInsets.symmetric(horizontal: 10),
+            //           decoration: BoxDecoration(
+            //             color: Colors.grey.shade300,
+            //             borderRadius: BorderRadius.circular(20),
+            //           ),
+            //           child:
+            //               const Icon(Icons.add, size: 50, color: Colors.blue),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
           ],
         ),
       ),
