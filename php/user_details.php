@@ -20,7 +20,7 @@ $requiredFields = [
     'phone_no', 'customers_first_name','customers_last_name', 'customers_dob', 'customers_city', 
     'customers_district', 'customers_province', 'customers_identification', 
     'customers_gender', 'customers_blood_group', 'customers_contact_no1', 
-    'customers_contact_no2', 'customers_occupation', 'customers_relationship'
+     'customers_occupation', 'customers_relationship'
 ];
 
 foreach ($requiredFields as $field) {
@@ -48,8 +48,8 @@ if (!$dob_date) {
     exit();
 }
 
-$customers_home_no = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_home_no']);
-$customers_street_name = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_street_name']);
+
+
 $customers_city = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_city']);
 $customers_district = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_district']);
 $customers_province = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_province']);
@@ -57,10 +57,27 @@ $customers_identification = mysqli_real_escape_string($conn_hayleys_medicalapp, 
 $customers_gender = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_gender']);
 $customers_blood_group = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_blood_group']);
 $customers_contact_no1 = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_contact_no1']);
-$customers_contact_no2 = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_contact_no2']);
 $customers_occupation = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_occupation']);
 $customers_relationship = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_relationship']);
 
+
+// $customers_home_no = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_home_no']);
+
+$customers_home_no = isset($_POST['customers_home_no']) && !empty($_POST['customers_home_no']) 
+    ? mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_home_no']) 
+    : null;
+
+// $customers_street_name = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_street_name']);
+
+$customers_street_name = isset($_POST['customers_street_name']) && !empty($_POST['customers_street_name']) 
+    ? mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_street_name']) 
+    : null;
+
+//$customers_contact_no2 = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_contact_no2']);
+
+$customers_contact_no2 = isset($_POST['customers_contact_no2']) && !empty($_POST['customers_contact_no2']) 
+    ? mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_contact_no2']) 
+    : null;
 
 // Use prepared statements to prevent SQL injection
 $sql = "INSERT INTO customers (phone_no, customers_first_name, customers_last_name, customers_dob, customers_home_no, customers_street_name, customers_city, customers_district, customers_province, customers_identification, customers_gender, customers_blood_group, customers_contact_no1, customers_contact_no2, customers_occupation, customers_relationship) 
@@ -74,14 +91,15 @@ if ($stmt === false) {
 }
 
 // Bind the parameters to the prepared statement
+// Bind parameters (use `s` for string and `null` for optional field if needed)
 $stmt->bind_param(
     "ssssssssssssssss",
     $phone_no,
     $customers_first_name,
     $customers_last_name,
     $customers_dob,
-    $customers_home_no,
-    $customers_street_name,
+    $customers_home_no,// Optional: can be NULL
+    $customers_street_name,// Optional: can be NULL
     $customers_city,
     $customers_district,
     $customers_province,
@@ -89,7 +107,7 @@ $stmt->bind_param(
     $customers_gender,
     $customers_blood_group,
     $customers_contact_no1,
-    $customers_contact_no2,
+    $customers_contact_no2,// Optional: can be NULL
     $customers_occupation,
     $customers_relationship
 );

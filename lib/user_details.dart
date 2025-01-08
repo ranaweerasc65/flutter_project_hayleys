@@ -1,4 +1,5 @@
 // ADD THE DETAILS OF THE USER FOR THE OTHER MEMBERS TO THE SYSTEM
+import 'package:flutter_project_hayleys/home_page.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:animate_do/animate_do.dart';
@@ -10,11 +11,12 @@ import 'package:http/http.dart' as http;
 class UserDetails extends StatefulWidget {
   // To accept the phone number - 03/01/2024
   final String phoneNo;
+  final String userName;
 
   //const UserDetails({super.key});
 
   // Modify constructor - 03/01/2024
-  const UserDetails({super.key, required this.phoneNo});
+  const UserDetails({super.key, required this.phoneNo, required this.userName});
 
   @override
   State<UserDetails> createState() => _UserDetailsFormState();
@@ -46,8 +48,12 @@ class _UserDetailsFormState extends State<UserDetails> {
   void initState() {
     super.initState();
 
+    print('user_details.dart');
+
     // Print phone number to the terminal - 03/01/2024
     print('Logged in user phone number (user_details.dart): ${widget.phoneNo}');
+
+    print('Logged in user Username (user_details.dart): ${widget.userName}');
   }
 
   Future<void> _refreshForm() async {
@@ -219,7 +225,7 @@ class _UserDetailsFormState extends State<UserDetails> {
 
                     Row(
                       children: [
-                        // Contact Number 1
+                        // District
                         Expanded(
                           child: buildDropdownField(
                             "District",
@@ -278,6 +284,20 @@ class _UserDetailsFormState extends State<UserDetails> {
                     ),
 
                     const Text(
+                      "Gender",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+
+                    buildDropdownField(
+                      "Gender",
+                      gender,
+                      ['Male', 'Female', 'Not prefer to say'],
+                      (value) => gender = value,
+                    ),
+
+                    const Text(
                       "Identification",
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -304,10 +324,10 @@ class _UserDetailsFormState extends State<UserDetails> {
                           child: buildTextField(
                             "NIC",
                             nicController,
-                            "Enter your NIC",
+                            "", // HINT
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return "Please enter your NIC.";
+                                return null;
                               }
 
                               // Check NIC format (Old or New format)
@@ -320,25 +340,11 @@ class _UserDetailsFormState extends State<UserDetails> {
                                   !newFormat.hasMatch(value)) {
                                 return "Invalid NIC format.";
                               }
-                              return null; // NIC is valid
+                              return null;
                             },
                           ),
                         ),
                       ],
-                    ),
-
-                    const Text(
-                      "Gender",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-
-                    buildDropdownField(
-                      "Gender",
-                      gender,
-                      ['Male', 'Female', 'Not prefer to say'],
-                      (value) => gender = value,
                     ),
 
                     const Text(
@@ -378,7 +384,7 @@ class _UserDetailsFormState extends State<UserDetails> {
                         // Contact Number 2
                         Expanded(
                           child: buildTextField(
-                            "Contact Number 2",
+                            "Contact Number 2 (Optional)",
                             contact2Controller,
                             keyboardType: TextInputType.phone,
                             "",
@@ -438,9 +444,7 @@ class _UserDetailsFormState extends State<UserDetails> {
                         'Cousin',
 
                         // Others
-                        'Friend',
-                        'Colleague',
-                        'Neighbor',
+
                         'Guardian',
                         'Other',
                       ],
@@ -512,8 +516,100 @@ class _UserDetailsFormState extends State<UserDetails> {
     );
   }
 
+  void _showErrorDialog(String errorMessage) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.red, // Red color
+                    shape: BoxShape.circle,
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: const Icon(
+                    Icons.error,
+                    size: 60,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  "Error!",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red, // Red color
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  errorMessage,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 16, color: Colors.black),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: const Text(
+                    "Ok",
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   // This method submits the form
   Future<void> _addMember() async {
+// Mandatory fields to check
+    final mandatoryFields = {
+      "First Name": firstnameController.text,
+      "Last Name": lastnameController.text,
+      "Date of Birth": dobController.text,
+      "City": cityController.text,
+      "District": district,
+      "Province": province,
+      "Gender": gender,
+      "Contact Number 1": contact1Controller.text,
+      "Relationship": relationship,
+    };
+
+    // Check if any mandatory field is missing
+    final missingFields = mandatoryFields.entries
+        .where((entry) =>
+            entry.value == null || entry.value.toString().trim().isEmpty)
+        .map((entry) => entry.key)
+        .toList();
+
+    if (missingFields.isNotEmpty) {
+      // Show error message for missing mandatory fields
+      _showErrorDialog(
+          "Please fill all the mandatory fields before submitting.");
+      return;
+    }
+
     if (_formKey.currentState!.validate()) {
       final userDetails = {
         "phone_no": widget.phoneNo,
@@ -524,7 +620,7 @@ class _UserDetailsFormState extends State<UserDetails> {
         "customers_city": cityController.text,
         "customers_identification": nicController.text,
         "customers_dob": dobController.text,
-        "customers_blood_group": customers_blood_group,
+        "customers_blood_group": customers_blood_group ?? "",
         "customers_gender": gender,
         "customers_contact_no1": contact1Controller.text,
         "customers_contact_no2": contact2Controller.text,
@@ -556,19 +652,23 @@ class _UserDetailsFormState extends State<UserDetails> {
             // Show success dialog
             _showSuccessDialog();
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Error: ${jsonResponse['message']}")),
-            );
+            // ScaffoldMessenger.of(context).showSnackBar(
+            //   SnackBar(content: Text("Error: ${jsonResponse['message']}")),
+            // );
+            _showErrorDialog(
+                jsonResponse['message'] ?? "An unknown error occurred.");
           }
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Error: Unable to submit form.")),
-          );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(content: Text("Error: Unable to submit form.")),
+          // );
+          _showErrorDialog("Unable to submit the form. Please try again.");
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error: $e")),
-        );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text("Error: $e")),
+        // );
+        _showErrorDialog("An error occurred: $e");
         print("Error: $e");
       }
     }
@@ -618,13 +718,24 @@ class _UserDetailsFormState extends State<UserDetails> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF00C853), // Green color
+                      backgroundColor: const Color(0xFF00C853),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     onPressed: () {
-                      Navigator.of(context).pop(); // Close the dialog
+                      Navigator.of(context).pop();
+                      // Navigate to the HomeScreen
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HomeScreen(
+                            userName: widget.userName,
+                            phoneNo: widget.phoneNo,
+                          ),
+                        ),
+                        (route) => false,
+                      );
                     },
                     child: const Text(
                       "Ok",
@@ -864,12 +975,6 @@ class _UserDetailsFormState extends State<UserDetails> {
                       color: Colors.grey,
                     ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Please select $label.";
-                    }
-                    return null;
-                  },
                 ),
               ),
             ),

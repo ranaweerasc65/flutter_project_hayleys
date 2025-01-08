@@ -7,7 +7,7 @@ import 'user_details.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userName;
-  final String phoneNo; // To accept the phone number
+  final String phoneNo;
 
   const HomeScreen({super.key, required this.userName, required this.phoneNo});
 
@@ -116,6 +116,8 @@ class _HomeContentState extends State<HomeContent> {
   @override
   void initState() {
     super.initState();
+
+    print('home_page.dart');
 
     // Print phone number to the terminal
     print(
@@ -340,8 +342,9 @@ class _HomeContentState extends State<HomeContent> {
                             context,
                             MaterialPageRoute(
                               //builder: (context) => const UserDetails(),
-                              builder: (context) =>
-                                  UserDetails(phoneNo: widget.phoneNo),
+                              builder: (context) => UserDetails(
+                                  phoneNo: widget.phoneNo,
+                                  userName: widget.userName),
                             ),
                           );
                         },
