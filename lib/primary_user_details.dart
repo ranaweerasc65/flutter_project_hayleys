@@ -46,6 +46,59 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
 
   String? phoneNo;
 
+  List<String> genderOptions = ['Male', 'Female', 'Not prefered to say'];
+
+  List<String> districtOptions = [
+    "Ampara",
+    "Anuradhapura",
+    "Badulla",
+    "Batticaloa",
+    "Colombo",
+    "Galle",
+    "Gampaha",
+    "Hambantota",
+    "Jaffna",
+    "Kalutara",
+    "Kandy",
+    "Kegalle",
+    "Kilinochchi",
+    "Kurunegala",
+    "Mannar",
+    "Matale",
+    "Matara",
+    "Monaragala",
+    "Mullaitivu",
+    "Nuwara Eliya",
+    "Polonnaruwa",
+    "Puttalam",
+    "Ratnapura",
+    "Trincomalee",
+    "Vavuniya"
+  ];
+
+  List<String> provinceOptions = [
+    "Central",
+    "Eastern",
+    "Northern",
+    "North Central",
+    "North Western",
+    "Sabaragamuwa",
+    "Southern",
+    "Uva",
+    "Western"
+  ];
+
+  List<String> bloodGroupOptions = [
+    "A+",
+    "A-",
+    "B+",
+    "B-",
+    "AB+",
+    "AB-",
+    "O+",
+    "O-"
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -278,15 +331,15 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
                                     "Province",
                                     province,
                                     [
-                                      'Central ',
-                                      'Eastern ',
-                                      'North Central ',
-                                      'Northern ',
-                                      'North Western ',
-                                      'Sabaragamuwa ',
-                                      'Southern ',
-                                      'Uva ',
-                                      'Western ',
+                                      'Central',
+                                      'Eastern',
+                                      'North Central',
+                                      'Northern',
+                                      'North Western',
+                                      'Sabaragamuwa',
+                                      'Southern',
+                                      'Uva',
+                                      'Western',
                                     ],
                                     (value) => province = value,
                                   ),
@@ -464,36 +517,36 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
                                       ),
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    child: MaterialButton(
-                                      onPressed: () =>
-                                          _showClearFormDialog(context),
-                                      height: 50,
-                                      minWidth:
-                                          MediaQuery.of(context).size.width *
-                                              0.4,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(50),
-                                        side: BorderSide(
-                                          color: Colors.blue[500]!,
-                                          width: 2.0,
-                                        ),
-                                      ),
-                                      child: const Center(
-                                        child: Text(
-                                          "Clear Form",
-                                          style: TextStyle(
-                                            color: Color.fromARGB(
-                                                255, 84, 156, 233),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                                  // Padding(
+                                  //   padding: const EdgeInsets.symmetric(
+                                  //       horizontal: 10),
+                                  //   child: MaterialButton(
+                                  //     onPressed: () =>
+                                  //         _showClearFormDialog(context),
+                                  //     height: 50,
+                                  //     minWidth:
+                                  //         MediaQuery.of(context).size.width *
+                                  //             0.4,
+                                  //     shape: RoundedRectangleBorder(
+                                  //       borderRadius: BorderRadius.circular(50),
+                                  //       side: BorderSide(
+                                  //         color: Colors.blue[500]!,
+                                  //         width: 2.0,
+                                  //       ),
+                                  //     ),
+                                  //     child: const Center(
+                                  //       child: Text(
+                                  //         "Clear Form",
+                                  //         style: TextStyle(
+                                  //           color: Color.fromARGB(
+                                  //               255, 84, 156, 233),
+                                  //           fontWeight: FontWeight.bold,
+                                  //           fontSize: 16,
+                                  //         ),
+                                  //       ),
+                                  //     ),
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                             ),
@@ -678,35 +731,53 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
 
       final jsonResponse = jsonDecode(response.body);
       if (jsonResponse['status'] == 'success') {
-        print('Send success status to PHP');
-
         // Parse the existing data and populate the form fields
         var existingData = jsonResponse['existing_data'];
 
-        firstnameController.text = existingData['CUSTOMERS_FIRST_NAME'];
-        lastnameController.text = existingData['CUSTOMERS_LAST_NAME'];
-        dobController.text = existingData['CUSTOMERS_DOB'];
-        cityController.text = existingData['CUSTOMERS_CITY'];
+        setState(() {
+          firstnameController.text = existingData['CUSTOMERS_FIRST_NAME'];
+          lastnameController.text = existingData['CUSTOMERS_LAST_NAME'];
+          dobController.text = existingData['CUSTOMERS_DOB'];
+          cityController.text = existingData['CUSTOMERS_CITY'];
 
-        // Strip leading/trailing spaces to avoid mismatches
-        district = existingData['CUSTOMERS_DISTRICT']?.trim();
-        province = existingData['CUSTOMERS_PROVINCE']?.trim();
-        gender = existingData['CUSTOMERS_GENDER']?.trim();
-        customers_blood_group = existingData['CUSTOMERS_BLOOD_GROUP']?.trim();
+          district =
+              districtOptions.contains(existingData['CUSTOMERS_DISTRICT'])
+                  ? existingData['CUSTOMERS_DISTRICT']
+                  : null;
+          // province = existingData['CUSTOMERS_PROVINCE']?.trim();
+          // print('Province from response: $province');
 
-        print('District from response: $district');
-        print('Province from response: $province');
-        print('Gender from response: $gender');
-        print('Blood Group from response: $customers_blood_group');
+          // print(
+          //     'Fetched CUSTOMERS_PROVINCE: ${existingData['CUSTOMERS_PROVINCE']}');
 
-        contact1Controller.text =
-            existingData['CUSTOMERS_CONTACT_NO1'].toString();
-        contact2Controller.text =
-            existingData['CUSTOMERS_CONTACT_NO2']?.toString() ?? "";
-        nicController.text = existingData['CUSTOMERS_IDENTIFICATION'] ?? "";
-        occupationController.text = existingData['CUSTOMERS_OCCUPATION'] ?? "";
-        homeNoController.text = existingData['CUSTOMERS_HOME_NO'] ?? "";
-        streetController.text = existingData['CUSTOMERS_STREET_NAME'] ?? "";
+          // print('Province Options: $provinceOptions');
+
+          // print(
+          //     'Province match: ${provinceOptions.contains(existingData['CUSTOMERS_PROVINCE'])}');
+
+          province = provinceOptions
+                  .contains(existingData['CUSTOMERS_PROVINCE']?.trim())
+              ? existingData['CUSTOMERS_PROVINCE']?.trim()
+              : null;
+
+          gender = genderOptions.contains(existingData['CUSTOMERS_GENDER'])
+              ? existingData['CUSTOMERS_GENDER']
+              : null;
+          customers_blood_group =
+              bloodGroupOptions.contains(existingData['CUSTOMERS_BLOOD_GROUP'])
+                  ? existingData['CUSTOMERS_BLOOD_GROUP']
+                  : null;
+
+          contact1Controller.text =
+              existingData['CUSTOMERS_CONTACT_NO1'].toString();
+          contact2Controller.text =
+              existingData['CUSTOMERS_CONTACT_NO2']?.toString() ?? "";
+          nicController.text = existingData['CUSTOMERS_IDENTIFICATION'] ?? "";
+          occupationController.text =
+              existingData['CUSTOMERS_OCCUPATION'] ?? "";
+          homeNoController.text = existingData['CUSTOMERS_HOME_NO'] ?? "";
+          streetController.text = existingData['CUSTOMERS_STREET_NAME'] ?? "";
+        });
 
         // Optionally, show a success message if needed
         //_showSuccessDialog("Existing member details fetched successfully.");
@@ -1028,11 +1099,87 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
     );
   }
 
+  // Widget buildDropdownField(
+  //   String label,
+  //   String? currentValue,
+  //   List<String> options,
+  //   Function(String?) onChanged, {
+  //   Color focusedBorderColor = const Color(0xFF607D8B),
+  //   Color borderColor = const Color(0xFFCFD8DC),
+  //   Color labelColor = const Color(0xFF78909C),
+  //   Color hintColor = const Color(0xFFB0BEC5),
+  // }) {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(vertical: 10),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         // Dropdown field
+  //         GestureDetector(
+  //           onTap: () {},
+  //           child: AnimatedContainer(
+  //             duration: const Duration(milliseconds: 300),
+  //             curve: Curves.easeInOut,
+  //             decoration: BoxDecoration(
+  //               color: Colors.white,
+  //               borderRadius: BorderRadius.circular(4),
+  //               border: Border.all(
+  //                 color: borderColor,
+  //                 width: 1.0,
+  //               ),
+  //             ),
+  //             child: DropdownButtonFormField<String>(
+  //               value: currentValue,
+  //               decoration: InputDecoration(
+  //                 hintStyle: TextStyle(
+  //                   color: hintColor,
+  //                   fontWeight: FontWeight.w500,
+  //                 ),
+  //                 border: InputBorder.none,
+  //                 contentPadding: const EdgeInsets.symmetric(
+  //                   vertical: 12.0,
+  //                   horizontal: 10.0,
+  //                 ),
+  //               ),
+  //               items: options.map((String value) {
+  //                 return DropdownMenuItem<String>(
+  //                   value: value,
+  //                   child: Text(
+  //                     value,
+  //                     style: const TextStyle(
+  //                       fontSize: 16,
+  //                       fontWeight: FontWeight.normal,
+  //                       color: Colors.black,
+  //                     ),
+  //                   ),
+  //                 );
+  //               }).toList(),
+  //               onChanged: (value) {
+  //                 onChanged(value);
+  //               },
+  //               dropdownColor: const Color.fromARGB(255, 255, 255, 255),
+  //               elevation: 8,
+  //               menuMaxHeight: 500,
+  //             ),
+  //           ),
+  //         ),
+  //         const SizedBox(height: 8),
+  //         // Label
+  //         Text(
+  //           label,
+  //           style: TextStyle(fontSize: 12, color: labelColor),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
   Widget buildDropdownField(
     String label,
     String? currentValue,
     List<String> options,
-    Function(String?) onChanged, {
+    ValueChanged<String?> onChanged, {
+    Key? fieldKey,
     Color focusedBorderColor = const Color(0xFF607D8B),
     Color borderColor = const Color(0xFFCFD8DC),
     Color labelColor = const Color(0xFF78909C),
@@ -1043,60 +1190,64 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Dropdown field
-          GestureDetector(
-            onTap: () {},
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(
-                  color: borderColor,
-                  width: 1.0,
-                ),
-              ),
-              child: DropdownButtonFormField<String>(
-                value: currentValue,
-                decoration: InputDecoration(
-                  hintStyle: TextStyle(
-                    color: hintColor,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 12.0,
-                    horizontal: 10.0,
-                  ),
-                ),
-                items: options.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(
-                      value,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.black,
-                      ),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  onChanged(value);
-                },
-                dropdownColor: const Color.fromARGB(255, 255, 255, 255),
-                elevation: 8,
-                menuMaxHeight: 500,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
           // Label
           Text(
             label,
-            style: TextStyle(fontSize: 12, color: labelColor),
+            style: TextStyle(fontSize: 14, color: labelColor),
+          ),
+          const SizedBox(height: 4),
+          // Dropdown field
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(
+                color: borderColor,
+                width: 1.0,
+              ),
+            ),
+            child: DropdownButtonFormField<String>(
+              key: fieldKey, // Ensures unique state for each dropdown
+              value: currentValue, // Dynamically updates with fetched values
+              decoration: InputDecoration(
+                hintStyle: TextStyle(
+                  color: hintColor,
+                  fontWeight: FontWeight.w500,
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 12.0,
+                  horizontal: 10.0,
+                ),
+              ),
+              items: options.map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(
+                    value,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.black,
+                    ),
+                  ),
+                );
+              }).toList(),
+              onChanged: (value) {
+                onChanged(value);
+              },
+              dropdownColor: Colors.white,
+              elevation: 8,
+              menuMaxHeight: 500,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please select $label';
+                }
+                return null;
+              },
+            ),
           ),
         ],
       ),
