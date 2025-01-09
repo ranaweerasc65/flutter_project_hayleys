@@ -651,6 +651,15 @@ class _UserDetailsFormState extends State<UserDetails> {
           if (jsonResponse['status'] == 'success') {
             // Show success dialog
             _showSuccessDialog();
+
+            // Navigate back to the home screen with the new member's details
+            final newMember = {
+              "name": "${firstnameController.text} ${lastnameController.text}",
+              "image":
+                  "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png", // Example placeholder
+            };
+
+            Navigator.pop(context, newMember);
           } else {
             // ScaffoldMessenger.of(context).showSnackBar(
             //   SnackBar(content: Text("Error: ${jsonResponse['message']}")),

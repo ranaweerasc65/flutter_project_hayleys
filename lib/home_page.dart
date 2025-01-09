@@ -266,10 +266,12 @@ class _HomeContentState extends State<HomeContent> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const PrimaryUserDetails(
-                                  phoneNo: '',
-                                  userName: '',
-                                ),
+                                builder: (context) => PrimaryUserDetails(
+                                    // phoneNo: '',
+                                    // userName: '',
+
+                                    phoneNo: widget.phoneNo,
+                                    userName: widget.userName),
                               ),
                             );
                           },

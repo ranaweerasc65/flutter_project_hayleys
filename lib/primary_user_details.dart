@@ -84,7 +84,7 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Member Details Form',
+          'My Details ',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 24,
@@ -93,7 +93,7 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
         ),
         automaticallyImplyLeading: false,
         centerTitle: true,
-        backgroundColor: Colors.blue.shade800,
+        backgroundColor: Colors.blue.shade500,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
@@ -126,392 +126,420 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
         color: const Color.fromARGB(255, 8, 120, 212),
         child: Container(
           color: Colors.white,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(30),
-            child: Form(
-              key: _formKey,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Name title
-                    const Text(
-                      "Name",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: constraints
+                        .maxHeight, // Ensures it takes full screen height
+                  ),
+                  child: IntrinsicHeight(
+                    child: Form(
+                      key: _formKey,
+                      child: Padding(
+                        padding: const EdgeInsets.all(30),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Name title
+                            const Text(
+                              "Name",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
 
-                    Row(
-                      children: [
-                        // First Name
-                        Expanded(
-                          child: buildTextField(
-                            "First Name",
-                            firstnameController,
-                            "",
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: buildTextField(
-                            "Last Name",
-                            lastnameController,
-                            "",
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const Text(
-                      "Date of Birth",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-
-                    Row(
-                      children: [
-                        // DOB
-                        Expanded(
-                          child: buildDatePickerField(
-                            "Date of Birth",
-                            dobController,
-                            "",
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const Text(
-                      "Address",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-
-                    Row(
-                      children: [
-                        // First Name
-                        Expanded(
-                          child: buildTextField(
-                            "Home No",
-                            homeNoController,
-                            "",
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: buildTextField(
-                            "Street Name",
-                            streetController,
-                            "",
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    Row(
-                      children: [
-                        // City
-                        Expanded(
-                          child: buildTextField(
-                            "City",
-                            cityController,
-                            "",
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    Row(
-                      children: [
-                        // District
-                        Expanded(
-                          child: buildDropdownField(
-                            "District",
-                            district,
-                            [
-                              'Ampara',
-                              'Anuradhapura',
-                              'Badulla',
-                              'Batticaloa',
-                              'Colombo',
-                              'Galle',
-                              'Gampaha',
-                              'Hambantota',
-                              'Jaffna',
-                              'Kalutara',
-                              'Kandy',
-                              'Kegalle',
-                              'Kilinochchi',
-                              'Kurunegala',
-                              'Mannar',
-                              'Matale',
-                              'Matara',
-                              'Monaragala',
-                              'Mullaitivu',
-                              'Nuwara Eliya',
-                              'Polonnaruwa',
-                              'Puttalam',
-                              'Ratnapura',
-                              'Trincomalee',
-                              'Vavuniya',
-                            ],
-                            (value) => district = value,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        // Province
-                        Expanded(
-                          child: buildDropdownField(
-                            "Province",
-                            province,
-                            [
-                              'Central ',
-                              'Eastern ',
-                              'North Central ',
-                              'Northern ',
-                              'North Western ',
-                              'Sabaragamuwa ',
-                              'Southern ',
-                              'Uva ',
-                              'Western ',
-                            ],
-                            (value) => province = value,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const Text(
-                      "Gender",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-
-                    buildDropdownField(
-                      "Gender",
-                      gender,
-                      ['Male', 'Female', 'Not prefer to say'],
-                      (value) => gender = value,
-                    ),
-
-                    const Text(
-                      "Identification",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Row(
-                    //   children: [
-                    //     // NIC
-                    //     Expanded(
-                    //       child: buildTextField(
-                    //         "NIC",
-                    //         nicController,
-                    //         "",
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
-
-                    Row(
-                      children: [
-                        // NIC
-                        Expanded(
-                          child: buildTextField(
-                            "NIC",
-                            nicController,
-                            "", // HINT
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return null;
-                              }
-
-                              // Check NIC format (Old or New format)
-                              RegExp oldFormat = RegExp(
-                                  r'^\d{9}[Vv]$'); // Old format: 9 digits followed by 'V' or 'v'
-                              RegExp newFormat =
-                                  RegExp(r'^\d{12}$'); // New format: 12 digits
-
-                              if (!oldFormat.hasMatch(value) &&
-                                  !newFormat.hasMatch(value)) {
-                                return "Invalid NIC format.";
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const Text(
-                      "Blood Group",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-
-                    buildDropdownField(
-                      "Blood Group",
-                      customers_blood_group,
-                      ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
-                      (value) => customers_blood_group = value,
-                    ),
-
-                    // Contact
-                    const Text(
-                      "Contact",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-
-                    Row(
-                      children: [
-                        // Contact Number 1
-                        Expanded(
-                          child: buildTextField(
-                            "Contact Number 1",
-                            contact1Controller,
-                            "",
-                            keyboardType: TextInputType.phone,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        // Contact Number 2
-                        Expanded(
-                          child: buildTextField(
-                            "Contact Number 2 (Optional)",
-                            contact2Controller,
-                            keyboardType: TextInputType.phone,
-                            "",
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const Text(
-                      "Occupation",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-
-                    Row(
-                      children: [
-                        // Occupation
-                        Expanded(
-                          child: buildTextField(
-                            "Occupation",
-                            occupationController,
-                            "",
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const Text(
-                      "Relationship",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-
-                    buildDropdownField(
-                      "Relationship",
-                      relationship,
-                      [
-                        // First Connections
-
-                        'Mother',
-                        'Father',
-                        'Spouse',
-                        'Sister',
-                        'Brother',
-                        'Daughter',
-                        'Son',
-
-                        // Second Connections
-                        'Grandmother',
-                        'Grandfather',
-                        'Aunt',
-                        'Uncle',
-                        'Niece',
-                        'Nephew',
-                        'Cousin',
-
-                        // Others
-
-                        'Guardian',
-                        'Other',
-                      ],
-                      (value) => relationship = value,
-                    ),
-                    const SizedBox(height: 20),
-                    FadeInUp(
-                      duration: const Duration(milliseconds: 1600),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: MaterialButton(
-                              onPressed: _addMember,
-                              height: 50,
-                              minWidth: MediaQuery.of(context).size.width * 0.4,
-                              color: Colors.blue[800],
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              child: const Center(
-                                child: Text(
-                                  "Add Member",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                            Row(
+                              children: [
+                                // First Name
+                                Expanded(
+                                  child: buildTextField(
+                                    "First Name",
+                                    firstnameController,
+                                    "",
                                   ),
                                 ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: MaterialButton(
-                              onPressed: () => _showClearFormDialog(context),
-                              height: 50,
-                              minWidth: MediaQuery.of(context).size.width * 0.4,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(50),
-                                side: BorderSide(
-                                  color: Colors.blue[800]!,
-                                  width: 2.0,
-                                ),
-                              ),
-                              child: const Center(
-                                child: Text(
-                                  "Clear Form",
-                                  style: TextStyle(
-                                    color: Color.fromARGB(255, 2, 99, 178),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: buildTextField(
+                                    "Last Name",
+                                    lastnameController,
+                                    "",
                                   ),
                                 ),
+                              ],
+                            ),
+
+                            const Text(
+                              "Date of Birth",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+
+                            Row(
+                              children: [
+                                // DOB
+                                Expanded(
+                                  child: buildDatePickerField(
+                                    "Date of Birth",
+                                    dobController,
+                                    "",
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const Text(
+                              "Address",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+
+                            Row(
+                              children: [
+                                // First Name
+                                Expanded(
+                                  child: buildTextField(
+                                    "Home No",
+                                    homeNoController,
+                                    "",
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: buildTextField(
+                                    "Street Name",
+                                    streetController,
+                                    "",
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            Row(
+                              children: [
+                                // City
+                                Expanded(
+                                  child: buildTextField(
+                                    "City",
+                                    cityController,
+                                    "",
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            Row(
+                              children: [
+                                // District
+                                Expanded(
+                                  child: buildDropdownField(
+                                    "District",
+                                    district,
+                                    [
+                                      'Ampara',
+                                      'Anuradhapura',
+                                      'Badulla',
+                                      'Batticaloa',
+                                      'Colombo',
+                                      'Galle',
+                                      'Gampaha',
+                                      'Hambantota',
+                                      'Jaffna',
+                                      'Kalutara',
+                                      'Kandy',
+                                      'Kegalle',
+                                      'Kilinochchi',
+                                      'Kurunegala',
+                                      'Mannar',
+                                      'Matale',
+                                      'Matara',
+                                      'Monaragala',
+                                      'Mullaitivu',
+                                      'Nuwara Eliya',
+                                      'Polonnaruwa',
+                                      'Puttalam',
+                                      'Ratnapura',
+                                      'Trincomalee',
+                                      'Vavuniya',
+                                    ],
+                                    (value) => district = value,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                // Province
+                                Expanded(
+                                  child: buildDropdownField(
+                                    "Province",
+                                    province,
+                                    [
+                                      'Central ',
+                                      'Eastern ',
+                                      'North Central ',
+                                      'Northern ',
+                                      'North Western ',
+                                      'Sabaragamuwa ',
+                                      'Southern ',
+                                      'Uva ',
+                                      'Western ',
+                                    ],
+                                    (value) => province = value,
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const Text(
+                              "Gender",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+
+                            buildDropdownField(
+                              "Gender",
+                              gender,
+                              ['Male', 'Female', 'Not prefer to say'],
+                              (value) => gender = value,
+                            ),
+
+                            const Text(
+                              "Identification",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+
+                            // Row(
+                            //   children: [
+                            //     // NIC
+                            //     Expanded(
+                            //       child: buildTextField(
+                            //         "NIC",
+                            //         nicController,
+                            //         "",
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
+
+                            Row(
+                              children: [
+                                // NIC
+                                Expanded(
+                                  child: buildTextField(
+                                    "NIC",
+                                    nicController,
+                                    "", // HINT
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return null;
+                                      }
+
+                                      // Check NIC format (Old or New format)
+                                      RegExp oldFormat = RegExp(
+                                          r'^\d{9}[Vv]$'); // Old format: 9 digits followed by 'V' or 'v'
+                                      RegExp newFormat = RegExp(
+                                          r'^\d{12}$'); // New format: 12 digits
+
+                                      if (!oldFormat.hasMatch(value) &&
+                                          !newFormat.hasMatch(value)) {
+                                        return "Invalid NIC format.";
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const Text(
+                              "Blood Group",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+
+                            buildDropdownField(
+                              "Blood Group",
+                              customers_blood_group,
+                              [
+                                'A+',
+                                'A-',
+                                'B+',
+                                'B-',
+                                'AB+',
+                                'AB-',
+                                'O+',
+                                'O-'
+                              ],
+                              (value) => customers_blood_group = value,
+                            ),
+
+                            // Contact
+                            const Text(
+                              "Contact",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+
+                            Row(
+                              children: [
+                                // Contact Number 1
+                                Expanded(
+                                  child: buildTextField(
+                                    "Contact Number 1",
+                                    contact1Controller,
+                                    "",
+                                    keyboardType: TextInputType.phone,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                // Contact Number 2
+                                Expanded(
+                                  child: buildTextField(
+                                    "Contact Number 2 (Optional)",
+                                    contact2Controller,
+                                    keyboardType: TextInputType.phone,
+                                    "",
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const Text(
+                              "Occupation",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+
+                            Row(
+                              children: [
+                                // Occupation
+                                Expanded(
+                                  child: buildTextField(
+                                    "Occupation",
+                                    occupationController,
+                                    "",
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            // const Text(
+                            //   "Relationship",
+                            //   style:
+                            //       TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            // ),
+                            // const SizedBox(height: 8),
+
+                            // buildDropdownField(
+                            //   "Relationship",
+                            //   relationship,
+                            //   [
+                            //     // First Connections
+
+                            //     'Mother',
+                            //     'Father',
+                            //     'Spouse',
+                            //     'Sister',
+                            //     'Brother',
+                            //     'Daughter',
+                            //     'Son',
+
+                            //     // Second Connections
+                            //     'Grandmother',
+                            //     'Grandfather',
+                            //     'Aunt',
+                            //     'Uncle',
+                            //     'Niece',
+                            //     'Nephew',
+                            //     'Cousin',
+
+                            //     // Others
+
+                            //     'Guardian',
+                            //     'Other',
+                            //   ],
+                            //   (value) => relationship = value,
+                            // ),
+                            const SizedBox(height: 20),
+                            FadeInUp(
+                              duration: const Duration(milliseconds: 1600),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10),
+                                    child: MaterialButton(
+                                      onPressed: _addMember,
+                                      height: 50,
+                                      minWidth:
+                                          MediaQuery.of(context).size.width *
+                                              0.4,
+                                      color: Colors.blue[500],
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(50),
+                                      ),
+                                      child: const Center(
+                                        child: Text(
+                                          "Save Me",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10),
+                                    child: MaterialButton(
+                                      onPressed: () =>
+                                          _showClearFormDialog(context),
+                                      height: 50,
+                                      minWidth:
+                                          MediaQuery.of(context).size.width *
+                                              0.4,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(50),
+                                        side: BorderSide(
+                                          color: Colors.blue[500]!,
+                                          width: 2.0,
+                                        ),
+                                      ),
+                                      child: const Center(
+                                        child: Text(
+                                          "Clear Form",
+                                          style: TextStyle(
+                                            color: Color.fromARGB(
+                                                255, 84, 156, 233),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         ),
       ),
@@ -594,7 +622,6 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
       "Province": province,
       "Gender": gender,
       "Contact Number 1": contact1Controller.text,
-      "Relationship": relationship,
     };
 
     // Check if any mandatory field is missing
@@ -628,7 +655,7 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
         "customers_district": district,
         "customers_province": province,
         "customers_occupation": occupationController.text,
-        "customers_relationship": relationship,
+        "customers_relationship": relationship ?? "",
       };
 
       // Print the user-entered details to the terminal for debugging
@@ -637,7 +664,7 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
       try {
         final response = await http.post(
           Uri.parse(
-              "http://172.16.200.79/flutter_project_hayleys/php/user_details.php"),
+              "http://172.16.200.79/flutter_project_hayleys/php/primary_user_details.php"),
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
           },
