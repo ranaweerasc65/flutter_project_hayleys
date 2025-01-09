@@ -56,6 +56,8 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
     print('Logged in user phone number (user_details.dart): ${widget.phoneNo}');
 
     print('Logged in user Username (user_details.dart): ${widget.userName}');
+
+    _fetchExistingDetails();
   }
 
   Future<void> _refreshForm() async {
@@ -658,6 +660,61 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
         _showErrorDialog("An error occurred: $e");
         print("Error: $e");
       }
+    }
+  }
+
+  Future<void> _fetchExistingDetails() async {
+    print('come to _fetchExistingDetails');
+
+    // Prepare the URL with query parameter
+    final url = Uri.parse(
+        "http://172.16.200.79/flutter_project_hayleys/php/fetch_user_details.php?phone_no=${widget.phoneNo}");
+
+    // Send the GET request
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      print('Response body _fetchExistingDetails: ${response.body}');
+
+      final jsonResponse = jsonDecode(response.body);
+      if (jsonResponse['status'] == 'success') {
+        print('Send success status to PHP');
+
+        // Parse the existing data and populate the form fields
+        var existingData = jsonResponse['existing_data'];
+
+        firstnameController.text = existingData['CUSTOMERS_FIRST_NAME'];
+        lastnameController.text = existingData['CUSTOMERS_LAST_NAME'];
+        dobController.text = existingData['CUSTOMERS_DOB'];
+        cityController.text = existingData['CUSTOMERS_CITY'];
+
+        // Strip leading/trailing spaces to avoid mismatches
+        district = existingData['CUSTOMERS_DISTRICT']?.trim();
+        province = existingData['CUSTOMERS_PROVINCE']?.trim();
+        gender = existingData['CUSTOMERS_GENDER']?.trim();
+        customers_blood_group = existingData['CUSTOMERS_BLOOD_GROUP']?.trim();
+
+        print('District from response: $district');
+        print('Province from response: $province');
+        print('Gender from response: $gender');
+        print('Blood Group from response: $customers_blood_group');
+
+        contact1Controller.text =
+            existingData['CUSTOMERS_CONTACT_NO1'].toString();
+        contact2Controller.text =
+            existingData['CUSTOMERS_CONTACT_NO2']?.toString() ?? "";
+        nicController.text = existingData['CUSTOMERS_IDENTIFICATION'] ?? "";
+        occupationController.text = existingData['CUSTOMERS_OCCUPATION'] ?? "";
+        homeNoController.text = existingData['CUSTOMERS_HOME_NO'] ?? "";
+        streetController.text = existingData['CUSTOMERS_STREET_NAME'] ?? "";
+
+        // Optionally, show a success message if needed
+        //_showSuccessDialog("Existing member details fetched successfully.");
+      } else {
+        //_showErrorDialog(jsonResponse['message'] ?? "Failed to fetch details.");
+      }
+    } else {
+      _showErrorDialog("Failed to fetch details. Please try again later.");
     }
   }
 

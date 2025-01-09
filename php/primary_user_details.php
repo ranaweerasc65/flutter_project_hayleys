@@ -79,6 +79,7 @@ $customers_contact_no2 = isset($_POST['customers_contact_no2']) && !empty($_POST
     : null;
 
 
+// UPDATE EMPLOYEE DETAILS - 09/01/2025 
 // Check if there's already a record with the same phone number and relationship 'ME'
 $sql_check = "SELECT * FROM customers WHERE phone_no = ? AND customers_relationship = 'ME'";
 $stmt_check = $conn_hayleys_medicalapp->prepare($sql_check);
@@ -161,6 +162,8 @@ if ($result_check->num_rows > 0) {
     }
     $stmt_insert->close();
 }
+
+
 
 // Close the connection
 $conn_hayleys_medicalapp->close();
