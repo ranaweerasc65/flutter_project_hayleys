@@ -20,7 +20,7 @@ $requiredFields = [
     'phone_no', 'customers_first_name','customers_last_name', 'customers_dob', 'customers_city', 
     'customers_district', 'customers_province', 'customers_identification', 
     'customers_gender', 'customers_blood_group', 'customers_contact_no1', 
-     'customers_occupation'
+    'customers_occupation'
 ];
 
 foreach ($requiredFields as $field) {
@@ -48,8 +48,6 @@ if (!$dob_date) {
     exit();
 }
 
-
-
 $customers_city = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_city']);
 $customers_district = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_district']);
 $customers_province = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_province']);
@@ -58,77 +56,112 @@ $customers_gender = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['
 $customers_blood_group = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_blood_group']);
 $customers_contact_no1 = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_contact_no1']);
 $customers_occupation = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_occupation']);
-//$customers_relationship = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_relationship']);
 
 // Check if 'customers_relationship' is provided, if not, set it to "ME"
 $customers_relationship = isset($_POST['customers_relationship']) && !empty($_POST['customers_relationship']) 
     ? mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_relationship']) 
     : "ME";
 
-
 // Always set "ME" as the relationship value
 $customers_relationship = "ME";
 
-
-// $customers_home_no = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_home_no']);
-
+// Optional fields
 $customers_home_no = isset($_POST['customers_home_no']) && !empty($_POST['customers_home_no']) 
     ? mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_home_no']) 
     : null;
-
-// $customers_street_name = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_street_name']);
 
 $customers_street_name = isset($_POST['customers_street_name']) && !empty($_POST['customers_street_name']) 
     ? mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_street_name']) 
     : null;
 
-//$customers_contact_no2 = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_contact_no2']);
-
 $customers_contact_no2 = isset($_POST['customers_contact_no2']) && !empty($_POST['customers_contact_no2']) 
     ? mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_contact_no2']) 
     : null;
 
-// Use prepared statements to prevent SQL injection
-$sql = "INSERT INTO customers (phone_no, customers_first_name, customers_last_name, customers_dob, customers_home_no, customers_street_name, customers_city, customers_district, customers_province, customers_identification, customers_gender, customers_blood_group, customers_contact_no1, customers_contact_no2, customers_occupation, customers_relationship) 
-        VALUES (?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-$stmt = $conn_hayleys_medicalapp->prepare($sql);
 
-// Check if the prepared statement was successful
-if ($stmt === false) {
-    echo json_encode(array("status" => "error", "message" => "Error preparing SQL statement: " . $conn_hayleys_medicalapp->error));
-    exit();
-}
+// Check if there's already a record with the same phone number and relationship 'ME'
+$sql_check = "SELECT * FROM customers WHERE phone_no = ? AND customers_relationship = 'ME'";
+$stmt_check = $conn_hayleys_medicalapp->prepare($sql_check);
+$stmt_check->bind_param("s", $phone_no);
+$stmt_check->execute();
+$result_check = $stmt_check->get_result();
 
-// Bind the parameters to the prepared statement
-// Bind parameters (use `s` for string and `null` for optional field if needed)
-$stmt->bind_param(
-    "ssssssssssssssss",
-    $phone_no,
-    $customers_first_name,
-    $customers_last_name,
-    $customers_dob,
-    $customers_home_no,// Optional: can be NULL
-    $customers_street_name,// Optional: can be NULL
-    $customers_city,
-    $customers_district,
-    $customers_province,
-    $customers_identification,
-    $customers_gender,
-    $customers_blood_group,
-    $customers_contact_no1,
-    $customers_contact_no2,// Optional: can be NULL
-    $customers_occupation,
-    $customers_relationship
-);
+if ($result_check->num_rows > 0) {
+    // If a record exists with 'ME' relationship for this phone number, update it instead of inserting
+    $sql_update = "UPDATE customers SET 
+                    customers_first_name = ?, 
+                    customers_last_name = ?, 
+                    customers_dob = ?, 
+                    customers_city = ?, 
+                    customers_district = ?, 
+                    customers_province = ?, 
+                    customers_identification = ?, 
+                    customers_gender = ?, 
+                    customers_blood_group = ?, 
+                    customers_contact_no1 = ?, 
+                    customers_contact_no2 = ?, 
+                    customers_occupation = ?, 
+                    customers_relationship = ?
+                    WHERE phone_no = ? AND customers_relationship = 'ME'";
 
-// Execute the query and check for success
-if ($stmt->execute()) {
-    echo json_encode(array("status" => "success", "message" => "User details inserted successfully"));
+    $stmt_update = $conn_hayleys_medicalapp->prepare($sql_update);
+    $stmt_update->bind_param("ssssssssssssss", 
+                            $customers_first_name, 
+                            $customers_last_name, 
+                            $customers_dob, 
+                            $customers_city, 
+                            $customers_district, 
+                            $customers_province, 
+                            $customers_identification, 
+                            $customers_gender, 
+                            $customers_blood_group, 
+                            $customers_contact_no1, 
+                            $customers_contact_no2, 
+                            $customers_occupation, 
+                            $customers_relationship, 
+                            $phone_no);
+
+    if ($stmt_update->execute()) {
+        echo json_encode(array("status" => "success", "message" => "Member details updated successfully"));
+    } else {
+        echo json_encode(array("status" => "error", "message" => "Failed to update user details: " . $stmt_update->error));
+    }
+    $stmt_update->close();
 } else {
-    echo json_encode(array("status" => "error", "message" => "Failed to insert user details: " . $stmt->error));
+    // If no record exists with 'ME' relationship, insert a new one
+    $sql_insert = "INSERT INTO customers (phone_no, customers_first_name, customers_last_name, customers_dob, customers_home_no, customers_street_name, customers_city, customers_district, customers_province, customers_identification, customers_gender, customers_blood_group, customers_contact_no1, customers_contact_no2, customers_occupation, customers_relationship) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmt_insert = $conn_hayleys_medicalapp->prepare($sql_insert);
+
+    // Bind parameters for insert query
+    $stmt_insert->bind_param(
+        "ssssssssssssssss", 
+        $phone_no, 
+        $customers_first_name, 
+        $customers_last_name, 
+        $customers_dob, 
+        $customers_home_no, 
+        $customers_street_name, 
+        $customers_city, 
+        $customers_district, 
+        $customers_province, 
+        $customers_identification, 
+        $customers_gender, 
+        $customers_blood_group, 
+        $customers_contact_no1, 
+        $customers_contact_no2, 
+        $customers_occupation, 
+        $customers_relationship
+    );
+
+    if ($stmt_insert->execute()) {
+        echo json_encode(array("status" => "success", "message" => "Member added successfully"));
+    } else {
+        echo json_encode(array("status" => "error", "message" => "Failed to insert user details: " . $stmt_insert->error));
+    }
+    $stmt_insert->close();
 }
 
-// Close the statement and connection
-$stmt->close();
+// Close the connection
 $conn_hayleys_medicalapp->close();
 ?>

@@ -431,43 +431,6 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
                               ],
                             ),
 
-                            // const Text(
-                            //   "Relationship",
-                            //   style:
-                            //       TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                            // ),
-                            // const SizedBox(height: 8),
-
-                            // buildDropdownField(
-                            //   "Relationship",
-                            //   relationship,
-                            //   [
-                            //     // First Connections
-
-                            //     'Mother',
-                            //     'Father',
-                            //     'Spouse',
-                            //     'Sister',
-                            //     'Brother',
-                            //     'Daughter',
-                            //     'Son',
-
-                            //     // Second Connections
-                            //     'Grandmother',
-                            //     'Grandfather',
-                            //     'Aunt',
-                            //     'Uncle',
-                            //     'Niece',
-                            //     'Nephew',
-                            //     'Cousin',
-
-                            //     // Others
-
-                            //     'Guardian',
-                            //     'Other',
-                            //   ],
-                            //   (value) => relationship = value,
-                            // ),
                             const SizedBox(height: 20),
                             FadeInUp(
                               duration: const Duration(milliseconds: 1600),
@@ -677,20 +640,16 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
         if (response.statusCode == 200) {
           final jsonResponse = jsonDecode(response.body);
           if (jsonResponse['status'] == 'success') {
-            // Show success dialog
-            _showSuccessDialog();
+            if (jsonResponse['message'] ==
+                'Member details updated successfully') {
+              _showSuccessDialog('Member details updated successfully');
+            } else {
+              _showSuccessDialog('Member added successfully');
+            }
           } else {
-            // ScaffoldMessenger.of(context).showSnackBar(
-            //   SnackBar(content: Text("Error: ${jsonResponse['message']}")),
-            // );
             _showErrorDialog(
                 jsonResponse['message'] ?? "An unknown error occurred.");
           }
-        } else {
-          // ScaffoldMessenger.of(context).showSnackBar(
-          //   const SnackBar(content: Text("Error: Unable to submit form.")),
-          // );
-          _showErrorDialog("Unable to submit the form. Please try again.");
         }
       } catch (e) {
         // ScaffoldMessenger.of(context).showSnackBar(
@@ -702,84 +661,80 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
     }
   }
 
-  void _showSuccessDialog() {
+  void _showSuccessDialog(String message) {
     showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF00C853), // Green color
-                      shape: BoxShape.circle,
-                    ),
-                    padding: const EdgeInsets.all(16),
-                    child: const Icon(
-                      Icons.check_circle,
-                      size: 60,
-                      color: Colors.white,
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF00C853), // Green color
+                    shape: BoxShape.circle,
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: const Icon(
+                    Icons.check_circle,
+                    size: 60,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  "Success!!!",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF00C853), // Green color
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 16, color: Colors.black),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF00C853),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    "Success!!!",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF00C853), // Green color
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    "Member Added Successfully!",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.black),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF00C853),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      // Navigate to the HomeScreen
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HomeScreen(
-                            userName: widget.userName,
-                            phoneNo: widget.phoneNo,
-                          ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    // Navigate to the HomeScreen
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HomeScreen(
+                          userName: widget.userName,
+                          phoneNo: widget.phoneNo,
                         ),
-                        (route) => false,
-                      );
-                    },
-                    child: const Text(
-                      "Ok",
-                      style: TextStyle(fontSize: 16, color: Colors.white),
-                    ),
+                      ),
+                      (route) => false,
+                    );
+                  },
+                  child: const Text(
+                    "Ok",
+                    style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          );
-
-          // ScaffoldMessenger.of(context).showSnackBar(
-          //   const SnackBar(content: Text("Form Submitted Successfully!")),
-          // );
-          // print("User Details: $userDetails");
-        });
+          ),
+        );
+      },
+    );
   }
 
   void _showClearFormDialog(BuildContext context) {
