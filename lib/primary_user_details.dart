@@ -148,7 +148,7 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
         ),
         automaticallyImplyLeading: false,
         centerTitle: true,
-        backgroundColor: Colors.blue.shade500,
+        backgroundColor: Colors.blue.shade800,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
@@ -501,7 +501,7 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
                                       minWidth:
                                           MediaQuery.of(context).size.width *
                                               0.4,
-                                      color: Colors.blue[500],
+                                      color: Colors.blue[800],
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(50),
                                       ),
@@ -721,7 +721,7 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
 
     // Prepare the URL with query parameter
     final url = Uri.parse(
-        "http://172.16.200.79/flutter_project_hayleys/php/fetch_user_details.php?phone_no=${widget.phoneNo}");
+        "http://172.16.200.79/flutter_project_hayleys/php/fetch_primary_user_details.php?phone_no=${widget.phoneNo}");
 
     // Send the GET request
     final response = await http.get(url);
