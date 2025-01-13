@@ -13,7 +13,7 @@ class UserDetails extends StatefulWidget {
   // To accept the phone number - 03/01/2024
   final String phoneNo;
   final String userName;
-  final List<String> connections;
+  //final List<String> connections;
 
   //const UserDetails({super.key});
 
@@ -22,7 +22,7 @@ class UserDetails extends StatefulWidget {
     Key? key,
     required this.phoneNo,
     required this.userName,
-    required this.connections,
+    // required this.connections,
   }) : super(key: key);
 
   @override
@@ -766,85 +766,6 @@ class _UserDetailsFormState extends State<UserDetails> {
     }
   }
 
-  Future<void> _fetchExistingDetails() async {
-    print('come to _fetchExistingDetails');
-
-    // Prepare the URL with query parameter
-    final url = Uri.parse(
-        "http://192.168.62.145/flutter_project_hayleys/php/fetch_user_details.php?phone_no=${widget.phoneNo}");
-    //192.168.62.145
-    //172.16.200.79
-
-    // Send the GET request
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      print('Response body _fetchExistingDetails: ${response.body}');
-
-      final jsonResponse = jsonDecode(response.body);
-      if (jsonResponse['status'] == 'success') {
-        // Parse the existing data and populate the form fields
-        var existingData = jsonResponse['existing_data'];
-
-        setState(() {
-          firstnameController.text = existingData['CUSTOMERS_FIRST_NAME'];
-          lastnameController.text = existingData['CUSTOMERS_LAST_NAME'];
-          dobController.text = existingData['CUSTOMERS_DOB'];
-          cityController.text = existingData['CUSTOMERS_CITY'];
-
-          district =
-              districtOptions.contains(existingData['CUSTOMERS_DISTRICT'])
-                  ? existingData['CUSTOMERS_DISTRICT']
-                  : null;
-          // province = existingData['CUSTOMERS_PROVINCE']?.trim();
-          // print('Province from response: $province');
-
-          // print(
-          //     'Fetched CUSTOMERS_PROVINCE: ${existingData['CUSTOMERS_PROVINCE']}');
-
-          // print('Province Options: $provinceOptions');
-
-          // print(
-          //     'Province match: ${provinceOptions.contains(existingData['CUSTOMERS_PROVINCE'])}');
-
-          province = provinceOptions
-                  .contains(existingData['CUSTOMERS_PROVINCE']?.trim())
-              ? existingData['CUSTOMERS_PROVINCE']?.trim()
-              : null;
-
-          gender = genderOptions.contains(existingData['CUSTOMERS_GENDER'])
-              ? existingData['CUSTOMERS_GENDER']
-              : null;
-          customers_blood_group =
-              bloodGroupOptions.contains(existingData['CUSTOMERS_BLOOD_GROUP'])
-                  ? existingData['CUSTOMERS_BLOOD_GROUP']
-                  : null;
-
-          contact1Controller.text =
-              existingData['CUSTOMERS_CONTACT_NO1'].toString();
-          contact2Controller.text =
-              existingData['CUSTOMERS_CONTACT_NO2']?.toString() ?? "";
-          nicController.text = existingData['CUSTOMERS_IDENTIFICATION'] ?? "";
-          occupationController.text =
-              existingData['CUSTOMERS_OCCUPATION'] ?? "";
-          homeNoController.text = existingData['CUSTOMERS_HOME_NO'] ?? "";
-          streetController.text = existingData['CUSTOMERS_STREET_NAME'] ?? "";
-          relationship = relationshipOptions
-                  .contains(existingData['CUSTOMERS_RELATIONSHIP'])
-              ? existingData['CUSTOMERS_RELATIONSHIP']
-              : null;
-        });
-
-        // Optionally, show a success message if needed
-        //_showSuccessDialog("Existing member details fetched successfully.");
-      } else {
-        //_showErrorDialog(jsonResponse['message'] ?? "Failed to fetch details.");
-      }
-    } else {
-      _showErrorDialog("Failed to fetch details. Please try again later.");
-    }
-  }
-
   void _showSuccessDialog(String message, int customerId) {
     print('Customer ID at successdialog: $customerId');
     showDialog(
@@ -897,15 +818,25 @@ class _UserDetailsFormState extends State<UserDetails> {
                   ),
                   onPressed: () {
                     Navigator.of(context).pop();
-                    // Add the new member to the list
-                    final updatedConnections =
-                        List<String>.from(widget.connections)
-                          ..add(
-                            'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
-                          );
+                    // // Add the new member to the list
+                    // final updatedConnections =
+                    //     List<String>.from(widget.connections)
+                    //       ..add(
+                    //         'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
+                    //       );
 
-                    // Navigate back to the HomeScreen with updated list
-                    Navigator.pop(context, updatedConnections);
+                    // // Navigate back to the HomeScreen with updated list
+                    // Navigator.pop(context, updatedConnections);
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HomeScreen(
+                          userName: widget.userName,
+                          phoneNo: widget.phoneNo,
+                        ),
+                      ),
+                      (route) => false,
+                    );
                   },
                   child: const Text(
                     "Ok",

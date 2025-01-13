@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_project_hayleys/dashboard.dart';
 import 'login_screen.dart';
@@ -5,6 +7,7 @@ import 'profile.dart';
 import 'approvals.dart';
 import 'primary_user_details.dart';
 import 'user_details.dart';
+import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -112,7 +115,8 @@ class HomeContent extends StatefulWidget {
 class _HomeContentState extends State<HomeContent> {
   final List<String> MyConnections = [];
 
-  List<String> Connections = [];
+  //List<String> Connections = [];
+  List<Map<String, dynamic>> connections = [];
 
   @override
   void initState() {
@@ -126,6 +130,7 @@ class _HomeContentState extends State<HomeContent> {
 
     // Print the username to the terminal
     print('Logged in user Username (home_page.dart): ${widget.userName}');
+    fetchConnections();
   }
 
   void addConnection(List<String> connectionList) {
@@ -134,6 +139,39 @@ class _HomeContentState extends State<HomeContent> {
         'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
       );
     });
+  }
+
+  Future<void> fetchConnections() async {
+    print("fetchConnections");
+    final url = Uri.parse(
+        'http://192.168.62.145/flutter_project_hayleys/php/get_connections.php?phone_no=${widget.phoneNo}');
+
+    //192.168.62.145
+    //172.16.200.79
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        print("status = 200");
+
+        print('Response body: ${response.body}');
+
+        final data = jsonDecode(response.body);
+
+        if (data['status'] == 'success') {
+          print("status = success");
+          setState(() {
+            connections = List<Map<String, dynamic>>.from(data['connections']);
+          });
+        } else {
+          print('Error: ${data['message']}');
+        }
+      } else {
+        print('Server Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching connections: $e');
+    }
   }
 
   @override
@@ -320,13 +358,12 @@ class _HomeContentState extends State<HomeContent> {
           const SizedBox(height: 20),
 
           SizedBox(
-            height: 127,
+            height: 145,
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
-                ...List.generate(
-                  Connections.length,
-                  (index) => Padding(
+                ...connections.map((connection) {
+                  return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Stack(
                       children: [
@@ -353,30 +390,39 @@ class _HomeContentState extends State<HomeContent> {
                                 width: 100,
                                 margin: const EdgeInsets.only(top: 16),
                                 child: ClipOval(
-                                  child: Image.network(
-                                    Connections[index],
+                                  child: Image.asset(
+                                    // connection['connection_image_url'] ??
+                                    //     'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
+                                    'assets/user.png',
                                     fit: BoxFit.cover,
                                   ),
                                 ),
                               ),
                               const SizedBox(height: 10),
+                              Text(
+                                '${connection['CUSTOMERS_FIRST_NAME']} ${connection['CUSTOMERS_LAST_NAME']}',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        // Edit Button Positioned at the Top-Right of each connection
+                        // Edit Button Positioned at the Top-Right
                         Positioned(
                           top: 5, // Adjust as needed
                           right: 5, // Adjust as needed
                           child: GestureDetector(
                             onTap: () {
-                              // Navigate to the UserDetails form to edit the connection
+                              // Navigate to the edit form
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => UserDetails(
                                     phoneNo: widget.phoneNo,
                                     userName: widget.userName,
-                                    connections: Connections,
                                   ),
                                 ),
                               );
@@ -397,10 +443,10 @@ class _HomeContentState extends State<HomeContent> {
                         ),
                       ],
                     ),
-                  ),
-                ),
+                  );
+                }).toList(),
 
-                // Plus Button to Add New Connection
+                // Add New Connection Button
                 GestureDetector(
                   onTap: () async {
                     final updatedConnections = await Navigator.push(
@@ -409,7 +455,7 @@ class _HomeContentState extends State<HomeContent> {
                         builder: (context) => UserDetails(
                           phoneNo: widget.phoneNo,
                           userName: widget.userName,
-                          connections: Connections, // Pass the current list
+                          // connections: Connections, // Pass the current list
                         ),
                       ),
                     );
@@ -417,7 +463,7 @@ class _HomeContentState extends State<HomeContent> {
                     if (updatedConnections != null) {
                       // Update the Connections list with the new data
                       setState(() {
-                        Connections = updatedConnections;
+                        // Connections = updatedConnections;
                       });
                     }
                   },
@@ -450,7 +496,7 @@ class _HomeContentState extends State<HomeContent> {
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
