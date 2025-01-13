@@ -553,7 +553,7 @@ class _UserDetailsFormState extends State<UserDetails> {
                               ),
                               child: const Center(
                                 child: Text(
-                                  "Add Member",
+                                  "Add and Save Member",
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
@@ -563,31 +563,31 @@ class _UserDetailsFormState extends State<UserDetails> {
                               ),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: MaterialButton(
-                              onPressed: () => _showClearFormDialog(context),
-                              height: 50,
-                              minWidth: MediaQuery.of(context).size.width * 0.4,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(50),
-                                side: BorderSide(
-                                  color: Colors.blue[800]!,
-                                  width: 2.0,
-                                ),
-                              ),
-                              child: const Center(
-                                child: Text(
-                                  "Clear Form",
-                                  style: TextStyle(
-                                    color: Color.fromARGB(255, 2, 99, 178),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                          // Padding(
+                          //   padding: const EdgeInsets.symmetric(horizontal: 10),
+                          //   child: MaterialButton(
+                          //     onPressed: () => _showClearFormDialog(context),
+                          //     height: 50,
+                          //     minWidth: MediaQuery.of(context).size.width * 0.4,
+                          //     shape: RoundedRectangleBorder(
+                          //       borderRadius: BorderRadius.circular(50),
+                          //       side: BorderSide(
+                          //         color: Colors.blue[800]!,
+                          //         width: 2.0,
+                          //       ),
+                          //     ),
+                          //     child: const Center(
+                          //       child: Text(
+                          //         "Clear Form",
+                          //         style: TextStyle(
+                          //           color: Color.fromARGB(255, 2, 99, 178),
+                          //           fontWeight: FontWeight.bold,
+                          //           fontSize: 16,
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
                         ],
                       ),
                     ),
