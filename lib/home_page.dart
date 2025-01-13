@@ -399,6 +399,7 @@ class _HomeContentState extends State<HomeContent> {
                     ),
                   ),
                 ),
+
                 // Plus Button to Add New Connection
                 GestureDetector(
                   onTap: () async {

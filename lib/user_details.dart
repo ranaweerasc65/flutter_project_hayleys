@@ -744,10 +744,12 @@ class _UserDetailsFormState extends State<UserDetails> {
             if (jsonResponse['message'] ==
                 'Member details added successfully') {
               _showSuccessDialog(
-                  'Member details added successfully\nMember ID: $customerId');
+                  'Member details added successfully\nMember ID: $customerId',
+                  customerId);
             } else {
               _showSuccessDialog(
-                  'Member updated successfully\nMember ID: $customerId');
+                  'Member updated successfully\nMember ID: $customerId',
+                  customerId);
             }
           } else {
             _showErrorDialog(
@@ -843,7 +845,8 @@ class _UserDetailsFormState extends State<UserDetails> {
     }
   }
 
-  void _showSuccessDialog(String message) {
+  void _showSuccessDialog(String message, int customerId) {
+    print('Customer ID at successdialog: $customerId');
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -1151,87 +1154,11 @@ class _UserDetailsFormState extends State<UserDetails> {
     );
   }
 
-  // Widget buildDropdownField(
-  //   String label,
-  //   String? currentValue,
-  //   List<String> options,
-  //   Function(String?) onChanged, {
-  //   Color focusedBorderColor = const Color(0xFF607D8B),
-  //   Color borderColor = const Color(0xFFCFD8DC),
-  //   Color labelColor = const Color(0xFF78909C),
-  //   Color hintColor = const Color(0xFFB0BEC5),
-  // }) {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(vertical: 10),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         // Dropdown field
-  //         GestureDetector(
-  //           onTap: () {},
-  //           child: AnimatedContainer(
-  //             duration: const Duration(milliseconds: 300),
-  //             curve: Curves.easeInOut,
-  //             decoration: BoxDecoration(
-  //               color: Colors.white,
-  //               borderRadius: BorderRadius.circular(4),
-  //               border: Border.all(
-  //                 color: borderColor,
-  //                 width: 1.0,
-  //               ),
-  //             ),
-  //             child: DropdownButtonFormField<String>(
-  //               value: currentValue,
-  //               decoration: InputDecoration(
-  //                 hintStyle: TextStyle(
-  //                   color: hintColor,
-  //                   fontWeight: FontWeight.w500,
-  //                 ),
-  //                 border: InputBorder.none,
-  //                 contentPadding: const EdgeInsets.symmetric(
-  //                   vertical: 12.0,
-  //                   horizontal: 10.0,
-  //                 ),
-  //               ),
-  //               items: options.map((String value) {
-  //                 return DropdownMenuItem<String>(
-  //                   value: value,
-  //                   child: Text(
-  //                     value,
-  //                     style: const TextStyle(
-  //                       fontSize: 16,
-  //                       fontWeight: FontWeight.normal,
-  //                       color: Colors.black,
-  //                     ),
-  //                   ),
-  //                 );
-  //               }).toList(),
-  //               onChanged: (value) {
-  //                 onChanged(value);
-  //               },
-  //               dropdownColor: const Color.fromARGB(255, 255, 255, 255),
-  //               elevation: 8,
-  //               menuMaxHeight: 500,
-  //             ),
-  //           ),
-  //         ),
-  //         const SizedBox(height: 8),
-  //         // Label
-  //         Text(
-  //           label,
-  //           style: TextStyle(fontSize: 12, color: labelColor),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   Widget buildDropdownField(
     String label,
     String? currentValue,
     List<String> options,
-    ValueChanged<String?> onChanged, {
-    Key? fieldKey,
+    Function(String?) onChanged, {
     Color focusedBorderColor = const Color(0xFF607D8B),
     Color borderColor = const Color(0xFFCFD8DC),
     Color labelColor = const Color(0xFF78909C),
@@ -1242,64 +1169,60 @@ class _UserDetailsFormState extends State<UserDetails> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Dropdown field
+          GestureDetector(
+            onTap: () {},
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(
+                  color: borderColor,
+                  width: 1.0,
+                ),
+              ),
+              child: DropdownButtonFormField<String>(
+                value: currentValue,
+                decoration: InputDecoration(
+                  hintStyle: TextStyle(
+                    color: hintColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 12.0,
+                    horizontal: 10.0,
+                  ),
+                ),
+                items: options.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(
+                      value,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.black,
+                      ),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  onChanged(value);
+                },
+                dropdownColor: const Color.fromARGB(255, 255, 255, 255),
+                elevation: 8,
+                menuMaxHeight: 500,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
           // Label
           Text(
             label,
-            style: TextStyle(fontSize: 14, color: labelColor),
-          ),
-          const SizedBox(height: 4),
-          // Dropdown field
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(
-                color: borderColor,
-                width: 1.0,
-              ),
-            ),
-            child: DropdownButtonFormField<String>(
-              key: fieldKey, // Ensures unique state for each dropdown
-              value: currentValue, // Dynamically updates with fetched values
-              decoration: InputDecoration(
-                hintStyle: TextStyle(
-                  color: hintColor,
-                  fontWeight: FontWeight.w500,
-                ),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 12.0,
-                  horizontal: 10.0,
-                ),
-              ),
-              items: options.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(
-                    value,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.black,
-                    ),
-                  ),
-                );
-              }).toList(),
-              onChanged: (value) {
-                onChanged(value);
-              },
-              dropdownColor: Colors.white,
-              elevation: 8,
-              menuMaxHeight: 500,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please select $label';
-                }
-                return null;
-              },
-            ),
+            style: TextStyle(fontSize: 12, color: labelColor),
           ),
         ],
       ),
