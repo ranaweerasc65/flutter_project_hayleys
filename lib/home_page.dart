@@ -110,9 +110,9 @@ class HomeContent extends StatefulWidget {
 }
 
 class _HomeContentState extends State<HomeContent> {
-  final List<String> firstConnections = [];
+  final List<String> MyConnections = [];
 
-  final List<String> otherConnections = [];
+  List<String> Connections = [];
 
   @override
   void initState() {
@@ -140,86 +140,89 @@ class _HomeContentState extends State<HomeContent> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Card(
-              shape: RoundedRectangleBorder(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            elevation: 4,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.blue.shade900,
+                    Colors.blue.shade800,
+                    Colors.blue.shade400,
+                  ],
+                ),
                 borderRadius: BorderRadius.circular(20),
               ),
-              elevation: 4,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.blue.shade900,
-                      Colors.blue.shade800,
-                      Colors.blue.shade400,
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Welcome!",
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 196, 222, 241),
-                              fontSize: 40,
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Welcome!",
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 196, 222, 241),
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: Text(
+                            '${getGreeting()}, ${widget.userName}',
+                            style: const TextStyle(
+                              color: Color.fromARGB(255, 223, 234, 242),
+                              fontSize: 28,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 5),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 16),
-                            child: Text(
-                              '${getGreeting()}, ${widget.userName}',
-                              style: const TextStyle(
-                                color: Color.fromARGB(255, 223, 234, 242),
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          const Text(
-                            "How is it going today?",
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Color.fromARGB(255, 199, 195, 195),
-                            ),
-                          ),
-                        ],
-                      ),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: Image.network(
-                          'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
-                          width: 200,
-                          height: 200,
-                          fit: BoxFit.cover,
                         ),
+                        const SizedBox(height: 5),
+                        const Text(
+                          "How is it going today?",
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Color.fromARGB(255, 199, 195, 195),
+                          ),
+                        ),
+                      ],
+                    ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.network(
+                        'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
+                        width: 200,
+                        height: 200,
+                        fit: BoxFit.cover,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
-            const SizedBox(height: 20),
-            // FLOW TREE CONNECTION UI SETUP - 17/12/2024
+          ),
+          const SizedBox(height: 20),
+          // FLOW TREE CONNECTION UI SETUP - 17/12/2024
 
-            const SizedBox(height: 10),
+          const SizedBox(height: 10),
 
-            GestureDetector(
+          // Employee details
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
@@ -228,260 +231,226 @@ class _HomeContentState extends State<HomeContent> {
                   ),
                 );
               },
-              child: Container(
-                width: 120, // Adjust the width as needed
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color.fromRGBO(27, 86, 225, 0.298),
-                      blurRadius: 20,
-                      offset: Offset(0, 10),
+              child: Stack(
+                children: [
+                  // Main Container
+                  Container(
+                    width: 120, // Adjust the width as needed
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color.fromRGBO(27, 86, 225, 0.298),
+                          blurRadius: 20,
+                          offset: Offset(0, 10),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Profile Picture
-                    Container(
-                      height: 100,
-                      width: 100,
-                      margin: const EdgeInsets.only(top: 16),
-                      child: ClipOval(
-                        child: Image.network(
-                          'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
-                          fit: BoxFit.cover,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Profile Picture
+                        Container(
+                          height: 100,
+                          width: 100,
+                          margin: const EdgeInsets.only(top: 16),
+                          child: ClipOval(
+                            child: Image.network(
+                              'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                      ],
+                    ),
+                  ),
+                  // Edit Button Positioned at the Top-Right
+                  Positioned(
+                    top: 5, // Adjust as needed
+                    right: 5, // Adjust as needed
+                    child: GestureDetector(
+                      onTap: () {
+                        // Navigate to UserDetails form to edit the connection
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PrimaryUserDetails(
+                              phoneNo: widget.phoneNo,
+                              userName: widget.userName,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.7),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.edit,
+                          size: 20,
+                          color: Color.fromARGB(255, 243, 33, 89),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    // Buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PrimaryUserDetails(
-                                    // phoneNo: '',
-                                    // userName: '',
+                  ),
+                ],
+              ),
+            ),
+          ),
 
-                                    phoneNo: widget.phoneNo,
-                                    userName: widget.userName),
+          const SizedBox(height: 20),
+
+          // connections
+
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: const Text(
+              "My Connections",
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          SizedBox(
+            height: 127,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                ...List.generate(
+                  Connections.length,
+                  (index) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Stack(
+                      children: [
+                        // Main Container
+                        Container(
+                          width: 120,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color.fromRGBO(27, 86, 225, 0.298),
+                                blurRadius: 20,
+                                offset: Offset(0, 10),
                               ),
-                            );
-                          },
-                          icon: const Icon(
-                            Icons.edit,
-                            color: Colors.black,
+                            ],
                           ),
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Profile Picture
+                              Container(
+                                height: 100,
+                                width: 100,
+                                margin: const EdgeInsets.only(top: 16),
+                                child: ClipOval(
+                                  child: Image.network(
+                                    Connections[index],
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                            ],
+                          ),
+                        ),
+                        // Edit Button Positioned at the Top-Right of each connection
+                        Positioned(
+                          top: 5, // Adjust as needed
+                          right: 5, // Adjust as needed
+                          child: GestureDetector(
+                            onTap: () {
+                              // Navigate to the UserDetails form to edit the connection
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => UserDetails(
+                                    phoneNo: widget.phoneNo,
+                                    userName: widget.userName,
+                                    connections: Connections,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.7),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.edit,
+                                size: 20,
+                                color: Color.fromARGB(255, 243, 33, 89),
+                              ),
                             ),
-                            side: const BorderSide(color: Colors.black),
                           ),
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // "Connections"
-
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: const Text(
-                "My Connections",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 10),
-
-            SizedBox(
-              height: 100,
-              child: Center(
-                child: ListView(scrollDirection: Axis.horizontal, children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ...List.generate(
-                        firstConnections.length,
-                        (index) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Container(
-                            width: 100,
-                            height: 100,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: Colors.grey.shade300,
-                                width: 2,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 5),
-                                ),
-                              ],
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: Image.network(
-                                firstConnections[index],
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      // 17/12/2024 MODIFIED WITH THE PLUS BUTTON
-                      // 24/12/2024 COMMENT ======== TO APPEAR THE USER DETAILS FORM
-                      //                             NEED TO IMPLEMENT THE MAN IMAGE APPEAR WHEN SUBMIT THE USER DETAILS FORM
-
-                      // GestureDetector(
-                      //   onTap: () => addConnection(firstConnections),
-                      //   child: Container(
-                      //     width: 100,
-                      //     height: 100,
-                      //     margin: const EdgeInsets.symmetric(horizontal: 10),
-                      //     decoration: BoxDecoration(
-                      //       color: Colors.grey.shade300,
-                      //       borderRadius: BorderRadius.circular(20),
-                      //     ),
-                      //     child:
-                      //         const Icon(Icons.add, size: 50, color: Colors.blue),
-                      //   ),
-                      // ),
-
-                      // 24/12/2024 WHEN PRESSING THE PLUS BUTTON APPEARS THE USER DETAILS FORM
-                      //            BUT DO NOT APPEAR THE MAN IMAGE FOR THAT
-
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              //builder: (context) => const UserDetails(),
-                              builder: (context) => UserDetails(
-                                  phoneNo: widget.phoneNo,
-                                  userName: widget.userName),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          width: 100,
-                          height: 100,
-                          margin: const EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: const Icon(Icons.add,
-                              size: 50, color: Colors.blue),
-                        ),
-                      ),
-                    ],
                   ),
-                ]),
-              ),
+                ),
+                // Plus Button to Add New Connection
+                GestureDetector(
+                  onTap: () async {
+                    final updatedConnections = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UserDetails(
+                          phoneNo: widget.phoneNo,
+                          userName: widget.userName,
+                          connections: Connections, // Pass the current list
+                        ),
+                      ),
+                    );
+
+                    if (updatedConnections != null) {
+                      // Update the Connections list with the new data
+                      setState(() {
+                        Connections = updatedConnections;
+                      });
+                    }
+                  },
+                  child: Container(
+                    width: 120,
+                    height: 120,
+                    margin: const EdgeInsets.symmetric(horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 255, 255, 255),
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color.fromRGBO(27, 86, 225, 0.298),
+                          blurRadius: 20,
+                          offset: Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add,
+                          size: 50,
+                          color: Colors.orange,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-
-            const SizedBox(height: 20),
-
-            // Display "Other Connections"
-
-            // Container(
-            //   padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            //   child: const Text(
-            //     "My Other Connections",
-            //     style: TextStyle(
-            //       fontSize: 22,
-            //       fontWeight: FontWeight.bold,
-            //     ),
-            //   ),
-            // ),
-
-            const SizedBox(height: 10),
-
-            // 17/12/2024 MODIFIED WITH THE PLUS BUTTON
-
-            // SizedBox(
-            //   height: 100,
-            //   child: ListView(
-            //     scrollDirection: Axis.horizontal,
-            //     children: [
-            //       ...List.generate(
-            //         otherConnections.length,
-            //         (index) => Padding(
-            //           padding: const EdgeInsets.symmetric(horizontal: 10),
-            //           child: Container(
-            //             width: 100,
-            //             height: 100,
-            //             decoration: BoxDecoration(
-            //               color: Colors.white,
-            //               borderRadius: BorderRadius.circular(20),
-            //               border: Border.all(
-            //                 color: Colors.grey.shade300,
-            //                 width: 2,
-            //               ),
-            //               boxShadow: [
-            //                 BoxShadow(
-            //                   color: Colors.black.withOpacity(0.1),
-            //                   blurRadius: 10,
-            //                   offset: const Offset(0, 5),
-            //                 ),
-            //               ],
-            //             ),
-            //             child: ClipRRect(
-            //               borderRadius: BorderRadius.circular(20),
-            //               child: Image.network(
-            //                 otherConnections[index],
-            //                 fit: BoxFit.cover,
-            //               ),
-            //             ),
-            //           ),
-            //         ),
-            //       ),
-
-            //       // plus button to add new connections
-            //       GestureDetector(
-            //         onTap: () => addConnection(otherConnections),
-            //         child: Container(
-            //           width: 100,
-            //           height: 100,
-            //           margin: const EdgeInsets.symmetric(horizontal: 10),
-            //           decoration: BoxDecoration(
-            //             color: Colors.grey.shade300,
-            //             borderRadius: BorderRadius.circular(20),
-            //           ),
-            //           child:
-            //               const Icon(Icons.add, size: 50, color: Colors.blue),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-          ],
-        ),
+          )
+        ],
       ),
     );
   }

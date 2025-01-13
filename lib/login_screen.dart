@@ -30,7 +30,10 @@ class InitState extends State<LoginScreen> {
     }
 
     final response = await http.post(
-      Uri.parse('http://172.16.200.79/flutter_project_hayleys/php/login.php'),
+      Uri.parse('http://192.168.62.145/flutter_project_hayleys/php/login.php'),
+      //172.16.200.79
+      //192.168.62.145
+      //192.168.5.201
       body: {
         'phone_no': phoneNo,
         'password': password,

@@ -13,11 +13,17 @@ class UserDetails extends StatefulWidget {
   // To accept the phone number - 03/01/2024
   final String phoneNo;
   final String userName;
+  final List<String> connections;
 
   //const UserDetails({super.key});
 
   // Modify constructor - 03/01/2024
-  const UserDetails({super.key, required this.phoneNo, required this.userName});
+  const UserDetails({
+    Key? key,
+    required this.phoneNo,
+    required this.userName,
+    required this.connections,
+  }) : super(key: key);
 
   @override
   State<UserDetails> createState() => _UserDetailsFormState();
@@ -45,6 +51,82 @@ class _UserDetailsFormState extends State<UserDetails> {
 
   String? phoneNo;
 
+  List<String> genderOptions = ['Male', 'Female', 'Not prefered to say'];
+
+  List<String> districtOptions = [
+    "Ampara",
+    "Anuradhapura",
+    "Badulla",
+    "Batticaloa",
+    "Colombo",
+    "Galle",
+    "Gampaha",
+    "Hambantota",
+    "Jaffna",
+    "Kalutara",
+    "Kandy",
+    "Kegalle",
+    "Kilinochchi",
+    "Kurunegala",
+    "Mannar",
+    "Matale",
+    "Matara",
+    "Monaragala",
+    "Mullaitivu",
+    "Nuwara Eliya",
+    "Polonnaruwa",
+    "Puttalam",
+    "Ratnapura",
+    "Trincomalee",
+    "Vavuniya"
+  ];
+
+  List<String> provinceOptions = [
+    "Central",
+    "Eastern",
+    "Northern",
+    "North Central",
+    "North Western",
+    "Sabaragamuwa",
+    "Southern",
+    "Uva",
+    "Western"
+  ];
+
+  List<String> bloodGroupOptions = [
+    "A+",
+    "A-",
+    "B+",
+    "B-",
+    "AB+",
+    "AB-",
+    "O+",
+    "O-"
+  ];
+  List<String> relationshipOptions = [
+    'Mother',
+    'Father',
+    'Spouse',
+    'Sister',
+    'Brother',
+    'Daughter',
+    'Son',
+
+    // Second Connections
+    'Grandmother',
+    'Grandfather',
+    'Aunt',
+    'Uncle',
+    'Niece',
+    'Nephew',
+    'Cousin',
+
+    // Others
+
+    'Guardian',
+    'Other',
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -55,6 +137,8 @@ class _UserDetailsFormState extends State<UserDetails> {
     print('Logged in user phone number (user_details.dart): ${widget.phoneNo}');
 
     print('Logged in user Username (user_details.dart): ${widget.userName}');
+
+    _fetchExistingDetails();
   }
 
   Future<void> _refreshForm() async {
@@ -268,15 +352,15 @@ class _UserDetailsFormState extends State<UserDetails> {
                             "Province",
                             province,
                             [
-                              'Central ',
-                              'Eastern ',
-                              'North Central ',
-                              'Northern ',
-                              'North Western ',
-                              'Sabaragamuwa ',
-                              'Southern ',
-                              'Uva ',
-                              'Western ',
+                              'Central',
+                              'Eastern',
+                              'North Central',
+                              'Northern',
+                              'North Western',
+                              'Sabaragamuwa',
+                              'Southern',
+                              'Uva',
+                              'Western',
                             ],
                             (value) => province = value,
                           ),
@@ -583,6 +667,9 @@ class _UserDetailsFormState extends State<UserDetails> {
   }
 
   Future<void> _addMember() async {
+    print('user_details.dart');
+    print(' _addMember function');
+
 // Mandatory fields to check
     final mandatoryFields = {
       "First Name": firstnameController.text,
@@ -636,7 +723,8 @@ class _UserDetailsFormState extends State<UserDetails> {
       try {
         final response = await http.post(
           Uri.parse(
-              "http://172.16.200.79/flutter_project_hayleys/php/user_details.php"),
+              "http://192.168.62.145/flutter_project_hayleys/php/user_details.php"),
+          //172.16.200.79
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
           },
@@ -649,29 +737,22 @@ class _UserDetailsFormState extends State<UserDetails> {
         if (response.statusCode == 200) {
           final jsonResponse = jsonDecode(response.body);
           if (jsonResponse['status'] == 'success') {
-            // Show success dialog
-            _showSuccessDialog();
+            final customerId =
+                jsonResponse['customer_id']; // Extract customer_id
+            print('Customer ID: $customerId');
 
-            // Navigate back to the home screen with the new member's details
-            final newMember = {
-              "name": "${firstnameController.text} ${lastnameController.text}",
-              "image":
-                  "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png", // Example placeholder
-            };
-
-            Navigator.pop(context, newMember);
+            if (jsonResponse['message'] ==
+                'Member details added successfully') {
+              _showSuccessDialog(
+                  'Member details added successfully\nMember ID: $customerId');
+            } else {
+              _showSuccessDialog(
+                  'Member updated successfully\nMember ID: $customerId');
+            }
           } else {
-            // ScaffoldMessenger.of(context).showSnackBar(
-            //   SnackBar(content: Text("Error: ${jsonResponse['message']}")),
-            // );
             _showErrorDialog(
                 jsonResponse['message'] ?? "An unknown error occurred.");
           }
-        } else {
-          // ScaffoldMessenger.of(context).showSnackBar(
-          //   const SnackBar(content: Text("Error: Unable to submit form.")),
-          // );
-          _showErrorDialog("Unable to submit the form. Please try again.");
         }
       } catch (e) {
         // ScaffoldMessenger.of(context).showSnackBar(
@@ -683,84 +764,157 @@ class _UserDetailsFormState extends State<UserDetails> {
     }
   }
 
-  void _showSuccessDialog() {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF00C853), // Green color
-                      shape: BoxShape.circle,
-                    ),
-                    padding: const EdgeInsets.all(16),
-                    child: const Icon(
-                      Icons.check_circle,
-                      size: 60,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    "Success!!!",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF00C853), // Green color
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    "Member Added Successfully!",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.black),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF00C853),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      // Navigate to the HomeScreen
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HomeScreen(
-                            userName: widget.userName,
-                            phoneNo: widget.phoneNo,
-                          ),
-                        ),
-                        (route) => false,
-                      );
-                    },
-                    child: const Text(
-                      "Ok",
-                      style: TextStyle(fontSize: 16, color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
+  Future<void> _fetchExistingDetails() async {
+    print('come to _fetchExistingDetails');
 
-          // ScaffoldMessenger.of(context).showSnackBar(
-          //   const SnackBar(content: Text("Form Submitted Successfully!")),
-          // );
-          // print("User Details: $userDetails");
+    // Prepare the URL with query parameter
+    final url = Uri.parse(
+        "http://192.168.62.145/flutter_project_hayleys/php/fetch_user_details.php?phone_no=${widget.phoneNo}");
+    //192.168.62.145
+    //172.16.200.79
+
+    // Send the GET request
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      print('Response body _fetchExistingDetails: ${response.body}');
+
+      final jsonResponse = jsonDecode(response.body);
+      if (jsonResponse['status'] == 'success') {
+        // Parse the existing data and populate the form fields
+        var existingData = jsonResponse['existing_data'];
+
+        setState(() {
+          firstnameController.text = existingData['CUSTOMERS_FIRST_NAME'];
+          lastnameController.text = existingData['CUSTOMERS_LAST_NAME'];
+          dobController.text = existingData['CUSTOMERS_DOB'];
+          cityController.text = existingData['CUSTOMERS_CITY'];
+
+          district =
+              districtOptions.contains(existingData['CUSTOMERS_DISTRICT'])
+                  ? existingData['CUSTOMERS_DISTRICT']
+                  : null;
+          // province = existingData['CUSTOMERS_PROVINCE']?.trim();
+          // print('Province from response: $province');
+
+          // print(
+          //     'Fetched CUSTOMERS_PROVINCE: ${existingData['CUSTOMERS_PROVINCE']}');
+
+          // print('Province Options: $provinceOptions');
+
+          // print(
+          //     'Province match: ${provinceOptions.contains(existingData['CUSTOMERS_PROVINCE'])}');
+
+          province = provinceOptions
+                  .contains(existingData['CUSTOMERS_PROVINCE']?.trim())
+              ? existingData['CUSTOMERS_PROVINCE']?.trim()
+              : null;
+
+          gender = genderOptions.contains(existingData['CUSTOMERS_GENDER'])
+              ? existingData['CUSTOMERS_GENDER']
+              : null;
+          customers_blood_group =
+              bloodGroupOptions.contains(existingData['CUSTOMERS_BLOOD_GROUP'])
+                  ? existingData['CUSTOMERS_BLOOD_GROUP']
+                  : null;
+
+          contact1Controller.text =
+              existingData['CUSTOMERS_CONTACT_NO1'].toString();
+          contact2Controller.text =
+              existingData['CUSTOMERS_CONTACT_NO2']?.toString() ?? "";
+          nicController.text = existingData['CUSTOMERS_IDENTIFICATION'] ?? "";
+          occupationController.text =
+              existingData['CUSTOMERS_OCCUPATION'] ?? "";
+          homeNoController.text = existingData['CUSTOMERS_HOME_NO'] ?? "";
+          streetController.text = existingData['CUSTOMERS_STREET_NAME'] ?? "";
+          relationship = relationshipOptions
+                  .contains(existingData['CUSTOMERS_RELATIONSHIP'])
+              ? existingData['CUSTOMERS_RELATIONSHIP']
+              : null;
         });
+
+        // Optionally, show a success message if needed
+        //_showSuccessDialog("Existing member details fetched successfully.");
+      } else {
+        //_showErrorDialog(jsonResponse['message'] ?? "Failed to fetch details.");
+      }
+    } else {
+      _showErrorDialog("Failed to fetch details. Please try again later.");
+    }
+  }
+
+  void _showSuccessDialog(String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF00C853), // Green color
+                    shape: BoxShape.circle,
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: const Icon(
+                    Icons.check_circle,
+                    size: 60,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  "Success!!!",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF00C853), // Green color
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 16, color: Colors.black),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF00C853),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    // Add the new member to the list
+                    final updatedConnections =
+                        List<String>.from(widget.connections)
+                          ..add(
+                            'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
+                          );
+
+                    // Navigate back to the HomeScreen with updated list
+                    Navigator.pop(context, updatedConnections);
+                  },
+                  child: const Text(
+                    "Ok",
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _showClearFormDialog(BuildContext context) {
@@ -997,11 +1151,87 @@ class _UserDetailsFormState extends State<UserDetails> {
     );
   }
 
+  // Widget buildDropdownField(
+  //   String label,
+  //   String? currentValue,
+  //   List<String> options,
+  //   Function(String?) onChanged, {
+  //   Color focusedBorderColor = const Color(0xFF607D8B),
+  //   Color borderColor = const Color(0xFFCFD8DC),
+  //   Color labelColor = const Color(0xFF78909C),
+  //   Color hintColor = const Color(0xFFB0BEC5),
+  // }) {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(vertical: 10),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         // Dropdown field
+  //         GestureDetector(
+  //           onTap: () {},
+  //           child: AnimatedContainer(
+  //             duration: const Duration(milliseconds: 300),
+  //             curve: Curves.easeInOut,
+  //             decoration: BoxDecoration(
+  //               color: Colors.white,
+  //               borderRadius: BorderRadius.circular(4),
+  //               border: Border.all(
+  //                 color: borderColor,
+  //                 width: 1.0,
+  //               ),
+  //             ),
+  //             child: DropdownButtonFormField<String>(
+  //               value: currentValue,
+  //               decoration: InputDecoration(
+  //                 hintStyle: TextStyle(
+  //                   color: hintColor,
+  //                   fontWeight: FontWeight.w500,
+  //                 ),
+  //                 border: InputBorder.none,
+  //                 contentPadding: const EdgeInsets.symmetric(
+  //                   vertical: 12.0,
+  //                   horizontal: 10.0,
+  //                 ),
+  //               ),
+  //               items: options.map((String value) {
+  //                 return DropdownMenuItem<String>(
+  //                   value: value,
+  //                   child: Text(
+  //                     value,
+  //                     style: const TextStyle(
+  //                       fontSize: 16,
+  //                       fontWeight: FontWeight.normal,
+  //                       color: Colors.black,
+  //                     ),
+  //                   ),
+  //                 );
+  //               }).toList(),
+  //               onChanged: (value) {
+  //                 onChanged(value);
+  //               },
+  //               dropdownColor: const Color.fromARGB(255, 255, 255, 255),
+  //               elevation: 8,
+  //               menuMaxHeight: 500,
+  //             ),
+  //           ),
+  //         ),
+  //         const SizedBox(height: 8),
+  //         // Label
+  //         Text(
+  //           label,
+  //           style: TextStyle(fontSize: 12, color: labelColor),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
   Widget buildDropdownField(
     String label,
     String? currentValue,
     List<String> options,
-    Function(String?) onChanged, {
+    ValueChanged<String?> onChanged, {
+    Key? fieldKey,
     Color focusedBorderColor = const Color(0xFF607D8B),
     Color borderColor = const Color(0xFFCFD8DC),
     Color labelColor = const Color(0xFF78909C),
@@ -1012,60 +1242,64 @@ class _UserDetailsFormState extends State<UserDetails> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Dropdown field
-          GestureDetector(
-            onTap: () {},
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(
-                  color: borderColor,
-                  width: 1.0,
-                ),
-              ),
-              child: DropdownButtonFormField<String>(
-                value: currentValue,
-                decoration: InputDecoration(
-                  hintStyle: TextStyle(
-                    color: hintColor,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 12.0,
-                    horizontal: 10.0,
-                  ),
-                ),
-                items: options.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(
-                      value,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.black,
-                      ),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  onChanged(value);
-                },
-                dropdownColor: const Color.fromARGB(255, 255, 255, 255),
-                elevation: 8,
-                menuMaxHeight: 500,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
           // Label
           Text(
             label,
-            style: TextStyle(fontSize: 12, color: labelColor),
+            style: TextStyle(fontSize: 14, color: labelColor),
+          ),
+          const SizedBox(height: 4),
+          // Dropdown field
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(
+                color: borderColor,
+                width: 1.0,
+              ),
+            ),
+            child: DropdownButtonFormField<String>(
+              key: fieldKey, // Ensures unique state for each dropdown
+              value: currentValue, // Dynamically updates with fetched values
+              decoration: InputDecoration(
+                hintStyle: TextStyle(
+                  color: hintColor,
+                  fontWeight: FontWeight.w500,
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 12.0,
+                  horizontal: 10.0,
+                ),
+              ),
+              items: options.map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(
+                    value,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.black,
+                    ),
+                  ),
+                );
+              }).toList(),
+              onChanged: (value) {
+                onChanged(value);
+              },
+              dropdownColor: Colors.white,
+              elevation: 8,
+              menuMaxHeight: 500,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please select $label';
+                }
+                return null;
+              },
+            ),
           ),
         ],
       ),

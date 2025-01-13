@@ -164,7 +164,6 @@ if ($result_check->num_rows > 0) {
 }
 
 
-
 // Close the connection
 $conn_hayleys_medicalapp->close();
 ?>
