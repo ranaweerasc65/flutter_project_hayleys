@@ -138,7 +138,7 @@ class _UserDetailsFormState extends State<UserDetails> {
 
     print('Logged in user Username (user_details.dart): ${widget.userName}');
 
-    _fetchExistingDetails();
+    //_fetchExistingDetails();
   }
 
   Future<void> _refreshForm() async {
@@ -536,8 +536,8 @@ class _UserDetailsFormState extends State<UserDetails> {
                       (value) => relationship = value,
                     ),
                     const SizedBox(height: 20),
-                    FadeInUp(
-                      duration: const Duration(milliseconds: 1600),
+                    Container(
+                      //duration: const Duration(milliseconds: 1600),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
