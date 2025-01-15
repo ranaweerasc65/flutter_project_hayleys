@@ -65,6 +65,7 @@ $customers_relationship = isset($_POST['customers_relationship']) && !empty($_PO
 // Always set "ME" as the relationship value
 $customers_relationship = "ME";
 
+
 // Optional fields
 $customers_home_no = isset($_POST['customers_home_no']) && !empty($_POST['customers_home_no']) 
     ? mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_home_no']) 

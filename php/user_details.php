@@ -17,10 +17,10 @@ $missingFields = [];
 
 // Check if required fields are provided
 $requiredFields = [
-    'phone_no', 'customers_first_name','customers_last_name', 'customers_dob', 'customers_city', 
+    'phone_no', 'customers_first_name', 'customers_last_name', 'customers_dob', 'customers_city', 
     'customers_district', 'customers_province', 'customers_identification', 
     'customers_gender', 'customers_blood_group', 'customers_contact_no1', 
-     'customers_occupation', 'customers_relationship'
+    'customers_occupation', 'customers_relationship'
 ];
 
 foreach ($requiredFields as $field) {
@@ -35,6 +35,7 @@ if (!empty($missingFields)) {
 }
 
 // Get POST data from the Flutter app
+
 $phone_no = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['phone_no']);
 $customers_first_name = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_first_name']);
 $customers_last_name = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_last_name']);
@@ -70,48 +71,99 @@ $customers_contact_no2 = isset($_POST['customers_contact_no2']) && !empty($_POST
     ? mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_contact_no2']) 
     : null;
 
-// Use prepared statements to prevent SQL injection
-$sql = "INSERT INTO customers (phone_no, customers_first_name, customers_last_name, customers_dob, customers_home_no, customers_street_name, customers_city, customers_district, customers_province, customers_identification, customers_gender, customers_blood_group, customers_contact_no1, customers_contact_no2, customers_occupation, customers_relationship) 
-        VALUES (?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-$stmt = $conn_hayleys_medicalapp->prepare($sql);
+// Get the customer_id (required for update)
+$customer_id = isset($_POST['customer_id']) ? intval($_POST['customer_id']) : null;
 
-// Check if the prepared statement was successful
-if ($stmt === false) {
-    echo json_encode(array("status" => "error", "message" => "Error preparing SQL statement: " . $conn_hayleys_medicalapp->error));
-    exit();
-}
+if ($customer_id) {
+    // UPDATE query if customer_id is provided
+    $sql = "UPDATE customers SET 
+            phone_no = ?, customers_first_name = ?, customers_last_name = ?, customers_dob = ?, 
+            customers_home_no = ?, customers_street_name = ?, customers_city = ?, customers_district = ?, 
+            customers_province = ?, customers_identification = ?, customers_gender = ?, customers_blood_group = ?, 
+            customers_contact_no1 = ?, customers_contact_no2 = ?, customers_occupation = ?, customers_relationship = ? 
+            WHERE CUSTOMERS_ID = ?";
 
-// Bind the parameters to the prepared statement
-$stmt->bind_param(
-    "ssssssssssssssss",
-    $phone_no,
-    $customers_first_name,
-    $customers_last_name,
-    $customers_dob,
-    $customers_home_no,// Optional: can be NULL
-    $customers_street_name,// Optional: can be NULL
-    $customers_city,
-    $customers_district,
-    $customers_province,
-    $customers_identification,
-    $customers_gender,
-    $customers_blood_group,
-    $customers_contact_no1,
-    $customers_contact_no2,// Optional: can be NULL
-    $customers_occupation,
-    $customers_relationship
-);
+    $stmt = $conn_hayleys_medicalapp->prepare($sql);
 
-// Execute the query and check for success
-if ($stmt->execute()) {
-    $customer_id = $conn_hayleys_medicalapp->insert_id; // Get the last inserted customer ID
-    echo json_encode(array(
-        "status" => "success", 
-        "message" => "Member details added successfully", 
-        "customer_id" => $customer_id // Pass the customer ID in the response
-    ));
+    // Check if the prepared statement was successful
+    if ($stmt === false) {
+        echo json_encode(array("status" => "error", "message" => "Error preparing SQL statement: " . $conn_hayleys_medicalapp->error));
+        exit();
+    }
+
+    // Bind the parameters to the prepared statement
+    $stmt->bind_param(
+        "sssssssssssssssss",
+        $phone_no,
+        $customers_first_name,
+        $customers_last_name,
+        $customers_dob,
+        $customers_home_no, // Optional: can be NULL
+        $customers_street_name, // Optional: can be NULL
+        $customers_city,
+        $customers_district,
+        $customers_province,
+        $customers_identification,
+        $customers_gender,
+        $customers_blood_group,
+        $customers_contact_no1,
+        $customers_contact_no2, // Optional: can be NULL
+        $customers_occupation,
+        $customers_relationship,
+        $customer_id // This is the ID of the customer we are updating
+    );
+
+    // Execute the query and check for success
+    if ($stmt->execute()) {
+        echo json_encode(array("status" => "success", "message" => "Customer details updated successfully"));
+    } else {
+        echo json_encode(array("status" => "error", "message" => "Failed to update user details: " . $stmt->error));
+    }
 } else {
-    echo json_encode(array("status" => "error", "message" => "Failed to insert user details: " . $stmt->error));
+    // If customer_id is not provided, insert a new record
+    $sql = "INSERT INTO customers (phone_no, customers_first_name, customers_last_name, customers_dob, customers_home_no, customers_street_name, customers_city, customers_district, customers_province, customers_identification, customers_gender, customers_blood_group, customers_contact_no1, customers_contact_no2, customers_occupation, customers_relationship) 
+            VALUES (?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    $stmt = $conn_hayleys_medicalapp->prepare($sql);
+
+    // Check if the prepared statement was successful
+    if ($stmt === false) {
+        echo json_encode(array("status" => "error", "message" => "Error preparing SQL statement: " . $conn_hayleys_medicalapp->error));
+        exit();
+    }
+
+    // Bind the parameters to the prepared statement
+    $stmt->bind_param(
+        "ssssssssssssssss",
+        $phone_no,
+        $customers_first_name,
+        $customers_last_name,
+        $customers_dob,
+        $customers_home_no,// Optional: can be NULL
+        $customers_street_name,// Optional: can be NULL
+        $customers_city,
+        $customers_district,
+        $customers_province,
+        $customers_identification,
+        $customers_gender,
+        $customers_blood_group,
+        $customers_contact_no1,
+        $customers_contact_no2,// Optional: can be NULL
+        $customers_occupation,
+        $customers_relationship
+    );
+
+    // Execute the query and check for success
+    if ($stmt->execute()) {
+        $customer_id = $conn_hayleys_medicalapp->insert_id; // Get the last inserted customer ID
+        echo json_encode(array(
+            "status" => "success", 
+            "message" => "Member details added successfully", 
+            "customer_id" => $customer_id // Pass the customer ID in the response
+        ));
+    } else {
+        echo json_encode(array("status" => "error", "message" => "Failed to insert user details: " . $stmt->error));
+    }
 }
 
 // Close the statement and connection

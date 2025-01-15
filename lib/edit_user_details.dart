@@ -1,30 +1,26 @@
-// ADD THE DETAILS OF THE USER FOR THE OTHER MEMBERS TO THE SYSTEM
-
 import 'package:flutter_project_hayleys/home_page.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
-
-// 31/12/2024 CONNECT WITH THE USER_DETAILS.PHP CODE
 import 'package:http/http.dart' as http;
 
-class UserDetails extends StatefulWidget {
-  // To accept the phone number - 03/01/2024
+class EditUserDetails extends StatefulWidget {
+  final int customerId;
   final String phoneNo;
   final String userName;
 
-  const UserDetails({
-    Key? key,
+  const EditUserDetails({
+    required this.customerId,
     required this.phoneNo,
     required this.userName,
-  }) : super(key: key);
+  });
 
   @override
-  State<UserDetails> createState() => _UserDetailsFormState();
+  _EditUserDetailsState createState() => _EditUserDetailsState();
 }
 
-class _UserDetailsFormState extends State<UserDetails> {
+class _EditUserDetailsState extends State<EditUserDetails> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController firstnameController = TextEditingController();
@@ -126,14 +122,85 @@ class _UserDetailsFormState extends State<UserDetails> {
   void initState() {
     super.initState();
 
-    print('user_details.dart');
+    print('edit_user_details.dart');
 
     // Print phone number to the terminal - 03/01/2024
-    print('Logged in user phone number (user_details.dart): ${widget.phoneNo}');
+    print('edit_Logged in user phone number : ${widget.phoneNo}');
 
-    print('Logged in user Username (user_details.dart): ${widget.userName}');
+    print('edit_Logged in user Username : ${widget.userName}');
 
-    //_fetchExistingDetails();
+    print('edit_Logged in user customer ID : ${widget.customerId} ');
+
+    _fetchExistingDetails();
+  }
+
+  Future<void> _fetchExistingDetails() async {
+    print('come to _fetchExistingDetails');
+    print('Customer ID : ${widget.customerId} ');
+
+    // Corrected URL with '&' for multiple query parameters
+    final url = Uri.parse(
+        "http://172.16.200.79/flutter_project_hayleys/php/fetch_user_details.php?phone_no=${widget.phoneNo}&CUSTOMERS_ID=${widget.customerId}");
+
+    // Send the GET request
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      print('Response body _fetchExistingDetails: ${response.body}');
+
+      final jsonResponse = jsonDecode(response.body);
+      if (jsonResponse['status'] == 'success') {
+        // Parse the existing data and populate the form fields
+        var existingData = jsonResponse['customer_data'];
+
+        setState(() {
+          firstnameController.text = existingData['CUSTOMERS_FIRST_NAME'];
+          lastnameController.text = existingData['CUSTOMERS_LAST_NAME'];
+          dobController.text = existingData['CUSTOMERS_DOB'];
+          cityController.text = existingData['CUSTOMERS_CITY'];
+
+          district =
+              districtOptions.contains(existingData['CUSTOMERS_DISTRICT'])
+                  ? existingData['CUSTOMERS_DISTRICT']
+                  : null;
+
+          province = provinceOptions
+                  .contains(existingData['CUSTOMERS_PROVINCE']?.trim())
+              ? existingData['CUSTOMERS_PROVINCE']?.trim()
+              : null;
+
+          gender = genderOptions.contains(existingData['CUSTOMERS_GENDER'])
+              ? existingData['CUSTOMERS_GENDER']
+              : null;
+          customers_blood_group =
+              bloodGroupOptions.contains(existingData['CUSTOMERS_BLOOD_GROUP'])
+                  ? existingData['CUSTOMERS_BLOOD_GROUP']
+                  : null;
+
+          relationship = relationshipOptions
+                  .contains(existingData['CUSTOMERS_RELATIONSHIP'])
+              ? existingData['CUSTOMERS_RELATIONSHIP']
+              : null;
+
+          contact1Controller.text =
+              existingData['CUSTOMERS_CONTACT_NO1'].toString();
+          contact2Controller.text =
+              existingData['CUSTOMERS_CONTACT_NO2']?.toString() ?? "";
+          nicController.text = existingData['CUSTOMERS_IDENTIFICATION'] ?? "";
+          occupationController.text =
+              existingData['CUSTOMERS_OCCUPATION'] ?? "";
+          homeNoController.text = existingData['CUSTOMERS_HOME_NO'] ?? "";
+          streetController.text = existingData['CUSTOMERS_STREET_NAME'] ?? "";
+        });
+
+        // Optionally, show a success message if needed
+        //_showSuccessDialog("Existing member details fetched successfully.");
+      } else {
+        //_showErrorDialog(jsonResponse['message'] ?? "Failed to fetch details.");
+      }
+    } else {
+      _showErrorDialog("Failed to fetch details. Please try again later.");
+    }
   }
 
   Future<void> _refreshForm() async {
@@ -157,12 +224,108 @@ class _UserDetailsFormState extends State<UserDetails> {
     await Future.delayed(const Duration(seconds: 1));
   }
 
+  // Function to save the updated details
+  Future<void> _saveDetails() async {
+    print(' _saveDetails function');
+
+// Mandatory fields to check
+    final mandatoryFields = {
+      "First Name": firstnameController.text,
+      "Last Name": lastnameController.text,
+      "Date of Birth": dobController.text,
+      "City": cityController.text,
+      "District": district,
+      "Province": province,
+      "Gender": gender,
+      "Contact Number 1": contact1Controller.text,
+      "Relationship": relationship,
+    };
+
+    // Check if any mandatory field is missing
+    final missingFields = mandatoryFields.entries
+        .where((entry) =>
+            entry.value == null || entry.value.toString().trim().isEmpty)
+        .map((entry) => entry.key)
+        .toList();
+
+    if (missingFields.isNotEmpty) {
+      // Show error message for missing mandatory fields
+      _showErrorDialog(
+          "Please fill all the mandatory fields before submitting.");
+      return;
+    }
+
+    if (_formKey.currentState!.validate()) {
+      final userDetails = {
+        "customer_id": widget.customerId.toString(),
+        "phone_no": widget.phoneNo,
+        "customers_first_name": firstnameController.text,
+        "customers_last_name": lastnameController.text,
+        "customers_home_no": homeNoController.text,
+        "customers_street_name": streetController.text,
+        "customers_city": cityController.text,
+        "customers_identification": nicController.text,
+        "customers_dob": dobController.text,
+        "customers_blood_group": customers_blood_group ?? "",
+        "customers_gender": gender,
+        "customers_contact_no1": contact1Controller.text,
+        "customers_contact_no2": contact2Controller.text,
+        "customers_district": district,
+        "customers_province": province,
+        "customers_occupation": occupationController.text,
+        "customers_relationship": relationship,
+      };
+
+      // Print the user-entered details to the terminal for debugging
+      print('User Details: $userDetails');
+
+      try {
+        final response = await http.post(
+          Uri.parse(
+              "http://172.16.200.79/flutter_project_hayleys/php/user_details.php"),
+          //172.16.200.79
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: userDetails,
+        );
+
+        // Print response body to terminal for debugging
+        print('Response: ${response.body}');
+
+        if (response.statusCode == 200) {
+          final jsonResponse = jsonDecode(response.body);
+          if (jsonResponse['status'] == 'success') {
+            final customerId =
+                jsonResponse['customer_id']; // Extract customer_id
+            print('Customer ID: $customerId');
+
+            if (jsonResponse['message'] ==
+                'Customer details updated successfully') {
+              _showSuccessDialog('Customer details updated successfully');
+              //_showConfirmationDialog();
+            }
+          } else {
+            _showErrorDialog(
+                jsonResponse['message'] ?? "An unknown error occurred.");
+          }
+        }
+      } catch (e) {
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(content: Text("Error: $e")),
+        // );
+        _showErrorDialog("An error occurred: $e");
+        print("Error: $e");
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Member Details Form',
+          'Edit User Details',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 24,
@@ -182,9 +345,9 @@ class _UserDetailsFormState extends State<UserDetails> {
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: GestureDetector(
-              onTap: () {
-                _showExitConfirmationDialog(context);
-              },
+              // onTap: () {
+              //   _showExitConfirmationDialog(context);
+              // },
               child: const Center(
                 child: Text(
                   'Cancel',
@@ -539,7 +702,7 @@ class _UserDetailsFormState extends State<UserDetails> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: MaterialButton(
-                              onPressed: _addMember,
+                              onPressed: _showConfirmationDialog,
                               height: 50,
                               minWidth: MediaQuery.of(context).size.width * 0.4,
                               color: Colors.blue[800],
@@ -548,7 +711,7 @@ class _UserDetailsFormState extends State<UserDetails> {
                               ),
                               child: const Center(
                                 child: Text(
-                                  "Add and Save Member",
+                                  "Save Changes",
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
@@ -558,31 +721,6 @@ class _UserDetailsFormState extends State<UserDetails> {
                               ),
                             ),
                           ),
-                          // Padding(
-                          //   padding: const EdgeInsets.symmetric(horizontal: 10),
-                          //   child: MaterialButton(
-                          //     onPressed: () => _showClearFormDialog(context),
-                          //     height: 50,
-                          //     minWidth: MediaQuery.of(context).size.width * 0.4,
-                          //     shape: RoundedRectangleBorder(
-                          //       borderRadius: BorderRadius.circular(50),
-                          //       side: BorderSide(
-                          //         color: Colors.blue[800]!,
-                          //         width: 2.0,
-                          //       ),
-                          //     ),
-                          //     child: const Center(
-                          //       child: Text(
-                          //         "Clear Form",
-                          //         style: TextStyle(
-                          //           color: Color.fromARGB(255, 2, 99, 178),
-                          //           fontWeight: FontWeight.bold,
-                          //           fontSize: 16,
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
                         ],
                       ),
                     ),
@@ -593,6 +731,174 @@ class _UserDetailsFormState extends State<UserDetails> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showSuccessDialog(String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF00C853), // Green color
+                    shape: BoxShape.circle,
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: const Icon(
+                    Icons.check_circle,
+                    size: 60,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  "Success!!!",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF00C853), // Green color
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 16, color: Colors.black),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF00C853),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    // Navigate to the HomeScreen
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HomeScreen(
+                          userName: widget.userName,
+                          phoneNo: widget.phoneNo,
+                        ),
+                      ),
+                      (route) => false,
+                    );
+                  },
+                  child: const Text(
+                    "Ok",
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // Function to show confirmation dialog
+  // Function to show confirmation dialog
+  void _showConfirmationDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Container(
+              width: 300, // Fixed width for the dialog
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.orange, // Use orange for a neutral tone
+                      shape: BoxShape.circle,
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: const Icon(
+                      Icons.info,
+                      size: 60,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Confirmation",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange, // Match icon color
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Are you sure you want to save the details?",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: const Text(
+                          "No",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color(0xFF00C853), // Green color
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                          _saveDetails(); // Now call the save details function
+                        },
+                        child: const Text(
+                          "Yes",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -656,266 +962,6 @@ class _UserDetailsFormState extends State<UserDetails> {
               ],
             ),
           ),
-        );
-      },
-    );
-  }
-
-  Future<void> _addMember() async {
-    print('user_details.dart');
-    print(' _addMember function');
-
-// Mandatory fields to check
-    final mandatoryFields = {
-      "First Name": firstnameController.text,
-      "Last Name": lastnameController.text,
-      "Date of Birth": dobController.text,
-      "City": cityController.text,
-      "District": district,
-      "Province": province,
-      "Gender": gender,
-      "Contact Number 1": contact1Controller.text,
-      "Relationship": relationship,
-    };
-
-    // Check if any mandatory field is missing
-    final missingFields = mandatoryFields.entries
-        .where((entry) =>
-            entry.value == null || entry.value.toString().trim().isEmpty)
-        .map((entry) => entry.key)
-        .toList();
-
-    if (missingFields.isNotEmpty) {
-      // Show error message for missing mandatory fields
-      _showErrorDialog(
-          "Please fill all the mandatory fields before submitting.");
-      return;
-    }
-
-    if (_formKey.currentState!.validate()) {
-      final userDetails = {
-        "phone_no": widget.phoneNo,
-        "customers_first_name": firstnameController.text,
-        "customers_last_name": lastnameController.text,
-        "customers_home_no": homeNoController.text,
-        "customers_street_name": streetController.text,
-        "customers_city": cityController.text,
-        "customers_identification": nicController.text,
-        "customers_dob": dobController.text,
-        "customers_blood_group": customers_blood_group ?? "",
-        "customers_gender": gender,
-        "customers_contact_no1": contact1Controller.text,
-        "customers_contact_no2": contact2Controller.text,
-        "customers_district": district,
-        "customers_province": province,
-        "customers_occupation": occupationController.text,
-        "customers_relationship": relationship,
-      };
-
-      // Print the user-entered details to the terminal for debugging
-      print('User Details: $userDetails');
-
-      try {
-        final response = await http.post(
-          Uri.parse(
-              "http://172.16.200.79/flutter_project_hayleys/php/user_details.php"),
-          //172.16.200.79
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: userDetails,
-        );
-
-        // Print response body to terminal for debugging
-        print('Response: ${response.body}');
-
-        if (response.statusCode == 200) {
-          final jsonResponse = jsonDecode(response.body);
-          if (jsonResponse['status'] == 'success') {
-            final customerId =
-                jsonResponse['customer_id']; // Extract customer_id
-            print('Customer ID: $customerId');
-
-            if (jsonResponse['message'] ==
-                'Member details added successfully') {
-              _showSuccessDialog(
-                  'Member details added successfully\nMember ID: $customerId',
-                  customerId);
-            } else {
-              _showSuccessDialog(
-                  'Member updated successfully\nMember ID: $customerId',
-                  customerId);
-            }
-          } else {
-            _showErrorDialog(
-                jsonResponse['message'] ?? "An unknown error occurred.");
-          }
-        }
-      } catch (e) {
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(content: Text("Error: $e")),
-        // );
-        _showErrorDialog("An error occurred: $e");
-        print("Error: $e");
-      }
-    }
-  }
-
-  void _showSuccessDialog(String message, int customerId) {
-    print('Customer ID at successdialog: $customerId');
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF00C853), // Green color
-                    shape: BoxShape.circle,
-                  ),
-                  padding: const EdgeInsets.all(16),
-                  child: const Icon(
-                    Icons.check_circle,
-                    size: 60,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  "Success!!!",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF00C853), // Green color
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  message,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 16, color: Colors.black),
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00C853),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    // // Add the new member to the list
-                    // final updatedConnections =
-                    //     List<String>.from(widget.connections)
-                    //       ..add(
-                    //         'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
-                    //       );
-
-                    // // Navigate back to the HomeScreen with updated list
-                    // Navigator.pop(context, updatedConnections);
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => HomeScreen(
-                          userName: widget.userName,
-                          phoneNo: widget.phoneNo,
-                        ),
-                      ),
-                      (route) => false,
-                    );
-                  },
-                  child: const Text(
-                    "Ok",
-                    style: TextStyle(fontSize: 16, color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _showClearFormDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Clear Form Confirmation"),
-          content: const Text("Are you sure you want to clear the form?"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("No"),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _clearForm();
-              },
-              child: const Text("Yes"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _clearForm() {
-    firstnameController.clear();
-    lastnameController.clear();
-    streetController.clear();
-    homeNoController.clear();
-    cityController.clear();
-
-    nicController.clear();
-    dobController.clear();
-    contact1Controller.clear();
-    contact2Controller.clear();
-    occupationController.clear();
-    setState(() {
-      customers_blood_group = null;
-      district = null;
-      province = null;
-      relationship = null;
-      gender = null;
-    });
-  }
-
-  void _showExitConfirmationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Exit Confirmation"),
-          content: const Text("Are you sure you want to exit?"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("No"),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.pop(context);
-              },
-              child: const Text("Yes"),
-            ),
-          ],
         );
       },
     );
@@ -1084,7 +1130,8 @@ class _UserDetailsFormState extends State<UserDetails> {
     String label,
     String? currentValue,
     List<String> options,
-    Function(String?) onChanged, {
+    ValueChanged<String?> onChanged, {
+    Key? fieldKey,
     Color focusedBorderColor = const Color(0xFF607D8B),
     Color borderColor = const Color(0xFFCFD8DC),
     Color labelColor = const Color(0xFF78909C),
@@ -1096,59 +1143,63 @@ class _UserDetailsFormState extends State<UserDetails> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Dropdown field
-          GestureDetector(
-            onTap: () {},
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(
-                  color: borderColor,
-                  width: 1.0,
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(
+                color: borderColor,
+                width: 1.0,
+              ),
+            ),
+            child: DropdownButtonFormField<String>(
+              key: fieldKey, // Ensures unique state for each dropdown
+              value: currentValue, // Dynamically updates with fetched values
+              decoration: InputDecoration(
+                hintStyle: TextStyle(
+                  color: hintColor,
+                  fontWeight: FontWeight.w500,
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 12.0,
+                  horizontal: 10.0,
                 ),
               ),
-              child: DropdownButtonFormField<String>(
-                value: currentValue,
-                decoration: InputDecoration(
-                  hintStyle: TextStyle(
-                    color: hintColor,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 12.0,
-                    horizontal: 10.0,
-                  ),
-                ),
-                items: options.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(
-                      value,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.black,
-                      ),
+              items: options.map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(
+                    value,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.black,
                     ),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  onChanged(value);
-                },
-                dropdownColor: const Color.fromARGB(255, 255, 255, 255),
-                elevation: 8,
-                menuMaxHeight: 500,
-              ),
+                  ),
+                );
+              }).toList(),
+              onChanged: (value) {
+                onChanged(value);
+              },
+              dropdownColor: Colors.white,
+              elevation: 8,
+              menuMaxHeight: 500,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please select $label';
+                }
+                return null;
+              },
             ),
           ),
           const SizedBox(height: 8),
-          // Label
+          // Label below the dropdown field
           Text(
             label,
-            style: TextStyle(fontSize: 12, color: labelColor),
+            style: TextStyle(fontSize: 14, color: labelColor),
           ),
         ],
       ),

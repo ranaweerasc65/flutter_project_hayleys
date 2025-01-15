@@ -8,6 +8,7 @@ import 'approvals.dart';
 import 'primary_user_details.dart';
 import 'user_details.dart';
 import 'package:http/http.dart' as http;
+import 'edit_user_details.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -144,7 +145,7 @@ class _HomeContentState extends State<HomeContent> {
   Future<void> fetchConnections() async {
     print("fetchConnections");
     final url = Uri.parse(
-        'http://192.168.62.145/flutter_project_hayleys/php/get_connections.php?phone_no=${widget.phoneNo}');
+        'http://172.16.200.79/flutter_project_hayleys/php/get_connections.php?phone_no=${widget.phoneNo}');
 
     //192.168.62.145
     //172.16.200.79
@@ -177,329 +178,301 @@ class _HomeContentState extends State<HomeContent> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            elevation: 4,
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.blue.shade900,
-                    Colors.blue.shade800,
-                    Colors.blue.shade400,
-                  ],
-                ),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Card(
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Welcome!",
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 196, 222, 241),
-                            fontSize: 40,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: Text(
-                            '${getGreeting()}, ${widget.userName}',
-                            style: const TextStyle(
-                              color: Color.fromARGB(255, 223, 234, 242),
-                              fontSize: 28,
+              elevation: 4,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.blue.shade900,
+                      Colors.blue.shade800,
+                      Colors.blue.shade400,
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Welcome!",
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 196, 222, 241),
+                              fontSize: 40,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+                          const SizedBox(height: 5),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16),
+                            child: Text(
+                              '${getGreeting()}, ${widget.userName}',
+                              style: const TextStyle(
+                                color: Color.fromARGB(255, 223, 234, 242),
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          const Text(
+                            "How is it going today?",
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Color.fromARGB(255, 199, 195, 195),
+                            ),
+                          ),
+                        ],
+                      ),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.network(
+                          'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
+                          width: 200,
+                          height: 200,
+                          fit: BoxFit.cover,
                         ),
-                        const SizedBox(height: 5),
-                        const Text(
-                          "How is it going today?",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Color.fromARGB(255, 199, 195, 195),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            // FLOW TREE CONNECTION UI SETUP - 17/12/2024
+
+            const SizedBox(height: 10),
+
+            // Employee details
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const Dashboard(),
+                    ),
+                  );
+                },
+                child: Stack(
+                  children: [
+                    // Main Container
+                    Container(
+                      width: 120, // Adjust the width as needed
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color.fromRGBO(27, 86, 225, 0.298),
+                            blurRadius: 20,
+                            offset: Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Profile Picture
+                          Container(
+                            height: 100,
+                            width: 100,
+                            margin: const EdgeInsets.only(top: 16),
+                            child: ClipOval(
+                              child: Image.network(
+                                'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                        ],
+                      ),
+                    ),
+                    // Edit Button Positioned at the Top-Right
+                    Positioned(
+                      top: 5, // Adjust as needed
+                      right: 5, // Adjust as needed
+                      child: GestureDetector(
+                        onTap: () {
+                          // Navigate to UserDetails form to edit the connection
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PrimaryUserDetails(
+                                phoneNo: widget.phoneNo,
+                                userName: widget.userName,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.7),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.edit,
+                            size: 20,
+                            color: Color.fromARGB(255, 243, 33, 89),
                           ),
                         ),
-                      ],
-                    ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.network(
-                        'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
-                        width: 200,
-                        height: 200,
-                        fit: BoxFit.cover,
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-          ),
-          const SizedBox(height: 20),
-          // FLOW TREE CONNECTION UI SETUP - 17/12/2024
 
-          const SizedBox(height: 10),
+            const SizedBox(height: 20),
 
-          // Employee details
+            // connections
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const Dashboard(),
-                  ),
-                );
-              },
-              child: Stack(
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: const Text(
+                "My Connections",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            SizedBox(
+              height: 160,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
                 children: [
-                  // Main Container
-                  Container(
-                    width: 120, // Adjust the width as needed
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color.fromRGBO(27, 86, 225, 0.298),
-                          blurRadius: 20,
-                          offset: Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Profile Picture
-                        Container(
-                          height: 100,
-                          width: 100,
-                          margin: const EdgeInsets.only(top: 16),
-                          child: ClipOval(
-                            child: Image.network(
-                              'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
-                              fit: BoxFit.cover,
+                  ...connections.map((connection) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Stack(
+                        children: [
+                          // Main Container
+                          Container(
+                            width: 120,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Color.fromRGBO(27, 86, 225, 0.298),
+                                  blurRadius: 20,
+                                  offset: Offset(0, 10),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // Profile Picture
+                                Container(
+                                  height: 100,
+                                  width: 100,
+                                  margin: const EdgeInsets.only(top: 16),
+                                  child: ClipOval(
+                                    child: Image.asset(
+                                      'assets/user.png',
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Column(
+                                  children: [
+                                    Text(
+                                      '${connection['CUSTOMERS_FIRST_NAME']} ${connection['CUSTOMERS_LAST_NAME']}',
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Text(
+                                      'ID: ${connection['CUSTOMERS_ID']}',
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400,
+                                        color: Color.fromARGB(255, 102, 99, 99),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                      ],
-                    ),
-                  ),
-                  // Edit Button Positioned at the Top-Right
-                  Positioned(
-                    top: 5, // Adjust as needed
-                    right: 5, // Adjust as needed
-                    child: GestureDetector(
-                      onTap: () {
-                        // Navigate to UserDetails form to edit the connection
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PrimaryUserDetails(
-                              phoneNo: widget.phoneNo,
-                              userName: widget.userName,
+                          // Edit Button
+                          Positioned(
+                            top: 5,
+                            right: 5,
+                            child: GestureDetector(
+                              onTap: () {
+                                // Navigate to the EditUserDetails screen and pass the customer details
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EditUserDetails(
+                                      phoneNo: widget.phoneNo,
+                                      userName: widget.userName,
+                                      customerId: connection['CUSTOMERS_ID'],
+                                    ),
+                                  ),
+                                ).then((updatedConnection) {
+                                  // Handle the updated connection data
+                                  if (updatedConnection != null) {
+                                    setState(() {
+                                      connection['CUSTOMERS_FIRST_NAME'] =
+                                          updatedConnection["first_name"];
+                                      connection['CUSTOMERS_LAST_NAME'] =
+                                          updatedConnection["last_name"];
+                                    });
+                                  }
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.7),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.edit,
+                                  size: 20,
+                                  color: Color.fromARGB(255, 243, 33, 89),
+                                ),
+                              ),
                             ),
                           ),
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.7),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.edit,
-                          size: 20,
-                          color: Color.fromARGB(255, 243, 33, 89),
-                        ),
+                        ],
                       ),
-                    ),
-                  ),
+                    );
+                  }).toList(),
                 ],
               ),
             ),
-          ),
-
-          const SizedBox(height: 20),
-
-          // connections
-
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: const Text(
-              "My Connections",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          SizedBox(
-            height: 145,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                ...connections.map((connection) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Stack(
-                      children: [
-                        // Main Container
-                        Container(
-                          width: 120,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Color.fromRGBO(27, 86, 225, 0.298),
-                                blurRadius: 20,
-                                offset: Offset(0, 10),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // Profile Picture
-                              Container(
-                                height: 100,
-                                width: 100,
-                                margin: const EdgeInsets.only(top: 16),
-                                child: ClipOval(
-                                  child: Image.asset(
-                                    // connection['connection_image_url'] ??
-                                    //     'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
-                                    'assets/user.png',
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                '${connection['CUSTOMERS_FIRST_NAME']} ${connection['CUSTOMERS_LAST_NAME']}',
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        // Edit Button Positioned at the Top-Right
-                        Positioned(
-                          top: 5, // Adjust as needed
-                          right: 5, // Adjust as needed
-                          child: GestureDetector(
-                            onTap: () {
-                              // Navigate to the edit form
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => UserDetails(
-                                    phoneNo: widget.phoneNo,
-                                    userName: widget.userName,
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.7),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.edit,
-                                size: 20,
-                                color: Color.fromARGB(255, 243, 33, 89),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-
-                // Add New Connection Button
-                GestureDetector(
-                  onTap: () async {
-                    final updatedConnections = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => UserDetails(
-                          phoneNo: widget.phoneNo,
-                          userName: widget.userName,
-                          // connections: Connections, // Pass the current list
-                        ),
-                      ),
-                    );
-
-                    if (updatedConnections != null) {
-                      // Update the Connections list with the new data
-                      setState(() {
-                        // Connections = updatedConnections;
-                      });
-                    }
-                  },
-                  child: Container(
-                    width: 120,
-                    height: 120,
-                    margin: const EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color.fromRGBO(27, 86, 225, 0.298),
-                          blurRadius: 20,
-                          offset: Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.add,
-                          size: 50,
-                          color: Colors.orange,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ));
   }
 }
 
