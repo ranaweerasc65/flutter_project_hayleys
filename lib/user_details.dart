@@ -1,5 +1,4 @@
 // ADD THE DETAILS OF THE USER FOR THE OTHER MEMBERS TO THE SYSTEM
-
 import 'package:flutter_project_hayleys/home_page.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
@@ -511,7 +510,7 @@ class _UserDetailsFormState extends State<UserDetails> {
                         // Contact Number 2
                         Expanded(
                           child: buildTextField(
-                            "Contact Number 2 (Optional)",
+                            "Contact Number 2",
                             contact2Controller,
                             keyboardType: TextInputType.phone,
                             "",

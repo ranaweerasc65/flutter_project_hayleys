@@ -682,7 +682,7 @@ class _EditUserDetailsState extends State<EditUserDetails> {
                         // Contact Number 2
                         Expanded(
                           child: buildTextField(
-                            "Contact Number 2 (Optional)",
+                            "Contact Number 2",
                             contact2Controller,
                             keyboardType: TextInputType.phone,
                             "",
