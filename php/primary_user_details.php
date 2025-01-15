@@ -75,6 +75,10 @@ $customers_street_name = isset($_POST['customers_street_name']) && !empty($_POST
     ? mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_street_name']) 
     : null;
 
+    error_log("Home No: " . $_POST['customers_home_no']);
+    error_log("Street Name: " . $_POST['customers_street_name']);
+
+
 $customers_contact_no2 = isset($_POST['customers_contact_no2']) && !empty($_POST['customers_contact_no2']) 
     ? mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_contact_no2']) 
     : null;
@@ -91,43 +95,53 @@ $result_check = $stmt_check->get_result();
 if ($result_check->num_rows > 0) {
     // If a record exists with 'ME' relationship for this phone number, update it instead of inserting
     $sql_update = "UPDATE customers SET 
-                    customers_first_name = ?, 
-                    customers_last_name = ?, 
-                    customers_dob = ?, 
-                    customers_city = ?, 
-                    customers_district = ?, 
-                    customers_province = ?, 
-                    customers_identification = ?, 
-                    customers_gender = ?, 
-                    customers_blood_group = ?, 
-                    customers_contact_no1 = ?, 
-                    customers_contact_no2 = ?, 
-                    customers_occupation = ?, 
-                    customers_relationship = ?
-                    WHERE phone_no = ? AND customers_relationship = 'ME'";
+                customers_first_name = ?, 
+                customers_last_name = ?, 
+                customers_dob = ?, 
+                customers_city = ?, 
+                customers_district = ?, 
+                customers_province = ?, 
+                customers_identification = ?, 
+                customers_gender = ?, 
+                customers_blood_group = ?, 
+                customers_contact_no1 = ?, 
+                customers_contact_no2 = ?, 
+                customers_occupation = ?, 
+                customers_relationship = ?, 
+                customers_home_no = ?, 
+                customers_street_name = ?
+                WHERE phone_no = ? AND customers_relationship = 'ME'";
 
-    $stmt_update = $conn_hayleys_medicalapp->prepare($sql_update);
-    $stmt_update->bind_param("ssssssssssssss", 
-                            $customers_first_name, 
-                            $customers_last_name, 
-                            $customers_dob, 
-                            $customers_city, 
-                            $customers_district, 
-                            $customers_province, 
-                            $customers_identification, 
-                            $customers_gender, 
-                            $customers_blood_group, 
-                            $customers_contact_no1, 
-                            $customers_contact_no2, 
-                            $customers_occupation, 
-                            $customers_relationship, 
-                            $phone_no);
+
+        $stmt_update = $conn_hayleys_medicalapp->prepare($sql_update);
+        $stmt_update->bind_param("ssssssssssssssss", 
+            $customers_first_name, 
+            $customers_last_name, 
+            $customers_dob, 
+            $customers_city, 
+            $customers_district, 
+            $customers_province, 
+            $customers_identification, 
+            $customers_gender, 
+            $customers_blood_group, 
+            $customers_contact_no1, 
+            $customers_contact_no2, 
+            $customers_occupation, 
+            $customers_relationship, 
+            $customers_home_no, 
+            $customers_street_name, 
+            $phone_no
+        );
 
     if ($stmt_update->execute()) {
         echo json_encode(array("status" => "success", "message" => "Member details updated successfully"));
     } else {
         echo json_encode(array("status" => "error", "message" => "Failed to update user details: " . $stmt_update->error));
     }
+
+    error_log("SQL Query: " . $stmt_update->error);
+
+
     $stmt_update->close();
 } else {
     // If no record exists with 'ME' relationship, insert a new one

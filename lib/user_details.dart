@@ -133,6 +133,8 @@ class _UserDetailsFormState extends State<UserDetails> {
     print('Logged in user Username (user_details.dart): ${widget.userName}');
 
     //_fetchExistingDetails();
+
+    fetchPrimaryUserDetails();
   }
 
   Future<void> _refreshForm() async {
@@ -1193,5 +1195,50 @@ class _UserDetailsFormState extends State<UserDetails> {
         ],
       ),
     );
+  }
+
+  Future<void> fetchPrimaryUserDetails() async {
+    final url = Uri.parse(
+        "http://172.16.200.79/flutter_project_hayleys/php/fetch_primary_user_details.php?phone_no=${widget.phoneNo}");
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      print('Response body fetchPrimaryUserDetails: ${response.body}');
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (jsonResponse['status'] == 'success') {
+        // Parse the existing data and populate the form fields
+        var existingData = jsonResponse['existing_data']; // Fixed key here
+
+        setState(() {
+          cityController.text = existingData['CUSTOMERS_CITY'] ?? 'null';
+
+          district =
+              districtOptions.contains(existingData['CUSTOMERS_DISTRICT'])
+                  ? existingData['CUSTOMERS_DISTRICT']
+                  : 'null';
+
+          province = provinceOptions
+                  .contains(existingData['CUSTOMERS_PROVINCE']?.trim())
+              ? existingData['CUSTOMERS_PROVINCE']?.trim()
+              : null;
+
+          contact1Controller.text =
+              existingData['CUSTOMERS_CONTACT_NO1'].toString();
+
+          homeNoController.text = existingData['CUSTOMERS_HOME_NO'] ?? "";
+          streetController.text = existingData['CUSTOMERS_STREET_NAME'] ?? "";
+        });
+
+        // Optionally, show a success message if needed
+        //_showSuccessDialog("Existing member details fetched successfully.");
+      } else {
+        //_showErrorDialog(jsonResponse['message'] ?? "Failed to fetch details.");
+      }
+    } else {
+      _showErrorDialog("Failed to fetch details. Please try again later.");
+    }
   }
 }

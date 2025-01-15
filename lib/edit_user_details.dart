@@ -42,6 +42,8 @@ class _EditUserDetailsState extends State<EditUserDetails> {
 
   String? phoneNo;
 
+  bool isLoading = false;
+
   List<String> genderOptions = ['Male', 'Female', 'Not prefered to say'];
 
   List<String> districtOptions = [
@@ -134,72 +136,151 @@ class _EditUserDetailsState extends State<EditUserDetails> {
     _fetchExistingDetails();
   }
 
+  // Future<void> _fetchExistingDetails() async {
+  //   print('come to _fetchExistingDetails');
+  //   print('Customer ID : ${widget.customerId} ');
+
+  //   // Corrected URL with '&' for multiple query parameters
+  //   final url = Uri.parse(
+  //       "http://172.16.200.79/flutter_project_hayleys/php/fetch_user_details.php?phone_no=${widget.phoneNo}&CUSTOMERS_ID=${widget.customerId}");
+
+  //   // Send the GET request
+  //   final response = await http.get(url);
+
+  //   if (response.statusCode == 200) {
+  //     print('Response body _fetchExistingDetails: ${response.body}');
+
+  //     final jsonResponse = jsonDecode(response.body);
+  //     if (jsonResponse['status'] == 'success') {
+  //       // Parse the existing data and populate the form fields
+  //       var existingData = jsonResponse['customer_data'];
+
+  //       setState(() {
+  //         firstnameController.text = existingData['CUSTOMERS_FIRST_NAME'];
+  //         lastnameController.text = existingData['CUSTOMERS_LAST_NAME'];
+  //         dobController.text = existingData['CUSTOMERS_DOB'];
+  //         cityController.text = existingData['CUSTOMERS_CITY'];
+
+  //         district =
+  //             districtOptions.contains(existingData['CUSTOMERS_DISTRICT'])
+  //                 ? existingData['CUSTOMERS_DISTRICT']
+  //                 : null;
+
+  //         province = provinceOptions
+  //                 .contains(existingData['CUSTOMERS_PROVINCE']?.trim())
+  //             ? existingData['CUSTOMERS_PROVINCE']?.trim()
+  //             : null;
+
+  //         gender = genderOptions.contains(existingData['CUSTOMERS_GENDER'])
+  //             ? existingData['CUSTOMERS_GENDER']
+  //             : null;
+  //         customers_blood_group =
+  //             bloodGroupOptions.contains(existingData['CUSTOMERS_BLOOD_GROUP'])
+  //                 ? existingData['CUSTOMERS_BLOOD_GROUP']
+  //                 : null;
+
+  //         relationship = relationshipOptions
+  //                 .contains(existingData['CUSTOMERS_RELATIONSHIP'])
+  //             ? existingData['CUSTOMERS_RELATIONSHIP']
+  //             : null;
+
+  //         contact1Controller.text =
+  //             existingData['CUSTOMERS_CONTACT_NO1'].toString();
+  //         contact2Controller.text =
+  //             existingData['CUSTOMERS_CONTACT_NO2']?.toString() ?? "";
+  //         nicController.text = existingData['CUSTOMERS_IDENTIFICATION'] ?? "";
+  //         occupationController.text =
+  //             existingData['CUSTOMERS_OCCUPATION'] ?? "";
+  //         homeNoController.text = existingData['CUSTOMERS_HOME_NO'] ?? "";
+  //         streetController.text = existingData['CUSTOMERS_STREET_NAME'] ?? "";
+  //       });
+
+  //       // Optionally, show a success message if needed
+  //       //_showSuccessDialog("Existing member details fetched successfully.");
+  //     } else {
+  //       //_showErrorDialog(jsonResponse['message'] ?? "Failed to fetch details.");
+  //     }
+  //   } else {
+  //     _showErrorDialog("Failed to fetch details. Please try again later.");
+  //   }
+  // }
+
   Future<void> _fetchExistingDetails() async {
     print('come to _fetchExistingDetails');
     print('Customer ID : ${widget.customerId} ');
 
-    // Corrected URL with '&' for multiple query parameters
-    final url = Uri.parse(
-        "http://172.16.200.79/flutter_project_hayleys/php/fetch_user_details.php?phone_no=${widget.phoneNo}&CUSTOMERS_ID=${widget.customerId}");
+    setState(() {
+      isLoading = true; // Start loading
+    });
 
-    // Send the GET request
-    final response = await http.get(url);
+    try {
+      final url = Uri.parse(
+          "http://172.16.200.79/flutter_project_hayleys/php/fetch_user_details.php?phone_no=${widget.phoneNo}&CUSTOMERS_ID=${widget.customerId}");
 
-    if (response.statusCode == 200) {
-      print('Response body _fetchExistingDetails: ${response.body}');
+      // Send the GET request
+      final response = await http.get(url);
 
-      final jsonResponse = jsonDecode(response.body);
-      if (jsonResponse['status'] == 'success') {
-        // Parse the existing data and populate the form fields
-        var existingData = jsonResponse['customer_data'];
+      if (response.statusCode == 200) {
+        print('Response body _fetchExistingDetails: ${response.body}');
 
-        setState(() {
-          firstnameController.text = existingData['CUSTOMERS_FIRST_NAME'];
-          lastnameController.text = existingData['CUSTOMERS_LAST_NAME'];
-          dobController.text = existingData['CUSTOMERS_DOB'];
-          cityController.text = existingData['CUSTOMERS_CITY'];
+        final jsonResponse = jsonDecode(response.body);
+        if (jsonResponse['status'] == 'success') {
+          // Parse the existing data and populate the form fields
+          var existingData = jsonResponse['customer_data'];
 
-          district =
-              districtOptions.contains(existingData['CUSTOMERS_DISTRICT'])
-                  ? existingData['CUSTOMERS_DISTRICT']
-                  : null;
+          setState(() {
+            firstnameController.text = existingData['CUSTOMERS_FIRST_NAME'];
+            lastnameController.text = existingData['CUSTOMERS_LAST_NAME'];
+            dobController.text = existingData['CUSTOMERS_DOB'];
+            cityController.text = existingData['CUSTOMERS_CITY'];
 
-          province = provinceOptions
-                  .contains(existingData['CUSTOMERS_PROVINCE']?.trim())
-              ? existingData['CUSTOMERS_PROVINCE']?.trim()
-              : null;
+            district =
+                districtOptions.contains(existingData['CUSTOMERS_DISTRICT'])
+                    ? existingData['CUSTOMERS_DISTRICT']
+                    : null;
 
-          gender = genderOptions.contains(existingData['CUSTOMERS_GENDER'])
-              ? existingData['CUSTOMERS_GENDER']
-              : null;
-          customers_blood_group =
-              bloodGroupOptions.contains(existingData['CUSTOMERS_BLOOD_GROUP'])
-                  ? existingData['CUSTOMERS_BLOOD_GROUP']
-                  : null;
+            province = provinceOptions
+                    .contains(existingData['CUSTOMERS_PROVINCE']?.trim())
+                ? existingData['CUSTOMERS_PROVINCE']?.trim()
+                : null;
 
-          relationship = relationshipOptions
-                  .contains(existingData['CUSTOMERS_RELATIONSHIP'])
-              ? existingData['CUSTOMERS_RELATIONSHIP']
-              : null;
+            gender = genderOptions.contains(existingData['CUSTOMERS_GENDER'])
+                ? existingData['CUSTOMERS_GENDER']
+                : null;
+            customers_blood_group = bloodGroupOptions
+                    .contains(existingData['CUSTOMERS_BLOOD_GROUP'])
+                ? existingData['CUSTOMERS_BLOOD_GROUP']
+                : null;
 
-          contact1Controller.text =
-              existingData['CUSTOMERS_CONTACT_NO1'].toString();
-          contact2Controller.text =
-              existingData['CUSTOMERS_CONTACT_NO2']?.toString() ?? "";
-          nicController.text = existingData['CUSTOMERS_IDENTIFICATION'] ?? "";
-          occupationController.text =
-              existingData['CUSTOMERS_OCCUPATION'] ?? "";
-          homeNoController.text = existingData['CUSTOMERS_HOME_NO'] ?? "";
-          streetController.text = existingData['CUSTOMERS_STREET_NAME'] ?? "";
-        });
+            relationship = relationshipOptions
+                    .contains(existingData['CUSTOMERS_RELATIONSHIP'])
+                ? existingData['CUSTOMERS_RELATIONSHIP']
+                : null;
 
-        // Optionally, show a success message if needed
-        //_showSuccessDialog("Existing member details fetched successfully.");
+            contact1Controller.text =
+                existingData['CUSTOMERS_CONTACT_NO1'].toString();
+            contact2Controller.text =
+                existingData['CUSTOMERS_CONTACT_NO2']?.toString() ?? "";
+            nicController.text = existingData['CUSTOMERS_IDENTIFICATION'] ?? "";
+            occupationController.text =
+                existingData['CUSTOMERS_OCCUPATION'] ?? "";
+            homeNoController.text = existingData['CUSTOMERS_HOME_NO'] ?? "";
+            streetController.text = existingData['CUSTOMERS_STREET_NAME'] ?? "";
+          });
+        } else {
+          _showErrorDialog(
+              jsonResponse['message'] ?? "Failed to fetch details.");
+        }
       } else {
-        //_showErrorDialog(jsonResponse['message'] ?? "Failed to fetch details.");
+        _showErrorDialog("Failed to fetch details. Please try again later.");
       }
-    } else {
-      _showErrorDialog("Failed to fetch details. Please try again later.");
+    } catch (e) {
+      _showErrorDialog("An error occurred: $e");
+      print("Error: $e");
+    } finally {
+      setState(() {
+        isLoading = false; // Stop loading
+      });
     }
   }
 
@@ -331,425 +412,438 @@ class _EditUserDetailsState extends State<EditUserDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Edit User Details',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-            color: Colors.white,
+        appBar: AppBar(
+          title: const Text(
+            'Edit User Details',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 24,
+              color: Colors.white,
+            ),
           ),
-        ),
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        backgroundColor: Colors.blue.shade800,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: GestureDetector(
-              // onTap: () {
-              //   _showExitConfirmationDialog(context);
-              // },
-              child: const Center(
-                child: Text(
-                  'Cancel',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+          automaticallyImplyLeading: false,
+          centerTitle: true,
+          backgroundColor: Colors.blue.shade800,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: GestureDetector(
+                // onTap: () {
+                //   _showExitConfirmationDialog(context);
+                // },
+                child: const Center(
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: _refreshForm,
-        color: const Color.fromARGB(255, 8, 120, 212),
-        child: Container(
-          color: Colors.white,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(30),
-            child: Form(
-              key: _formKey,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Relationship",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-
-                    buildDropdownField(
-                      "Relationship",
-                      relationship,
-                      [
-                        // First Connections
-
-                        'Mother',
-                        'Father',
-                        'Spouse',
-                        'Sister',
-                        'Brother',
-                        'Daughter',
-                        'Son',
-
-                        // Second Connections
-                        'Grandmother',
-                        'Grandfather',
-                        'Aunt',
-                        'Uncle',
-                        'Niece',
-                        'Nephew',
-                        'Cousin',
-
-                        // Others
-
-                        'Guardian',
-                        'Other',
-                      ],
-                      (value) => relationship = value,
-                      isMandatory: true,
-                    ),
-
-                    // Name title
-                    const Text(
-                      "Name",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-
-                    Row(
-                      children: [
-                        // First Name
-                        Expanded(
-                          child: buildTextField(
-                            "First Name",
-                            isMandatory: true,
-                            firstnameController,
-                            "",
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: buildTextField(
-                            "Last Name",
-                            isMandatory: true,
-                            lastnameController,
-                            "",
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const Text(
-                      "Date of Birth",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-
-                    Row(
-                      children: [
-                        // DOB
-                        Expanded(
-                          child: buildDatePickerField(
-                            "Date of Birth",
-                            isMandatory: true,
-                            dobController,
-                            "",
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const Text(
-                      "Address",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-
-                    Row(
-                      children: [
-                        // First Name
-                        Expanded(
-                          child: buildTextField(
-                            "Home No",
-                            homeNoController,
-                            "",
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: buildTextField(
-                            "Street Name",
-                            streetController,
-                            "",
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    Row(
-                      children: [
-                        // City
-                        Expanded(
-                          child: buildTextField(
-                            "City",
-                            cityController,
-                            "",
-                            isMandatory: true,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    Row(
-                      children: [
-                        // District
-                        Expanded(
-                          child: buildDropdownField(
-                            "District",
-                            district,
-                            [
-                              'Ampara',
-                              'Anuradhapura',
-                              'Badulla',
-                              'Batticaloa',
-                              'Colombo',
-                              'Galle',
-                              'Gampaha',
-                              'Hambantota',
-                              'Jaffna',
-                              'Kalutara',
-                              'Kandy',
-                              'Kegalle',
-                              'Kilinochchi',
-                              'Kurunegala',
-                              'Mannar',
-                              'Matale',
-                              'Matara',
-                              'Monaragala',
-                              'Mullaitivu',
-                              'Nuwara Eliya',
-                              'Polonnaruwa',
-                              'Puttalam',
-                              'Ratnapura',
-                              'Trincomalee',
-                              'Vavuniya',
-                            ],
-                            (value) => district = value,
-                            isMandatory: true,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        // Province
-                        Expanded(
-                          child: buildDropdownField(
-                            "Province",
-                            province,
-                            [
-                              'Central',
-                              'Eastern',
-                              'North Central',
-                              'Northern',
-                              'North Western',
-                              'Sabaragamuwa',
-                              'Southern',
-                              'Uva',
-                              'Western',
-                            ],
-                            (value) => province = value,
-                            isMandatory: true,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const Text(
-                      "Gender",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-
-                    buildDropdownField(
-                      "Gender",
-                      gender,
-                      ['Male', 'Female', 'Not prefer to say'],
-                      (value) => gender = value,
-                      isMandatory: true,
-                    ),
-
-                    const Text(
-                      "Identification",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Row(
-                    //   children: [
-                    //     // NIC
-                    //     Expanded(
-                    //       child: buildTextField(
-                    //         "NIC",
-                    //         nicController,
-                    //         "",
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
-
-                    Row(
-                      children: [
-                        // NIC
-                        Expanded(
-                          child: buildTextField(
-                            "NIC",
-                            nicController,
-                            "", // HINT
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return null;
-                              }
-
-                              // Check NIC format (Old or New format)
-                              RegExp oldFormat = RegExp(
-                                  r'^\d{9}[Vv]$'); // Old format: 9 digits followed by 'V' or 'v'
-                              RegExp newFormat =
-                                  RegExp(r'^\d{12}$'); // New format: 12 digits
-
-                              if (!oldFormat.hasMatch(value) &&
-                                  !newFormat.hasMatch(value)) {
-                                return "Invalid NIC format.";
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const Text(
-                      "Blood Group",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-
-                    buildDropdownField(
-                      "Blood Group",
-                      customers_blood_group,
-                      ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
-                      (value) => customers_blood_group = value,
-                    ),
-
-                    // Contact
-                    const Text(
-                      "Contact",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-
-                    Row(
-                      children: [
-                        // Contact Number 1
-                        Expanded(
-                          child: buildTextField(
-                            "Contact Number 1",
-                            isMandatory: true,
-                            contact1Controller,
-                            "",
-                            keyboardType: TextInputType.phone,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        // Contact Number 2
-                        Expanded(
-                          child: buildTextField(
-                            "Contact Number 2",
-                            contact2Controller,
-                            keyboardType: TextInputType.phone,
-                            "",
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const Text(
-                      "Occupation",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-
-                    Row(
-                      children: [
-                        // Occupation
-                        Expanded(
-                          child: buildTextField(
-                            "Occupation",
-                            occupationController,
-                            "",
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 20),
-                    Container(
-                      //duration: const Duration(milliseconds: 1600),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+          ],
+        ),
+        body: Stack(
+          children: [
+            RefreshIndicator(
+              onRefresh: _refreshForm,
+              color: const Color.fromARGB(255, 8, 120, 212),
+              child: Container(
+                color: Colors.white,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(30),
+                  child: Form(
+                    key: _formKey,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: MaterialButton(
-                              onPressed: _showConfirmationDialog,
-                              height: 50,
-                              minWidth: MediaQuery.of(context).size.width * 0.4,
-                              color: Colors.blue[800],
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              child: const Center(
-                                child: Text(
-                                  "Save Changes",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
+                          const Text(
+                            "Relationship",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+
+                          buildDropdownField(
+                            "Relationship",
+                            relationship,
+                            [
+                              // First Connections
+
+                              'Mother',
+                              'Father',
+                              'Spouse',
+                              'Sister',
+                              'Brother',
+                              'Daughter',
+                              'Son',
+
+                              // Second Connections
+                              'Grandmother',
+                              'Grandfather',
+                              'Aunt',
+                              'Uncle',
+                              'Niece',
+                              'Nephew',
+                              'Cousin',
+
+                              // Others
+
+                              'Guardian',
+                              'Other',
+                            ],
+                            (value) => relationship = value,
+                            isMandatory: true,
+                          ),
+
+                          // Name title
+                          const Text(
+                            "Name",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+
+                          Row(
+                            children: [
+                              // First Name
+                              Expanded(
+                                child: buildTextField(
+                                  "First Name",
+                                  isMandatory: true,
+                                  firstnameController,
+                                  "",
                                 ),
                               ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: buildTextField(
+                                  "Last Name",
+                                  isMandatory: true,
+                                  lastnameController,
+                                  "",
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const Text(
+                            "Date of Birth",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+
+                          Row(
+                            children: [
+                              // DOB
+                              Expanded(
+                                child: buildDatePickerField(
+                                  "Date of Birth",
+                                  isMandatory: true,
+                                  dobController,
+                                  "",
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const Text(
+                            "Address",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+
+                          Row(
+                            children: [
+                              // First Name
+                              Expanded(
+                                child: buildTextField(
+                                  "Home No",
+                                  homeNoController,
+                                  "",
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: buildTextField(
+                                  "Street Name",
+                                  streetController,
+                                  "",
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          Row(
+                            children: [
+                              // City
+                              Expanded(
+                                child: buildTextField(
+                                  "City",
+                                  cityController,
+                                  "",
+                                  isMandatory: true,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          Row(
+                            children: [
+                              // District
+                              Expanded(
+                                child: buildDropdownField(
+                                  "District",
+                                  district,
+                                  [
+                                    'Ampara',
+                                    'Anuradhapura',
+                                    'Badulla',
+                                    'Batticaloa',
+                                    'Colombo',
+                                    'Galle',
+                                    'Gampaha',
+                                    'Hambantota',
+                                    'Jaffna',
+                                    'Kalutara',
+                                    'Kandy',
+                                    'Kegalle',
+                                    'Kilinochchi',
+                                    'Kurunegala',
+                                    'Mannar',
+                                    'Matale',
+                                    'Matara',
+                                    'Monaragala',
+                                    'Mullaitivu',
+                                    'Nuwara Eliya',
+                                    'Polonnaruwa',
+                                    'Puttalam',
+                                    'Ratnapura',
+                                    'Trincomalee',
+                                    'Vavuniya',
+                                  ],
+                                  (value) => district = value,
+                                  isMandatory: true,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              // Province
+                              Expanded(
+                                child: buildDropdownField(
+                                  "Province",
+                                  province,
+                                  [
+                                    'Central',
+                                    'Eastern',
+                                    'North Central',
+                                    'Northern',
+                                    'North Western',
+                                    'Sabaragamuwa',
+                                    'Southern',
+                                    'Uva',
+                                    'Western',
+                                  ],
+                                  (value) => province = value,
+                                  isMandatory: true,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const Text(
+                            "Gender",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+
+                          buildDropdownField(
+                            "Gender",
+                            gender,
+                            ['Male', 'Female', 'Not prefer to say'],
+                            (value) => gender = value,
+                            isMandatory: true,
+                          ),
+
+                          const Text(
+                            "Identification",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+
+                          // Row(
+                          //   children: [
+                          //     // NIC
+                          //     Expanded(
+                          //       child: buildTextField(
+                          //         "NIC",
+                          //         nicController,
+                          //         "",
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
+
+                          Row(
+                            children: [
+                              // NIC
+                              Expanded(
+                                child: buildTextField(
+                                  "NIC",
+                                  nicController,
+                                  "", // HINT
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return null;
+                                    }
+
+                                    // Check NIC format (Old or New format)
+                                    RegExp oldFormat = RegExp(
+                                        r'^\d{9}[Vv]$'); // Old format: 9 digits followed by 'V' or 'v'
+                                    RegExp newFormat = RegExp(
+                                        r'^\d{12}$'); // New format: 12 digits
+
+                                    if (!oldFormat.hasMatch(value) &&
+                                        !newFormat.hasMatch(value)) {
+                                      return "Invalid NIC format.";
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const Text(
+                            "Blood Group",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+
+                          buildDropdownField(
+                            "Blood Group",
+                            customers_blood_group,
+                            ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+                            (value) => customers_blood_group = value,
+                          ),
+
+                          // Contact
+                          const Text(
+                            "Contact",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+
+                          Row(
+                            children: [
+                              // Contact Number 1
+                              Expanded(
+                                child: buildTextField(
+                                  "Contact Number 1",
+                                  isMandatory: true,
+                                  contact1Controller,
+                                  "",
+                                  keyboardType: TextInputType.phone,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              // Contact Number 2
+                              Expanded(
+                                child: buildTextField(
+                                  "Contact Number 2",
+                                  contact2Controller,
+                                  keyboardType: TextInputType.phone,
+                                  "",
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const Text(
+                            "Occupation",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+
+                          Row(
+                            children: [
+                              // Occupation
+                              Expanded(
+                                child: buildTextField(
+                                  "Occupation",
+                                  occupationController,
+                                  "",
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 20),
+                          Container(
+                            //duration: const Duration(milliseconds: 1600),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: MaterialButton(
+                                    onPressed: _showConfirmationDialog,
+                                    height: 50,
+                                    minWidth:
+                                        MediaQuery.of(context).size.width * 0.4,
+                                    color: Colors.blue[800],
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    child: const Center(
+                                      child: Text(
+                                        "Save Changes",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
+
+                          if (isLoading)
+                            Container(
+                              color: Colors.black.withOpacity(0.5),
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
                         ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
-      ),
-    );
+          ],
+        ));
   }
 
   void _showSuccessDialog(String message) {
