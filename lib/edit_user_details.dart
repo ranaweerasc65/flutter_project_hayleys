@@ -204,6 +204,7 @@ class _EditUserDetailsState extends State<EditUserDetails> {
   }
 
   Future<void> _refreshForm() async {
+    // Clear the form fields first
     setState(() {
       firstnameController.clear();
       lastnameController.clear();
@@ -221,7 +222,12 @@ class _EditUserDetailsState extends State<EditUserDetails> {
       relationship = null;
       gender = null;
     });
-    await Future.delayed(const Duration(seconds: 1));
+
+    // Wait for a brief moment before re-fetching details
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    // Fetch details from the database to repopulate the fields
+    await _fetchExistingDetails();
   }
 
   // Function to save the updated details
@@ -232,7 +238,6 @@ class _EditUserDetailsState extends State<EditUserDetails> {
     final mandatoryFields = {
       "First Name": firstnameController.text,
       "Last Name": lastnameController.text,
-      "Date of Birth": dobController.text,
       "City": cityController.text,
       "District": district,
       "Province": province,
@@ -247,6 +252,9 @@ class _EditUserDetailsState extends State<EditUserDetails> {
             entry.value == null || entry.value.toString().trim().isEmpty)
         .map((entry) => entry.key)
         .toList();
+
+    print('Mandatory Fields Check: $mandatoryFields');
+    print('Missing Fields: $missingFields');
 
     if (missingFields.isNotEmpty) {
       // Show error message for missing mandatory fields
@@ -376,6 +384,45 @@ class _EditUserDetailsState extends State<EditUserDetails> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Text(
+                      "Relationship",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+
+                    buildDropdownField(
+                      "Relationship",
+                      relationship,
+                      [
+                        // First Connections
+
+                        'Mother',
+                        'Father',
+                        'Spouse',
+                        'Sister',
+                        'Brother',
+                        'Daughter',
+                        'Son',
+
+                        // Second Connections
+                        'Grandmother',
+                        'Grandfather',
+                        'Aunt',
+                        'Uncle',
+                        'Niece',
+                        'Nephew',
+                        'Cousin',
+
+                        // Others
+
+                        'Guardian',
+                        'Other',
+                      ],
+                      (value) => relationship = value,
+                      isMandatory: true,
+                    ),
+
                     // Name title
                     const Text(
                       "Name",
@@ -390,6 +437,7 @@ class _EditUserDetailsState extends State<EditUserDetails> {
                         Expanded(
                           child: buildTextField(
                             "First Name",
+                            isMandatory: true,
                             firstnameController,
                             "",
                           ),
@@ -398,6 +446,7 @@ class _EditUserDetailsState extends State<EditUserDetails> {
                         Expanded(
                           child: buildTextField(
                             "Last Name",
+                            isMandatory: true,
                             lastnameController,
                             "",
                           ),
@@ -418,6 +467,7 @@ class _EditUserDetailsState extends State<EditUserDetails> {
                         Expanded(
                           child: buildDatePickerField(
                             "Date of Birth",
+                            isMandatory: true,
                             dobController,
                             "",
                           ),
@@ -461,6 +511,7 @@ class _EditUserDetailsState extends State<EditUserDetails> {
                             "City",
                             cityController,
                             "",
+                            isMandatory: true,
                           ),
                         ),
                       ],
@@ -501,6 +552,7 @@ class _EditUserDetailsState extends State<EditUserDetails> {
                               'Vavuniya',
                             ],
                             (value) => district = value,
+                            isMandatory: true,
                           ),
                         ),
                         const SizedBox(width: 16),
@@ -521,6 +573,7 @@ class _EditUserDetailsState extends State<EditUserDetails> {
                               'Western',
                             ],
                             (value) => province = value,
+                            isMandatory: true,
                           ),
                         ),
                       ],
@@ -538,6 +591,7 @@ class _EditUserDetailsState extends State<EditUserDetails> {
                       gender,
                       ['Male', 'Female', 'Not prefer to say'],
                       (value) => gender = value,
+                      isMandatory: true,
                     ),
 
                     const Text(
@@ -618,6 +672,7 @@ class _EditUserDetailsState extends State<EditUserDetails> {
                         Expanded(
                           child: buildTextField(
                             "Contact Number 1",
+                            isMandatory: true,
                             contact1Controller,
                             "",
                             keyboardType: TextInputType.phone,
@@ -656,43 +711,6 @@ class _EditUserDetailsState extends State<EditUserDetails> {
                       ],
                     ),
 
-                    const Text(
-                      "Relationship",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-
-                    buildDropdownField(
-                      "Relationship",
-                      relationship,
-                      [
-                        // First Connections
-
-                        'Mother',
-                        'Father',
-                        'Spouse',
-                        'Sister',
-                        'Brother',
-                        'Daughter',
-                        'Son',
-
-                        // Second Connections
-                        'Grandmother',
-                        'Grandfather',
-                        'Aunt',
-                        'Uncle',
-                        'Niece',
-                        'Nephew',
-                        'Cousin',
-
-                        // Others
-
-                        'Guardian',
-                        'Other',
-                      ],
-                      (value) => relationship = value,
-                    ),
                     const SizedBox(height: 20),
                     Container(
                       //duration: const Duration(milliseconds: 1600),
@@ -971,6 +989,7 @@ class _EditUserDetailsState extends State<EditUserDetails> {
     String label,
     TextEditingController controller,
     String hint, {
+    bool isMandatory = false,
     TextInputType keyboardType = TextInputType.text,
     Color hintColor = const Color(0xFFB0BEC5),
     Color borderColor = const Color(0xFFCFD8DC),
@@ -1023,10 +1042,19 @@ class _EditUserDetailsState extends State<EditUserDetails> {
             ),
           ),
           const SizedBox(height: 8),
-          // Label below the input field
-          Text(
-            label,
-            style: TextStyle(fontSize: 12, color: labelColor),
+          // Label with optional red * for mandatory fields
+          Row(
+            children: [
+              Text(
+                label,
+                style: TextStyle(fontSize: 12, color: labelColor),
+              ),
+              if (isMandatory)
+                const Text(
+                  " *",
+                  style: TextStyle(fontSize: 12, color: Colors.red),
+                ),
+            ],
           ),
         ],
       ),
@@ -1037,6 +1065,7 @@ class _EditUserDetailsState extends State<EditUserDetails> {
     String label,
     TextEditingController controller,
     String hint, {
+    bool isMandatory = false,
     Color hintColor = const Color(0xFFB0BEC5),
     Color borderColor = const Color(0xFFCFD8DC),
     Color labelColor = const Color(0xFF78909C),
@@ -1116,10 +1145,19 @@ class _EditUserDetailsState extends State<EditUserDetails> {
             ),
           ),
           const SizedBox(height: 8),
-          // Label below the input field
-          Text(
-            label,
-            style: TextStyle(fontSize: 12, color: labelColor),
+          // Label with optional red * for mandatory fields
+          Row(
+            children: [
+              Text(
+                label,
+                style: TextStyle(fontSize: 12, color: labelColor),
+              ),
+              if (isMandatory)
+                const Text(
+                  " *",
+                  style: TextStyle(fontSize: 12, color: Colors.red),
+                ),
+            ],
           ),
         ],
       ),
@@ -1130,8 +1168,9 @@ class _EditUserDetailsState extends State<EditUserDetails> {
     String label,
     String? currentValue,
     List<String> options,
-    ValueChanged<String?> onChanged, {
-    Key? fieldKey,
+    Function(String?) onChanged, {
+    bool isMandatory =
+        false, // New parameter to indicate if the field is mandatory
     Color focusedBorderColor = const Color(0xFF607D8B),
     Color borderColor = const Color(0xFFCFD8DC),
     Color labelColor = const Color(0xFF78909C),
@@ -1143,63 +1182,68 @@ class _EditUserDetailsState extends State<EditUserDetails> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Dropdown field
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(
-                color: borderColor,
-                width: 1.0,
-              ),
-            ),
-            child: DropdownButtonFormField<String>(
-              key: fieldKey, // Ensures unique state for each dropdown
-              value: currentValue, // Dynamically updates with fetched values
-              decoration: InputDecoration(
-                hintStyle: TextStyle(
-                  color: hintColor,
-                  fontWeight: FontWeight.w500,
-                ),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 12.0,
-                  horizontal: 10.0,
+          GestureDetector(
+            onTap: () {},
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(
+                  color: borderColor,
+                  width: 1.0,
                 ),
               ),
-              items: options.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(
-                    value,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.black,
-                    ),
+              child: DropdownButtonFormField<String>(
+                value: currentValue,
+                decoration: InputDecoration(
+                  hintStyle: TextStyle(
+                    color: hintColor,
+                    fontWeight: FontWeight.w500,
                   ),
-                );
-              }).toList(),
-              onChanged: (value) {
-                onChanged(value);
-              },
-              dropdownColor: Colors.white,
-              elevation: 8,
-              menuMaxHeight: 500,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please select $label';
-                }
-                return null;
-              },
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 12.0,
+                    horizontal: 10.0,
+                  ),
+                ),
+                items: options.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(
+                      value,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.black,
+                      ),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  onChanged(value);
+                },
+                dropdownColor: const Color.fromARGB(255, 255, 255, 255),
+                elevation: 8,
+                menuMaxHeight: 500,
+              ),
             ),
           ),
           const SizedBox(height: 8),
-          // Label below the dropdown field
-          Text(
-            label,
-            style: TextStyle(fontSize: 14, color: labelColor),
+          // Label with optional red * for mandatory fields
+          Row(
+            children: [
+              Text(
+                label,
+                style: TextStyle(fontSize: 12, color: labelColor),
+              ),
+              if (isMandatory)
+                const Text(
+                  " *",
+                  style: TextStyle(fontSize: 12, color: Colors.red),
+                ),
+            ],
           ),
         ],
       ),

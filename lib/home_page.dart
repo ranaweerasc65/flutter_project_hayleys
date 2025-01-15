@@ -468,6 +468,54 @@ class _HomeContentState extends State<HomeContent> {
                       ),
                     );
                   }).toList(),
+
+                  // Add New Connection Button
+                  GestureDetector(
+                    onTap: () async {
+                      final updatedConnections = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UserDetails(
+                            phoneNo: widget.phoneNo,
+                            userName: widget.userName,
+                          ),
+                        ),
+                      );
+
+                      if (updatedConnections != null) {
+                        // Update the Connections list with the new data
+                        setState(() {
+                          // Connections = updatedConnections;
+                        });
+                      }
+                    },
+                    child: Container(
+                      width: 120,
+                      height: 120,
+                      margin: const EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 255, 255, 255),
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color.fromRGBO(27, 86, 225, 0.298),
+                            blurRadius: 20,
+                            offset: Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.add,
+                            size: 50,
+                            color: Colors.orange,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

@@ -19,7 +19,7 @@ $missingFields = [];
 $requiredFields = [
     'phone_no', 'customers_first_name', 'customers_last_name', 'customers_dob', 'customers_city', 
     'customers_district', 'customers_province', 'customers_identification', 
-    'customers_gender', 'customers_blood_group', 'customers_contact_no1', 
+    'customers_gender', 'customers_contact_no1', 
     'customers_occupation', 'customers_relationship'
 ];
 

@@ -211,6 +211,7 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
                                 Expanded(
                                   child: buildTextField(
                                     "First Name",
+                                    isMandatory: true,
                                     firstnameController,
                                     "",
                                   ),
@@ -219,6 +220,7 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
                                 Expanded(
                                   child: buildTextField(
                                     "Last Name",
+                                    isMandatory: true,
                                     lastnameController,
                                     "",
                                   ),
@@ -240,6 +242,7 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
                                   child: buildDatePickerField(
                                     "Date of Birth",
                                     dobController,
+                                    isMandatory: true,
                                     "",
                                   ),
                                 ),
@@ -281,6 +284,7 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
                                   child: buildTextField(
                                     "City",
                                     cityController,
+                                    isMandatory: true,
                                     "",
                                   ),
                                 ),
@@ -322,6 +326,7 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
                                       'Vavuniya',
                                     ],
                                     (value) => district = value,
+                                    isMandatory: true,
                                   ),
                                 ),
                                 const SizedBox(width: 16),
@@ -342,6 +347,7 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
                                       'Western',
                                     ],
                                     (value) => province = value,
+                                    isMandatory: true,
                                   ),
                                 ),
                               ],
@@ -359,6 +365,7 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
                               gender,
                               ['Male', 'Female', 'Not prefer to say'],
                               (value) => gender = value,
+                              isMandatory: true,
                             ),
 
                             const Text(
@@ -449,6 +456,7 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
                                   child: buildTextField(
                                     "Contact Number 1",
                                     contact1Controller,
+                                    isMandatory: true,
                                     "",
                                     keyboardType: TextInputType.phone,
                                   ),
@@ -945,6 +953,7 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
     String label,
     TextEditingController controller,
     String hint, {
+    bool isMandatory = false,
     TextInputType keyboardType = TextInputType.text,
     Color hintColor = const Color(0xFFB0BEC5),
     Color borderColor = const Color(0xFFCFD8DC),
@@ -997,10 +1006,19 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
             ),
           ),
           const SizedBox(height: 8),
-          // Label below the input field
-          Text(
-            label,
-            style: TextStyle(fontSize: 12, color: labelColor),
+          // Label with optional red * for mandatory fields
+          Row(
+            children: [
+              Text(
+                label,
+                style: TextStyle(fontSize: 12, color: labelColor),
+              ),
+              if (isMandatory)
+                const Text(
+                  " *",
+                  style: TextStyle(fontSize: 12, color: Colors.red),
+                ),
+            ],
           ),
         ],
       ),
@@ -1011,6 +1029,7 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
     String label,
     TextEditingController controller,
     String hint, {
+    bool isMandatory = false,
     Color hintColor = const Color(0xFFB0BEC5),
     Color borderColor = const Color(0xFFCFD8DC),
     Color labelColor = const Color(0xFF78909C),
@@ -1090,10 +1109,18 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
             ),
           ),
           const SizedBox(height: 8),
-          // Label below the input field
-          Text(
-            label,
-            style: TextStyle(fontSize: 12, color: labelColor),
+          Row(
+            children: [
+              Text(
+                label,
+                style: TextStyle(fontSize: 12, color: labelColor),
+              ),
+              if (isMandatory)
+                const Text(
+                  " *",
+                  style: TextStyle(fontSize: 12, color: Colors.red),
+                ),
+            ],
           ),
         ],
       ),
@@ -1180,6 +1207,7 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
     String? currentValue,
     List<String> options,
     ValueChanged<String?> onChanged, {
+    bool isMandatory = false,
     Key? fieldKey,
     Color focusedBorderColor = const Color(0xFF607D8B),
     Color borderColor = const Color(0xFFCFD8DC),
@@ -1191,64 +1219,76 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Label
-          Text(
-            label,
-            style: TextStyle(fontSize: 14, color: labelColor),
-          ),
           const SizedBox(height: 4),
           // Dropdown field
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(
-                color: borderColor,
-                width: 1.0,
-              ),
-            ),
-            child: DropdownButtonFormField<String>(
-              key: fieldKey, // Ensures unique state for each dropdown
-              value: currentValue, // Dynamically updates with fetched values
-              decoration: InputDecoration(
-                hintStyle: TextStyle(
-                  color: hintColor,
-                  fontWeight: FontWeight.w500,
-                ),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 12.0,
-                  horizontal: 10.0,
+          GestureDetector(
+            onTap: () {},
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(
+                  color: borderColor,
+                  width: 1.0,
                 ),
               ),
-              items: options.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(
-                    value,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.black,
-                    ),
+              child: DropdownButtonFormField<String>(
+                key: fieldKey, // Ensures unique state for each dropdown
+                value: currentValue, // Dynamically updates with fetched values
+                decoration: InputDecoration(
+                  hintStyle: TextStyle(
+                    color: hintColor,
+                    fontWeight: FontWeight.w500,
                   ),
-                );
-              }).toList(),
-              onChanged: (value) {
-                onChanged(value);
-              },
-              dropdownColor: Colors.white,
-              elevation: 8,
-              menuMaxHeight: 500,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please select $label';
-                }
-                return null;
-              },
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 12.0,
+                    horizontal: 10.0,
+                  ),
+                ),
+                items: options.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(
+                      value,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.black,
+                      ),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  onChanged(value);
+                },
+                dropdownColor: Colors.white,
+                elevation: 8,
+                menuMaxHeight: 500,
+                // validator: (value) {
+                //   if (value == null || value.isEmpty) {
+                //     return 'Please select $label';
+                //   }
+                //   return null;
+                // },
+              ),
             ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Text(
+                label,
+                style: TextStyle(fontSize: 12, color: labelColor),
+              ),
+              if (isMandatory)
+                const Text(
+                  " *",
+                  style: TextStyle(fontSize: 12, color: Colors.red),
+                ),
+            ],
           ),
         ],
       ),

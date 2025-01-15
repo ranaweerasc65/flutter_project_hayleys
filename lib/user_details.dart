@@ -213,6 +213,45 @@ class _UserDetailsFormState extends State<UserDetails> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Text(
+                      "Relationship",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+
+                    buildDropdownField(
+                      "Relationship",
+                      relationship,
+                      [
+                        // First Connections
+
+                        'Mother',
+                        'Father',
+                        'Spouse',
+                        'Sister',
+                        'Brother',
+                        'Daughter',
+                        'Son',
+
+                        // Second Connections
+                        'Grandmother',
+                        'Grandfather',
+                        'Aunt',
+                        'Uncle',
+                        'Niece',
+                        'Nephew',
+                        'Cousin',
+
+                        // Others
+
+                        'Guardian',
+                        'Other',
+                      ],
+                      (value) => relationship = value,
+                      isMandatory: true,
+                    ),
+
                     // Name title
                     const Text(
                       "Name",
@@ -227,6 +266,7 @@ class _UserDetailsFormState extends State<UserDetails> {
                         Expanded(
                           child: buildTextField(
                             "First Name",
+                            isMandatory: true,
                             firstnameController,
                             "",
                           ),
@@ -236,6 +276,7 @@ class _UserDetailsFormState extends State<UserDetails> {
                           child: buildTextField(
                             "Last Name",
                             lastnameController,
+                            isMandatory: true,
                             "",
                           ),
                         ),
@@ -255,6 +296,7 @@ class _UserDetailsFormState extends State<UserDetails> {
                         Expanded(
                           child: buildDatePickerField(
                             "Date of Birth",
+                            isMandatory: true,
                             dobController,
                             "",
                           ),
@@ -297,6 +339,7 @@ class _UserDetailsFormState extends State<UserDetails> {
                           child: buildTextField(
                             "City",
                             cityController,
+                            isMandatory: true,
                             "",
                           ),
                         ),
@@ -338,6 +381,7 @@ class _UserDetailsFormState extends State<UserDetails> {
                               'Vavuniya',
                             ],
                             (value) => district = value,
+                            isMandatory: true,
                           ),
                         ),
                         const SizedBox(width: 16),
@@ -358,6 +402,7 @@ class _UserDetailsFormState extends State<UserDetails> {
                               'Western',
                             ],
                             (value) => province = value,
+                            isMandatory: true,
                           ),
                         ),
                       ],
@@ -375,6 +420,7 @@ class _UserDetailsFormState extends State<UserDetails> {
                       gender,
                       ['Male', 'Female', 'Not prefer to say'],
                       (value) => gender = value,
+                      isMandatory: true,
                     ),
 
                     const Text(
@@ -456,6 +502,7 @@ class _UserDetailsFormState extends State<UserDetails> {
                           child: buildTextField(
                             "Contact Number 1",
                             contact1Controller,
+                            isMandatory: true,
                             "",
                             keyboardType: TextInputType.phone,
                           ),
@@ -493,43 +540,6 @@ class _UserDetailsFormState extends State<UserDetails> {
                       ],
                     ),
 
-                    const Text(
-                      "Relationship",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-
-                    buildDropdownField(
-                      "Relationship",
-                      relationship,
-                      [
-                        // First Connections
-
-                        'Mother',
-                        'Father',
-                        'Spouse',
-                        'Sister',
-                        'Brother',
-                        'Daughter',
-                        'Son',
-
-                        // Second Connections
-                        'Grandmother',
-                        'Grandfather',
-                        'Aunt',
-                        'Uncle',
-                        'Niece',
-                        'Nephew',
-                        'Cousin',
-
-                        // Others
-
-                        'Guardian',
-                        'Other',
-                      ],
-                      (value) => relationship = value,
-                    ),
                     const SizedBox(height: 20),
                     Container(
                       //duration: const Duration(milliseconds: 1600),
@@ -925,6 +935,7 @@ class _UserDetailsFormState extends State<UserDetails> {
     String label,
     TextEditingController controller,
     String hint, {
+    bool isMandatory = false,
     TextInputType keyboardType = TextInputType.text,
     Color hintColor = const Color(0xFFB0BEC5),
     Color borderColor = const Color(0xFFCFD8DC),
@@ -977,10 +988,19 @@ class _UserDetailsFormState extends State<UserDetails> {
             ),
           ),
           const SizedBox(height: 8),
-          // Label below the input field
-          Text(
-            label,
-            style: TextStyle(fontSize: 12, color: labelColor),
+          // Label with optional red * for mandatory fields
+          Row(
+            children: [
+              Text(
+                label,
+                style: TextStyle(fontSize: 12, color: labelColor),
+              ),
+              if (isMandatory)
+                const Text(
+                  " *",
+                  style: TextStyle(fontSize: 12, color: Colors.red),
+                ),
+            ],
           ),
         ],
       ),
@@ -991,6 +1011,7 @@ class _UserDetailsFormState extends State<UserDetails> {
     String label,
     TextEditingController controller,
     String hint, {
+    bool isMandatory = false,
     Color hintColor = const Color(0xFFB0BEC5),
     Color borderColor = const Color(0xFFCFD8DC),
     Color labelColor = const Color(0xFF78909C),
@@ -1070,10 +1091,19 @@ class _UserDetailsFormState extends State<UserDetails> {
             ),
           ),
           const SizedBox(height: 8),
-          // Label below the input field
-          Text(
-            label,
-            style: TextStyle(fontSize: 12, color: labelColor),
+          // Label with optional red * for mandatory fields
+          Row(
+            children: [
+              Text(
+                label,
+                style: TextStyle(fontSize: 12, color: labelColor),
+              ),
+              if (isMandatory)
+                const Text(
+                  " *",
+                  style: TextStyle(fontSize: 12, color: Colors.red),
+                ),
+            ],
           ),
         ],
       ),
@@ -1085,6 +1115,8 @@ class _UserDetailsFormState extends State<UserDetails> {
     String? currentValue,
     List<String> options,
     Function(String?) onChanged, {
+    bool isMandatory =
+        false, // New parameter to indicate if the field is mandatory
     Color focusedBorderColor = const Color(0xFF607D8B),
     Color borderColor = const Color(0xFFCFD8DC),
     Color labelColor = const Color(0xFF78909C),
@@ -1145,10 +1177,19 @@ class _UserDetailsFormState extends State<UserDetails> {
             ),
           ),
           const SizedBox(height: 8),
-          // Label
-          Text(
-            label,
-            style: TextStyle(fontSize: 12, color: labelColor),
+          // Label with optional red * for mandatory fields
+          Row(
+            children: [
+              Text(
+                label,
+                style: TextStyle(fontSize: 12, color: labelColor),
+              ),
+              if (isMandatory)
+                const Text(
+                  " *",
+                  style: TextStyle(fontSize: 12, color: Colors.red),
+                ),
+            ],
           ),
         ],
       ),
