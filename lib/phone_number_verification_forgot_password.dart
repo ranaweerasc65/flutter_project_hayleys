@@ -1,29 +1,27 @@
-// this is the phone number verification dart file
-// check whether
-// 1. enter a correct format phone number
-// 2. check that the phone number exsits in the database
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_project_hayleys/login_screen.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_project_hayleys/otp.dart';
+import 'package:flutter_project_hayleys/otp_forgot_password.dart';
 import 'package:animate_do/animate_do.dart';
 
-class OtpVerificationScreen extends StatefulWidget {
-  const OtpVerificationScreen({super.key});
+class ForgotPasswordScreen extends StatefulWidget {
+  const ForgotPasswordScreen({super.key});
 
   @override
-  State<StatefulWidget> createState() => _RegisterScreenState();
+  _ForgotPasswordScreenState createState() => _ForgotPasswordScreenState();
 }
 
-class _RegisterScreenState extends State<OtpVerificationScreen> {
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  bool isSendingOtp = false; // Track OTP sending state
   final TextEditingController _phonenoController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  Future<void> registerUser() async {
+  Future<void> identifyUser() async {
+    print("Phone Number Verification - Forgot Password");
+    print("identifyUser Function ");
     String phoneNo = _phonenoController.text.trim();
 
     print("Phone No: $phoneNo");
@@ -43,18 +41,31 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
       return;
     }
 
+    // 16/01/2025
+    setState(() {
+      isSendingOtp = true; // Set OTP sending flag to true
+    });
+
     try {
       final response = await http.post(
-        Uri.parse('http://172.16.200.79/flutter_project_hayleys/php/otp.php'),
+        Uri.parse(
+            'http://172.16.200.79/flutter_project_hayleys/php/forgot_password_otp.php'),
         body: {
-          'phoneno': _phonenoController.text.trim(),
+          'phoneno': phoneNo,
+          'action': 'generate',
         },
       );
 
       if (response.statusCode == 200) {
+        print("200");
+        print("Raw Response Body: ${response.body}");
         final Map<String, dynamic> result = jsonDecode(response.body);
+
+        // Print the status to the terminal
+        print("Status: ${result['status']}");
         debugPrint(response.body);
-        if (result['status'] == 'exists') {
+
+        if (result['status'] == 'not_exists') {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(result['message'])),
           );
@@ -62,27 +73,26 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
             context,
             MaterialPageRoute(builder: (context) => const LoginScreen()),
           );
-        } else if (result['status'] == 'not_exists') {
+        } else if (result['status'] == 'exists') {
           String userId = result['user_id'].toString();
-          //String contact = result['phoneno'].toString();
-
           print("User ID: $userId");
-          //print("Contact: $phoneNo");
 
+          // Navigate to OTP screen for verification
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => Otp(
-                      key: UniqueKey(),
-                      userId: userId,
-                      phoneNo: phoneNo,
-                    )),
+              builder: (context) => OtpForgotPassword(
+                key: UniqueKey(),
+                userId: userId,
+                phoneNo: phoneNo,
+              ),
+            ),
           );
         } else {
-          // ScaffoldMessenger.of(context).showSnackBar(
-          //   const SnackBar(content: Text('Error processing the request'))
-
-          // );
+          // Handle unexpected status if needed
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Error processing the request')),
+          );
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -95,6 +105,13 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
         SnackBar(content: Text('Exception: $e')),
       );
       debugPrint('Exception: $e');
+    }
+
+    // 16/01/2025
+    finally {
+      setState(() {
+        isSendingOtp = false; // Reset OTP sending flag
+      });
     }
   }
 
@@ -128,6 +145,18 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     const SizedBox(height: 80),
+
+                    // Back Button
+                    FadeInUp(
+                      duration: const Duration(milliseconds: 1500),
+                      child: IconButton(
+                        icon: Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () {
+                          Navigator.pop(
+                              context); // Goes back to the previous screen
+                        },
+                      ),
+                    ),
                     Padding(
                       padding: const EdgeInsets.all(20),
                       child: Column(
@@ -136,7 +165,7 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
                           FadeInUp(
                             duration: const Duration(milliseconds: 1000),
                             child: const Text(
-                              "Phone Number Verification",
+                              "Forgot Password",
                               style:
                                   TextStyle(color: Colors.white, fontSize: 40),
                             ),
@@ -145,7 +174,7 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
                           FadeInUp(
                             duration: const Duration(milliseconds: 1300),
                             child: const Text(
-                              "We will send you a One Time Password for the entered mobile number for the registration.",
+                              "We will send you a One Time Password for the entered mobile number for change the password.",
                               style:
                                   TextStyle(color: Colors.white, fontSize: 18),
                             ),
@@ -154,6 +183,7 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
+
                     Expanded(
                       child: Container(
                         decoration: const BoxDecoration(
@@ -194,16 +224,23 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
                               FadeInUp(
                                 duration: const Duration(milliseconds: 1600),
                                 child: MaterialButton(
-                                  onPressed: registerUser,
+                                  // 16/01/2025
+                                  onPressed: isSendingOtp
+                                      ? null
+                                      : identifyUser, // Disable button if sending OTP
+
+                                  //onPressed: identifyUser,
                                   height: 50,
                                   color: Colors.blue[900],
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(50),
                                   ),
-                                  child: const Center(
+                                  child: Center(
                                     child: Text(
-                                      "Request OTP",
-                                      style: TextStyle(
+                                      isSendingOtp
+                                          ? "Sending OTP..."
+                                          : "Request OTP", // Update text based on state
+                                      style: const TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -212,40 +249,6 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
                                 ),
                               ),
                               const SizedBox(height: 20),
-                              FadeInUp(
-                                duration: const Duration(milliseconds: 1500),
-                                child: const Text(
-                                  "Already have an account?",
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              FadeInUp(
-                                duration: const Duration(milliseconds: 1600),
-                                child: MaterialButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  height: 50,
-                                  color: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(50),
-                                    side: BorderSide(
-                                      color: Colors.blue[900]!,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      "Login",
-                                      style: TextStyle(
-                                        color: Colors.blue[900],
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
                               const SizedBox(height: 50),
                             ],
                           ),

@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'home_page.dart';
 import 'package:animate_do/animate_do.dart';
+import 'phone_number_verification_forgot_password.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -221,13 +222,44 @@ class InitState extends State<LoginScreen> {
                               ),
                             ),
                             const SizedBox(height: 40),
+                            // FadeInUp(
+                            //   duration: const Duration(milliseconds: 1500),
+                            //   child: const Text(
+                            //     "Forgot Password?",
+                            //     style: TextStyle(color: Colors.grey),
+                            //   ),
+                            // ),
+
                             FadeInUp(
                               duration: const Duration(milliseconds: 1500),
-                              child: const Text(
-                                "Forgot Password?",
-                                style: TextStyle(color: Colors.grey),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment
+                                    .end, // Aligns to the right
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ForgotPasswordScreen(),
+                                        ),
+                                      );
+                                    },
+                                    child: Text(
+                                      "Forgot Password?",
+                                      style: TextStyle(
+                                        color: Colors
+                                            .blue[900], // Changed to blue color
+                                        fontSize: 16, // Increased font size
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
+
                             const SizedBox(height: 20),
                             FadeInUp(
                               duration: const Duration(milliseconds: 1600),
@@ -243,6 +275,7 @@ class InitState extends State<LoginScreen> {
                                     "Login",
                                     style: TextStyle(
                                       color: Colors.white,
+                                      fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -284,6 +317,7 @@ class InitState extends State<LoginScreen> {
                                     "Register",
                                     style: TextStyle(
                                       color: Colors.blue[900],
+                                      fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
