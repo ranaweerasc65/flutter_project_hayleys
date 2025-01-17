@@ -20,6 +20,7 @@ if (!$user_id) {
     exit;
 }
 
+
 // Prepare the SQL query to update user data
 $sql_update = "UPDATE users SET name = ?, email = ?, password = ?, datetime = NOW() WHERE id = ?";
 $stmt_update = $conn_hayleys_medicalapp->prepare($sql_update);

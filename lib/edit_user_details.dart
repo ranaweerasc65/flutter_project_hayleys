@@ -11,6 +11,7 @@ class EditUserDetails extends StatefulWidget {
   final String userName;
 
   const EditUserDetails({
+    super.key,
     required this.customerId,
     required this.phoneNo,
     required this.userName,
@@ -935,7 +936,7 @@ class _EditUserDetailsState extends State<EditUserDetails> {
           ),
           child: Padding(
             padding: const EdgeInsets.all(20.0),
-            child: Container(
+            child: SizedBox(
               width: 300, // Fixed width for the dialog
               child: Column(
                 mainAxisSize: MainAxisSize.min,

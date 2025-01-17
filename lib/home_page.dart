@@ -467,7 +467,7 @@ class _HomeContentState extends State<HomeContent> {
                         ],
                       ),
                     );
-                  }).toList(),
+                  }),
 
                   // Add New Connection Button
                   GestureDetector(

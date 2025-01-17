@@ -20,30 +20,21 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       TextEditingController();
 
   Future<void> identifyUser() async {
-    print("Phone Number Verification - Forgot Password");
-    print("identifyUser Function ");
     String phoneNo = _phonenoController.text.trim();
 
-    print("Phone No: $phoneNo");
-
     if (phoneNo.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter the phone number.')),
-      );
+      _showErrorDialog('Please enter the phone number.');
       return;
     }
 
-    // Check if the phone number starts with '0' and has exactly 10 digits
     if (!RegExp(r"^0\d{9}$").hasMatch(phoneNo)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid phone number.')),
-      );
+      _showErrorDialog('Please enter a valid phone number.');
       return;
     }
 
-    // 16/01/2025
+    // Show loading state by updating isSendingOtp
     setState(() {
-      isSendingOtp = true; // Set OTP sending flag to true
+      isSendingOtp = true; // Disable button and show loading text
     });
 
     try {
@@ -57,27 +48,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       );
 
       if (response.statusCode == 200) {
-        print("200");
-        print("Raw Response Body: ${response.body}");
         final Map<String, dynamic> result = jsonDecode(response.body);
 
-        // Print the status to the terminal
-        print("Status: ${result['status']}");
-        debugPrint(response.body);
-
         if (result['status'] == 'not_exists') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(result['message'])),
-          );
+          _showErrorDialog(result['message']);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const LoginScreen()),
           );
         } else if (result['status'] == 'exists') {
           String userId = result['user_id'].toString();
-          print("User ID: $userId");
 
-          // Navigate to OTP screen for verification
+          // Navigate to OTP screen after successful response
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -89,28 +71,17 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ),
           );
         } else {
-          // Handle unexpected status if needed
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Error processing the request')),
-          );
+          _showErrorDialog('Error processing the request');
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error connecting to the server')),
-        );
-        debugPrint(response.statusCode.toString());
+        _showErrorDialog('Error connecting to the server');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Exception: $e')),
-      );
-      debugPrint('Exception: $e');
-    }
-
-    // 16/01/2025
-    finally {
+      _showErrorDialog('Exception: $e');
+    } finally {
+      // Reset the isSendingOtp state to allow button interaction again
       setState(() {
-        isSendingOtp = false; // Reset OTP sending flag
+        isSendingOtp = false;
       });
     }
   }
@@ -150,7 +121,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     FadeInUp(
                       duration: const Duration(milliseconds: 1500),
                       child: IconButton(
-                        icon: Icon(Icons.arrow_back, color: Colors.white),
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
                         onPressed: () {
                           Navigator.pop(
                               context); // Goes back to the previous screen
@@ -222,27 +193,39 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               ),
                               const SizedBox(height: 20),
                               FadeInUp(
-                                duration: const Duration(milliseconds: 1600),
-                                child: MaterialButton(
-                                  // 16/01/2025
-                                  onPressed: isSendingOtp
-                                      ? null
-                                      : identifyUser, // Disable button if sending OTP
-
-                                  //onPressed: identifyUser,
-                                  height: 50,
-                                  color: Colors.blue[900],
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(50),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      isSendingOtp
-                                          ? "Sending OTP..."
-                                          : "Request OTP", // Update text based on state
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
+                                duration: const Duration(
+                                    milliseconds:
+                                        1400), // Set the duration for fade-in animation
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    onPressed: isSendingOtp
+                                        ? null
+                                        : identifyUser, // Disable during verification
+                                    //onPressed: _verifyOtp,
+                                    style: ButtonStyle(
+                                      foregroundColor:
+                                          WidgetStateProperty.all<Color>(
+                                              Colors.white),
+                                      backgroundColor:
+                                          WidgetStateProperty.all<Color>(
+                                              Colors.blue.shade900),
+                                      shape: WidgetStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                        RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                        ),
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(14.0),
+                                      child: Text(
+                                        isSendingOtp
+                                            ? 'Sending OTP...'
+                                            : 'Request OTP',
+                                        //'Verify',
+                                        style: const TextStyle(fontSize: 16),
                                       ),
                                     ),
                                   ),
@@ -269,6 +252,71 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     // Add logic here if needed, e.g., clear text fields
     setState(() {});
     await Future.delayed(const Duration(seconds: 1));
+  }
+
+  void _showErrorDialog(String errorMessage) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.red, // Red color
+                    shape: BoxShape.circle,
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: const Icon(
+                    Icons.error,
+                    size: 60,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  "Error!",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red, // Red color
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  errorMessage,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 16, color: Colors.black),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: const Text(
+                    "Ok",
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Widget buildTextField(String hintText, {bool obscureText = false}) {

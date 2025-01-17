@@ -242,7 +242,7 @@ class InitState extends State<LoginScreen> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              ForgotPasswordScreen(),
+                                              const ForgotPasswordScreen(),
                                         ),
                                       );
                                     },
@@ -275,7 +275,7 @@ class InitState extends State<LoginScreen> {
                                     "Login",
                                     style: TextStyle(
                                       color: Colors.white,
-                                      fontSize: 18,
+                                      fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -317,7 +317,7 @@ class InitState extends State<LoginScreen> {
                                     "Register",
                                     style: TextStyle(
                                       color: Colors.blue[900],
-                                      fontSize: 18,
+                                      fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),

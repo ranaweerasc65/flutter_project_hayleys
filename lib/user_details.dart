@@ -14,10 +14,10 @@ class UserDetails extends StatefulWidget {
   final String userName;
 
   const UserDetails({
-    Key? key,
+    super.key,
     required this.phoneNo,
     required this.userName,
-  }) : super(key: key);
+  });
 
   @override
   State<UserDetails> createState() => _UserDetailsFormState();
