@@ -7,12 +7,19 @@ import 'others_page.dart';
 import 'insurance_card.dart';
 import 'settings.dart';
 import 'profile.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Dashboard extends StatefulWidget {
   final String userName;
   final String phoneNo;
+  final int customerId;
 
-  const Dashboard({super.key, required this.userName, required this.phoneNo});
+  const Dashboard(
+      {super.key,
+      required this.userName,
+      required this.phoneNo,
+      required this.customerId});
   @override
   _DashboardPageState createState() => _DashboardPageState();
 }
@@ -26,8 +33,17 @@ class _DashboardPageState extends State<Dashboard> {
   void initState() {
     super.initState();
 
+    print('DASHBOARD SCREEN');
+
+    // Print the customerId here
+    print('Customer ID: ${widget.customerId}');
+
     _pages = [
-      DashboardContent(userName: widget.userName, phoneNo: widget.phoneNo),
+      DashboardContent(
+        userName: widget.userName,
+        phoneNo: widget.phoneNo,
+        customerId: widget.customerId,
+      ),
       const ProfilePage(),
       const InsuranceCardPage(),
       const SettingsPage(),
@@ -87,19 +103,79 @@ class _DashboardPageState extends State<Dashboard> {
   }
 }
 
-class DashboardContent extends StatelessWidget {
+class DashboardContent extends StatefulWidget {
   final String userName;
   final String phoneNo;
+  final int customerId;
+
   const DashboardContent(
-      {super.key, required this.userName, required this.phoneNo});
+      {super.key,
+      required this.userName,
+      required this.phoneNo,
+      required this.customerId});
+
+  State<DashboardContent> createState() => _DashboardContentState();
+}
+
+class _DashboardContentState extends State<DashboardContent> {
+  String firstName = '';
+  String lastName = '';
+
+  @override
+  void initState() {
+    super.initState();
+    // Call the fetch method to retrieve customer details
+    _fetchCustomerDetails();
+  }
+
+  Future<void> _fetchCustomerDetails() async {
+    print("Starting _fetchCustomerDetails...");
+    print("Customer ID: ${widget.customerId}");
+
+    try {
+      final url = Uri.parse(
+          'http://172.16.200.79/flutter_project_hayleys/php/get_First&LastNames.php?customer_id=${widget.customerId}');
+      // print("Constructed URL: $url");
+
+      // Sending the GET request
+      final response = await http.get(url);
+      //  print("HTTP GET request sent.");
+
+      // Checking the status code
+      //print("Response Status Code: ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        print("Response Body: ${response.body}");
+        final data = jsonDecode(response.body);
+
+        // Checking the JSON structure
+        // print("Parsed Response Data: $data");
+
+        if (data['status'] == 'success') {
+          //print("Successfully fetched customer details.");
+          setState(() {
+            firstName = data['first_name']; // Update keys to match PHP response
+            lastName = data['last_name'];
+          });
+          //print("Updated state: firstName=$firstName, lastName=$lastName");
+        } else {
+          // print("Error from server: ${data['message']}");
+        }
+      } else {
+        // print('Error: Server returned status code ${response.statusCode}');
+      }
+    } catch (e) {
+      // print('Error fetching customer details: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text(
-            'First Name + Last Name',
-            style: TextStyle(
+          title: Text(
+            '$firstName $lastName',
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 24,
               color: Colors.white,

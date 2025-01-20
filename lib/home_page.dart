@@ -113,6 +113,8 @@ class HomeContent extends StatefulWidget {
 }
 
 class _HomeContentState extends State<HomeContent> {
+  int? customerId;
+
   final List<String> MyConnections = [];
 
   //List<String> Connections = [];
@@ -172,6 +174,76 @@ class _HomeContentState extends State<HomeContent> {
     } catch (e) {
       print('Error fetching connections: $e');
     }
+  }
+
+  Future<void> fetchEmployeeId() async {
+    final url = Uri.parse(
+        'http://172.16.200.79/flutter_project_hayleys/php/fetch_primary_user_details.php?phone_no=${widget.phoneNo}');
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+
+        if (responseData['status'] == 'success') {
+          setState(() {
+            customerId = responseData['existing_data']['CUSTOMERS_ID'];
+          });
+        } else {
+          showError(responseData['message']);
+        }
+      } else {
+        showError('Failed to fetch customer data');
+      }
+    } catch (e) {
+      showError('Error occurred: $e');
+    }
+  }
+
+  Future<void> fetchCustomerId() async {
+    final url = Uri.parse(
+        'http://172.16.200.79/flutter_project_hayleys/php/fetch_user_details.php?phone_no=${widget.phoneNo}');
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+
+        if (responseData['status'] == 'success') {
+          setState(() {
+            customerId = responseData['existing_data']['CUSTOMERS_ID'];
+          });
+        } else {
+          showError(responseData['message']);
+        }
+      } else {
+        showError('Failed to fetch customer data');
+      }
+    } catch (e) {
+      showError('Error occurred: $e');
+    }
+  }
+
+  void showError(String message) {
+    // Print the error message to the terminal
+    print('Error: $message');
+
+    // Display the error message in a dialog
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -261,16 +333,24 @@ class _HomeContentState extends State<HomeContent> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
               child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Dashboard(
-                        phoneNo: widget.phoneNo,
-                        userName: widget.userName,
+                onTap: () async {
+                  await fetchEmployeeId();
+                  print('Fetched Employee Id: $customerId');
+                  if (customerId != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Dashboard(
+                          phoneNo: widget.phoneNo,
+                          userName: widget.userName,
+                          customerId:
+                              customerId!, // Pass customerId to Dashboard
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  } else {
+                    showError('Employee ID is null'); // Handle error case
+                  }
                 },
                 child: Stack(
                   children: [
@@ -389,6 +469,8 @@ class _HomeContentState extends State<HomeContent> {
                               children: [
                                 GestureDetector(
                                   onTap: () {
+                                    print(
+                                        '${connection['CUSTOMERS_FIRST_NAME']} ${connection['CUSTOMERS_LAST_NAME']}');
                                     // Navigate to the Dashboard page
                                     Navigator.push(
                                       context,
@@ -396,6 +478,8 @@ class _HomeContentState extends State<HomeContent> {
                                         builder: (context) => Dashboard(
                                           phoneNo: widget.phoneNo,
                                           userName: widget.userName,
+                                          customerId:
+                                              connection['CUSTOMERS_ID'],
                                         ),
                                       ),
                                     );
