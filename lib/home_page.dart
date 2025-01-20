@@ -387,15 +387,28 @@ class _HomeContentState extends State<HomeContent> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                // Profile Picture
-                                Container(
-                                  height: 100,
-                                  width: 100,
-                                  margin: const EdgeInsets.only(top: 16),
-                                  child: ClipOval(
-                                    child: Image.asset(
-                                      'assets/user.png',
-                                      fit: BoxFit.cover,
+                                GestureDetector(
+                                  onTap: () {
+                                    // Navigate to the Dashboard page
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => Dashboard(
+                                          phoneNo: widget.phoneNo,
+                                          userName: widget.userName,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    height: 100,
+                                    width: 100,
+                                    margin: const EdgeInsets.only(top: 16),
+                                    child: ClipOval(
+                                      child: Image.asset(
+                                        'assets/user.png',
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   ),
                                 ),
