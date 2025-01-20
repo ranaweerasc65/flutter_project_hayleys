@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_project_hayleys/dashboard.dart';
 import 'login_screen.dart';
@@ -240,11 +239,11 @@ class _HomeContentState extends State<HomeContent> {
                       ),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(20),
-                        child: Image.network(
-                          'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
+                        child: Image.asset(
+                          'assets/user.png',
+                          fit: BoxFit.cover,
                           width: 200,
                           height: 200,
-                          fit: BoxFit.cover,
                         ),
                       ),
                     ],
@@ -266,7 +265,10 @@ class _HomeContentState extends State<HomeContent> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const Dashboard(),
+                      builder: (context) => Dashboard(
+                        phoneNo: widget.phoneNo,
+                        userName: widget.userName,
+                      ),
                     ),
                   );
                 },
@@ -295,8 +297,8 @@ class _HomeContentState extends State<HomeContent> {
                             width: 100,
                             margin: const EdgeInsets.only(top: 16),
                             child: ClipOval(
-                              child: Image.network(
-                                'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
+                              child: Image.asset(
+                                'assets/user.png',
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -307,8 +309,8 @@ class _HomeContentState extends State<HomeContent> {
                     ),
                     // Edit Button Positioned at the Top-Right
                     Positioned(
-                      top: 5, // Adjust as needed
-                      right: 5, // Adjust as needed
+                      top: 5,
+                      right: 5,
                       child: GestureDetector(
                         onTap: () {
                           // Navigate to UserDetails form to edit the connection

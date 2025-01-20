@@ -726,6 +726,7 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
 
   Future<void> _fetchExistingDetails() async {
     print('come to _fetchExistingDetails');
+    print('come to _fetchExistingDetails');
 
     // Prepare the URL with query parameter
     final url = Uri.parse(

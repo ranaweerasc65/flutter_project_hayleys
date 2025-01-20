@@ -47,7 +47,7 @@ class InitState extends State<SplashScreen> {
             Color.fromARGB(255, 98, 155, 221), // Soft Peach
           ], begin: Alignment.topCenter, end: Alignment.bottomCenter))),
           Center(
-            child: Container(child: Image.asset("assets/app_logo.png")),
+            child: Image.asset("assets/app_logo.png"),
           )
         ],
       ),
