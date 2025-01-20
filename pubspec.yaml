@@ -37,6 +37,8 @@ dependencies:
   intl_phone_number_input: ^0.7.4
   email_validator: ^2.0.0
   intl: ^0.18.0
+  flip_card: ^0.6.0
+  patterns_canvas: ^0.4.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -71,6 +73,11 @@ flutter:
     - assets/bills.png
     - assets/prescriptions.png
     - assets/reports.png
+    - assets/checked.png
+    - assets/chip.png
+    - assets/mastercard.png
+    - assets/contact_less.png
+
 
   # To add assets to your application, add an assets section, like this:
   # assets:
