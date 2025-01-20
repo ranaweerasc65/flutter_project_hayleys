@@ -1,9 +1,21 @@
 import 'package:flutter/material.dart';
 
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
-
+class ProfilePage extends StatefulWidget {
+  final int customerId;
+  const ProfilePage({super.key, required this.customerId});
   @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  @override
+  void initState() {
+    super.initState();
+
+    print('PROFILE SCREEN');
+    print('Customer ID: ${widget.customerId}');
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -23,17 +35,6 @@ class ProfilePage extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
-            // Profile Image
-            const Center(
-              child: CircleAvatar(
-                radius: 60,
-                backgroundImage:
-                    NetworkImage('https://via.placeholder.com/150'),
-                // You can replace the URL with an image from your assets or a network image.
-              ),
-            ),
-            const SizedBox(height: 20),
-
             // General Information Section
             const Text(
               'General Information',

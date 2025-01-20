@@ -44,9 +44,9 @@ class _DashboardPageState extends State<Dashboard> {
         phoneNo: widget.phoneNo,
         customerId: widget.customerId,
       ),
-      const ProfilePage(),
-      const InsuranceCardPage(),
-      const SettingsPage(),
+      ProfilePage(customerId: widget.customerId),
+      InsuranceCardPage(customerId: widget.customerId),
+      SettingsPage(customerId: widget.customerId),
     ];
   }
 
@@ -129,8 +129,8 @@ class _DashboardContentState extends State<DashboardContent> {
   }
 
   Future<void> _fetchCustomerDetails() async {
-    print("Starting _fetchCustomerDetails...");
-    print("Customer ID: ${widget.customerId}");
+    // print("Starting _fetchCustomerDetails...");
+    //print("Customer ID: ${widget.customerId}");
 
     try {
       final url = Uri.parse(
@@ -149,7 +149,7 @@ class _DashboardContentState extends State<DashboardContent> {
         final data = jsonDecode(response.body);
 
         // Checking the JSON structure
-        // print("Parsed Response Data: $data");
+        //print("Parsed Response Data: $data");
 
         if (data['status'] == 'success') {
           //print("Successfully fetched customer details.");

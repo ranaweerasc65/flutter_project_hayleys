@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     _pages = [
       HomeContent(userName: widget.userName, phoneNo: widget.phoneNo),
-      const ProfilePage(),
+      //const ProfilePage(firstName: '',),
       const ApprovalsPage(),
     ];
   }

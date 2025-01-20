@@ -10,13 +10,14 @@ import 'package:flutter_project_hayleys/insurance_card/master_card.dart';
 import 'package:flutter_project_hayleys/insurance_card/my_painter.dart';
 
 class InsuranceCardPage extends StatefulWidget {
-  const InsuranceCardPage({Key? key}) : super(key: key);
+  final int customerId;
+  const InsuranceCardPage({super.key, required this.customerId});
 
   @override
-  State<InsuranceCardPage> createState() => _HomePageState();
+  State<InsuranceCardPage> createState() => _InsuranceCardPageState();
 }
 
-class _HomePageState extends State<InsuranceCardPage> {
+class _InsuranceCardPageState extends State<InsuranceCardPage> {
   final TextEditingController cardNumberController = TextEditingController();
   final TextEditingController cardHolderNameController =
       TextEditingController();
@@ -27,6 +28,13 @@ class _HomePageState extends State<InsuranceCardPage> {
   final FlipCardController flipCardController = FlipCardController();
 
   @override
+  void initState() {
+    super.initState();
+
+    print('INSURANCE CARD SCREEN');
+    print('Customer ID: ${widget.customerId}');
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
