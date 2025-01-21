@@ -2,7 +2,6 @@
 import 'package:flutter_project_hayleys/home_page.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
-import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 
 // 31/12/2024 CONNECT WITH THE USER_DETAILS.PHP CODE

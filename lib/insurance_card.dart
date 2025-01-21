@@ -91,81 +91,7 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               //Insurance Card (Display the existing details)
-              // Card(
-              //   elevation: 8,
-              //   color: Colors.orange,
-              //   shape: RoundedRectangleBorder(
-              //     borderRadius: BorderRadius.circular(16),
-              //   ),
-              //   child: Padding(
-              //     padding: const EdgeInsets.all(16.0),
-              //     child: Column(
-              //       crossAxisAlignment: CrossAxisAlignment.start,
-              //       children: [
-              //         // Card Title
-              //         Text(
-              //           insuranceCompanyNameController.text.isNotEmpty
-              //               ? insuranceCompanyNameController.text
-              //               : "Insurance Company",
-              //           style: TextStyle(
-              //             fontSize: 24,
-              //             fontWeight: FontWeight.bold,
-              //             color: Colors.red.shade800,
-              //           ),
-              //         ),
-              //         const SizedBox(height: 16),
-              //         // Membership and Policy Number
-              //         Row(
-              //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //           children: [
-              //             Column(
-              //               crossAxisAlignment: CrossAxisAlignment.start,
-              //               children: [
-              //                 const Text(
-              //                   "MEMBERSHIP NO :",
-              //                   style: TextStyle(fontWeight: FontWeight.bold),
-              //                 ),
-              //                 Text(
-              //                   membershipNoController.text,
-              //                   style: TextStyle(fontSize: 16),
-              //                 ),
-              //               ],
-              //             ),
-              //             Column(
-              //               crossAxisAlignment: CrossAxisAlignment.start,
-              //               children: [
-              //                 const Text(
-              //                   "POLICY NO :",
-              //                   style: TextStyle(fontWeight: FontWeight.bold),
-              //                 ),
-              //                 Text(
-              //                   policyNoController.text,
-              //                   style: TextStyle(fontSize: 16),
-              //                 ),
-              //               ],
-              //             ),
-              //           ],
-              //         ),
-              //         const SizedBox(height: 16),
-              //         // Name of the insured
-              //         Text(
-              //           cardHolderNameController.text,
-              //           style: TextStyle(
-              //               fontSize: 18, fontWeight: FontWeight.bold),
-              //         ),
-              //         const SizedBox(height: 16),
-              //         // Footer text
-              //         const Align(
-              //           alignment: Alignment.bottomRight,
-              //           child: Text(
-              //             "Continental Insurance Lanka Ltd.",
-              //             style: TextStyle(fontSize: 12, color: Colors.grey),
-              //           ),
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              // ),
+              // COMMENT BELOW
 
               const SizedBox(height: 8),
               Form(
@@ -389,3 +315,82 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
     );
   }
 }
+
+
+
+ //Insurance Card (Display the existing details)
+              // Card(
+              //   elevation: 8,
+              //   color: Colors.orange,
+              //   shape: RoundedRectangleBorder(
+              //     borderRadius: BorderRadius.circular(16),
+              //   ),
+              //   child: Padding(
+              //     padding: const EdgeInsets.all(16.0),
+              //     child: Column(
+              //       crossAxisAlignment: CrossAxisAlignment.start,
+              //       children: [
+              //         // Card Title
+              //         Text(
+              //           insuranceCompanyNameController.text.isNotEmpty
+              //               ? insuranceCompanyNameController.text
+              //               : "Insurance Company",
+              //           style: TextStyle(
+              //             fontSize: 24,
+              //             fontWeight: FontWeight.bold,
+              //             color: Colors.red.shade800,
+              //           ),
+              //         ),
+              //         const SizedBox(height: 16),
+              //         // Membership and Policy Number
+              //         Row(
+              //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //           children: [
+              //             Column(
+              //               crossAxisAlignment: CrossAxisAlignment.start,
+              //               children: [
+              //                 const Text(
+              //                   "MEMBERSHIP NO :",
+              //                   style: TextStyle(fontWeight: FontWeight.bold),
+              //                 ),
+              //                 Text(
+              //                   membershipNoController.text,
+              //                   style: TextStyle(fontSize: 16),
+              //                 ),
+              //               ],
+              //             ),
+              //             Column(
+              //               crossAxisAlignment: CrossAxisAlignment.start,
+              //               children: [
+              //                 const Text(
+              //                   "POLICY NO :",
+              //                   style: TextStyle(fontWeight: FontWeight.bold),
+              //                 ),
+              //                 Text(
+              //                   policyNoController.text,
+              //                   style: TextStyle(fontSize: 16),
+              //                 ),
+              //               ],
+              //             ),
+              //           ],
+              //         ),
+              //         const SizedBox(height: 16),
+              //         // Name of the insured
+              //         Text(
+              //           cardHolderNameController.text,
+              //           style: TextStyle(
+              //               fontSize: 18, fontWeight: FontWeight.bold),
+              //         ),
+              //         const SizedBox(height: 16),
+              //         // Footer text
+              //         const Align(
+              //           alignment: Alignment.bottomRight,
+              //           child: Text(
+              //             "Continental Insurance Lanka Ltd.",
+              //             style: TextStyle(fontSize: 12, color: Colors.grey),
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
