@@ -1,13 +1,4 @@
-import 'package:flip_card/flip_card.dart';
-import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_project_hayleys/insurance_card/card_month_input_formatter.dart';
-import 'package:flutter_project_hayleys/insurance_card/card_alert_dialog.dart';
-import 'package:flutter_project_hayleys/insurance_card/card_input_formatter.dart';
-
-import 'package:flutter_project_hayleys/insurance_card/master_card.dart';
-import 'package:flutter_project_hayleys/insurance_card/my_painter.dart';
 
 class InsuranceCardPage extends StatefulWidget {
   final int customerId;
@@ -18,14 +9,14 @@ class InsuranceCardPage extends StatefulWidget {
 }
 
 class _InsuranceCardPageState extends State<InsuranceCardPage> {
-  final TextEditingController cardNumberController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  final TextEditingController membershipNoController = TextEditingController();
+  final TextEditingController policyNoController = TextEditingController();
   final TextEditingController cardHolderNameController =
       TextEditingController();
-  final TextEditingController cardExpiryDateController =
+  final TextEditingController insuranceCompanyNameController =
       TextEditingController();
-  final TextEditingController cardCvvController = TextEditingController();
-
-  final FlipCardController flipCardController = FlipCardController();
 
   @override
   void initState() {
@@ -35,320 +26,366 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
     print('Customer ID: ${widget.customerId}');
   }
 
+  Future<void> _refreshForm() async {
+    setState(() {
+      membershipNoController.clear();
+      policyNoController.clear();
+      cardHolderNameController.clear();
+      insuranceCompanyNameController.clear();
+    });
+    await Future.delayed(const Duration(seconds: 1));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 30),
-              FlipCard(
-                  fill: Fill.fillFront,
-                  direction: FlipDirection.HORIZONTAL,
-                  controller: flipCardController,
-                  onFlip: () {
-                    print('Flip');
-                  },
-                  flipOnTouch: false,
-                  onFlipDone: (isFront) {
-                    print('isFront: $isFront');
-                  },
-                  front: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: buildCreditCard(
-                      color: Color(0xffa42903),
-                      cardExpiration: cardExpiryDateController.text.isEmpty
-                          ? "08/2022"
-                          : cardExpiryDateController.text,
-                      cardHolder: cardHolderNameController.text.isEmpty
-                          ? "Card Holder"
-                          : cardHolderNameController.text.toUpperCase(),
-                      cardNumber: cardNumberController.text.isEmpty
-                          ? "XXXX XXXX XXXX XXXX"
-                          : cardNumberController.text,
-                    ),
+      appBar: AppBar(
+        title: const Text(
+          'Insurance Card Details',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+            color: Colors.white,
+          ),
+        ),
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        backgroundColor: Colors.blue.shade800,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: GestureDetector(
+              onTap: () {
+                _showExitConfirmationDialog(context);
+              },
+              child: const Center(
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
-                  back: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Card(
-                      elevation: 4.0,
-                      color: Color(0xffa42903),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      backgroundColor: Colors.white,
+      body: RefreshIndicator(
+        onRefresh:
+            _refreshForm, // The function to handle the pull-to-refresh action
+        color: const Color.fromARGB(255, 8, 120, 212),
+        child: SingleChildScrollView(
+          physics:
+              const AlwaysScrollableScrollPhysics(), // Ensures pull-to-refresh works
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              //Insurance Card (Display the existing details)
+              // Card(
+              //   elevation: 8,
+              //   color: Colors.orange,
+              //   shape: RoundedRectangleBorder(
+              //     borderRadius: BorderRadius.circular(16),
+              //   ),
+              //   child: Padding(
+              //     padding: const EdgeInsets.all(16.0),
+              //     child: Column(
+              //       crossAxisAlignment: CrossAxisAlignment.start,
+              //       children: [
+              //         // Card Title
+              //         Text(
+              //           insuranceCompanyNameController.text.isNotEmpty
+              //               ? insuranceCompanyNameController.text
+              //               : "Insurance Company",
+              //           style: TextStyle(
+              //             fontSize: 24,
+              //             fontWeight: FontWeight.bold,
+              //             color: Colors.red.shade800,
+              //           ),
+              //         ),
+              //         const SizedBox(height: 16),
+              //         // Membership and Policy Number
+              //         Row(
+              //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //           children: [
+              //             Column(
+              //               crossAxisAlignment: CrossAxisAlignment.start,
+              //               children: [
+              //                 const Text(
+              //                   "MEMBERSHIP NO :",
+              //                   style: TextStyle(fontWeight: FontWeight.bold),
+              //                 ),
+              //                 Text(
+              //                   membershipNoController.text,
+              //                   style: TextStyle(fontSize: 16),
+              //                 ),
+              //               ],
+              //             ),
+              //             Column(
+              //               crossAxisAlignment: CrossAxisAlignment.start,
+              //               children: [
+              //                 const Text(
+              //                   "POLICY NO :",
+              //                   style: TextStyle(fontWeight: FontWeight.bold),
+              //                 ),
+              //                 Text(
+              //                   policyNoController.text,
+              //                   style: TextStyle(fontSize: 16),
+              //                 ),
+              //               ],
+              //             ),
+              //           ],
+              //         ),
+              //         const SizedBox(height: 16),
+              //         // Name of the insured
+              //         Text(
+              //           cardHolderNameController.text,
+              //           style: TextStyle(
+              //               fontSize: 18, fontWeight: FontWeight.bold),
+              //         ),
+              //         const SizedBox(height: 16),
+              //         // Footer text
+              //         const Align(
+              //           alignment: Alignment.bottomRight,
+              //           child: Text(
+              //             "Continental Insurance Lanka Ltd.",
+              //             style: TextStyle(fontSize: 12, color: Colors.grey),
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
+
+              const SizedBox(height: 8),
+              Form(
+                key: _formKey,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Name title
+                      const Text(
+                        "Insurance Company Name",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
-                      child: Container(
-                        height: 230,
-                        padding: const EdgeInsets.only(
-                            left: 16.0, right: 16.0, bottom: 22.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      const SizedBox(height: 2),
+
+                      Row(
+                        children: [
+                          // First Name
+                          Expanded(
+                            child: buildTextField(
+                              insuranceCompanyNameController,
+                              "Enter the Insurance Company Name",
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      // Name title
+                      const Text(
+                        "Card Holder Name",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 2),
+
+                      Row(
+                        children: [
+                          // First Name
+                          Expanded(
+                            child: buildTextField(
+                              cardHolderNameController,
+                              "Enter the card holder name",
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const Text(
+                        "Membership No.",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 2),
+
+                      Row(
+                        children: [
+                          // City
+                          Expanded(
+                            child: buildTextField(
+                              membershipNoController,
+                              "Enter the membership number",
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const Text(
+                        "Policy No.",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 2),
+
+                      Row(
+                        children: [
+                          // Occupation
+                          Expanded(
+                            child: buildTextField(
+                              policyNoController,
+                              "Enter the policy number",
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 20),
+                      Container(
+                        //duration: const Duration(milliseconds: 1600),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const SizedBox(height: 0),
-                            const Text(
-                              'https://www.paypal.com',
-                              style: TextStyle(
-                                color: Colors.white54,
-                                fontSize: 11,
-                              ),
-                            ),
-                            Container(
-                              height: 45,
-                              width: MediaQuery.of(context).size.width / 1.2,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                            ),
-                            CustomPaint(
-                              painter: MyPainter(),
-                              child: SizedBox(
-                                height: 35,
-                                width: MediaQuery.of(context).size.width / 1.2,
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      cardCvvController.text.isEmpty
-                                          ? "322"
-                                          : cardCvvController.text,
-                                      style: const TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 21,
-                                      ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: MaterialButton(
+                                height: 50, // Button height
+                                minWidth: MediaQuery.of(context).size.width *
+                                    0.4, // 40% of the screen width
+                                color:
+                                    Colors.blue[800], // Button background color
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      50), // Rounded corners
+                                ),
+
+                                onPressed: () {},
+                                child: const Center(
+                                  child: Text(
+                                    "Add and Save Insurance Card",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
                                     ),
                                   ),
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 10),
-                            const Text(
-                              'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.',
-                              style: TextStyle(
-                                color: Colors.white54,
-                                fontSize: 11,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
                           ],
                         ),
                       ),
-                    ),
-                  )),
-              const SizedBox(height: 40),
-              Container(
-                height: 55,
-                width: MediaQuery.of(context).size.width / 1.12,
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: TextFormField(
-                  controller: cardNumberController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                    hintText: 'Card Number',
-                    hintStyle: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 16,
-                    ),
-                    prefixIcon: Icon(
-                      Icons.credit_card,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(16),
-                    CardInputFormatter(),
-                  ],
-                  onChanged: (value) {
-                    var text = value.replaceAll(RegExp(r'\s+\b|\b\s'), ' ');
-                    setState(() {
-                      cardNumberController.value = cardNumberController.value
-                          .copyWith(
-                              text: text,
-                              selection:
-                                  TextSelection.collapsed(offset: text.length),
-                              composing: TextRange.empty);
-                    });
-                  },
-                ),
-              ),
-              const SizedBox(height: 12),
-              Container(
-                height: 55,
-                width: MediaQuery.of(context).size.width / 1.12,
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: TextFormField(
-                  controller: cardHolderNameController,
-                  keyboardType: TextInputType.name,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                    hintText: 'Full Name',
-                    hintStyle: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 16,
-                    ),
-                    prefixIcon: Icon(
-                      Icons.person,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      cardHolderNameController.value =
-                          cardHolderNameController.value.copyWith(
-                              text: value,
-                              selection:
-                                  TextSelection.collapsed(offset: value.length),
-                              composing: TextRange.empty);
-                    });
-                  },
-                ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    height: 55,
-                    width: MediaQuery.of(context).size.width / 2.4,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: TextFormField(
-                      controller: cardExpiryDateController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                        hintText: 'MM/YY',
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                        ),
-                        prefixIcon: Icon(
-                          Icons.calendar_today,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(4),
-                        CardDateInputFormatter(),
-                      ],
-                      onChanged: (value) {
-                        var text = value.replaceAll(RegExp(r'\s+\b|\b\s'), ' ');
-                        setState(() {
-                          cardExpiryDateController.value =
-                              cardExpiryDateController.value.copyWith(
-                                  text: text,
-                                  selection: TextSelection.collapsed(
-                                      offset: text.length),
-                                  composing: TextRange.empty);
-                        });
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Container(
-                    height: 55,
-                    width: MediaQuery.of(context).size.width / 2.4,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: TextFormField(
-                      controller: cardCvvController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                        hintText: 'CVV',
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                        ),
-                        prefixIcon: Icon(
-                          Icons.lock,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(3),
-                      ],
-                      onTap: () {
-                        setState(() {
-                          Future.delayed(const Duration(milliseconds: 300), () {
-                            flipCardController.toggleCard();
-                          });
-                        });
-                      },
-                      onChanged: (value) {
-                        setState(() {
-                          int length = value.length;
-                          if (length == 4 || length == 9 || length == 14) {
-                            cardNumberController.text = '$value ';
-                            cardNumberController.selection =
-                                TextSelection.fromPosition(
-                                    TextPosition(offset: value.length + 1));
-                          }
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20 * 3),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.deepPurpleAccent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  minimumSize:
-                      Size(MediaQuery.of(context).size.width / 1.12, 55),
-                ),
-                onPressed: () {
-                  Future.delayed(const Duration(milliseconds: 300), () {
-                    showDialog(
-                        context: context,
-                        builder: (context) => const CardAlertDialog());
-                    cardCvvController.clear();
-                    cardExpiryDateController.clear();
-                    cardHolderNameController.clear();
-                    cardNumberController.clear();
-                    flipCardController.toggleCard();
-                  });
-                },
-                child: Text(
-                  'Add Card'.toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
+                    ],
                   ),
                 ),
               ),
-            ],
+            ]),
           ),
         ),
       ),
+    );
+  }
+
+  Widget buildTextField(
+    TextEditingController controller,
+    String hint, {
+    bool isMandatory = false,
+    TextInputType keyboardType = TextInputType.text,
+    Color hintColor = const Color(0xFFB0BEC5),
+    Color borderColor = const Color(0xFFCFD8DC),
+    Color labelColor = const Color(0xFF78909C),
+    Color focusedBorderColor = const Color(0xFF607D8B),
+    String? Function(String?)? validator,
+    String? errorMessage,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Input field
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(
+                color: borderColor,
+                width: 1.0,
+              ),
+            ),
+            child: TextFormField(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: hint,
+                hintStyle: TextStyle(
+                  color: hintColor,
+                  fontWeight: FontWeight.w500,
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 12.0,
+                  horizontal: 10.0,
+                ),
+                // Show error message if exists
+                errorText: errorMessage,
+              ),
+              keyboardType: keyboardType,
+              validator: validator,
+              // validator: (value) {
+              //   if (value == null || value.isEmpty) {
+              //     return "Please enter $label.";
+              //   }
+              //   return null;
+              // },
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Label with optional red * for mandatory fields
+        ],
+      ),
+    );
+  }
+
+  void _showExitConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Exit Confirmation"),
+          content: const Text("Are you sure you want to exit?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("No"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pop(context);
+              },
+              child: const Text("Yes"),
+            ),
+          ],
+        );
+      },
     );
   }
 }
