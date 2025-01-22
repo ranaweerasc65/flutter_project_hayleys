@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
 class InsuranceCardPage extends StatefulWidget {
@@ -34,23 +36,230 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
     print('Logged in user phone no: ${widget.phoneNo}');
   }
 
+  // Future<void> _addCard() async {
+  //   // Simulate adding a card
+  //   if (_formKey.currentState!.validate()) {
+  //     setState(() {
+  //       addedCards.add({
+  //         'insuranceCompanyName': insuranceCompanyNameController.text,
+  //         'cardHolderName': cardHolderNameController.text,
+  //         'membershipNo': membershipNoController.text,
+  //         'policyNo': policyNoController.text,
+  //       });
+  //       insuranceCompanyNameController.clear();
+  //       cardHolderNameController.clear();
+  //       membershipNoController.clear();
+  //       policyNoController.clear();
+  //     });
+  //     Navigator.pop(context); // Close the popup
+  //   }
+  // }
+
   Future<void> _addCard() async {
-    // Simulate adding a card
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        addedCards.add({
-          'insuranceCompanyName': insuranceCompanyNameController.text,
-          'cardHolderName': cardHolderNameController.text,
-          'membershipNo': membershipNoController.text,
-          'policyNo': policyNoController.text,
-        });
-        insuranceCompanyNameController.clear();
-        cardHolderNameController.clear();
-        membershipNoController.clear();
-        policyNoController.clear();
-      });
-      Navigator.pop(context); // Close the popup
+    print('insurance_card.dart');
+    print('_addCard function');
+
+    // Mandatory fields to check
+    final mandatoryFields = {
+      "Insurance Company Name": insuranceCompanyNameController.text,
+      "Card Holder Name": cardHolderNameController.text,
+      "Membership No": membershipNoController.text,
+      "Policy No": policyNoController.text,
+    };
+
+    // Check for missing mandatory fields
+    final missingFields = mandatoryFields.entries
+        .where((entry) => entry.value.toString().trim().isEmpty)
+        .map((entry) => entry.key)
+        .toList();
+
+    if (missingFields.isNotEmpty) {
+      // Show error message for missing mandatory fields
+      _showErrorDialog(
+          "Please fill all the mandatory fields before submitting.");
+      return;
     }
+
+    if (_formKey.currentState!.validate()) {
+      final cardDetails = {
+        "phone_no": widget.phoneNo, // Ensure widget.phoneNo is a String
+        "customers_id": widget.customerId.toString(), // Convert int to String
+        "insurance_card_holder_name": cardHolderNameController.text,
+        "insurance_membership_no": membershipNoController.text,
+        "insurance_policy_no": policyNoController.text,
+        "insurance_company": insuranceCompanyNameController.text,
+      };
+
+      // Print card details for debugging
+      print('Card Details: $cardDetails');
+
+      try {
+        final response = await http.post(
+          Uri.parse(
+              "http://172.16.200.79/flutter_project_hayleys/php/insurance_card.php"),
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: cardDetails,
+        );
+
+        // Print response body for debugging
+        print('Response: ${response.body}');
+
+        if (response.statusCode == 200) {
+          final jsonResponse = jsonDecode(response.body);
+          if (jsonResponse['status'] == 'success') {
+            final insuranceId =
+                jsonResponse['insurance_id']; // Extract insurance_id
+            print('Insurance ID: $insuranceId');
+            _showSuccessDialog(
+                'Insurance card details added successfully\nInsurance ID: $insuranceId',
+                insuranceId);
+          } else {
+            _showErrorDialog(
+                jsonResponse['message'] ?? "An unknown error occurred.");
+          }
+        } else {
+          _showErrorDialog("Server returned an error: ${response.statusCode}");
+        }
+      } catch (e) {
+        _showErrorDialog("An error occurred: $e");
+        print("Error: $e");
+      }
+    }
+  }
+
+  void _showSuccessDialog(String message, int customerId) {
+    print('Insurance ID at successdialog: $customerId');
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF00C853), // Green color
+                    shape: BoxShape.circle,
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: const Icon(
+                    Icons.check_circle,
+                    size: 60,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  "Success!!!",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF00C853), // Green color
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 16, color: Colors.black),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF00C853),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the success dialog
+                    Navigator.of(context)
+                        .pop(); // Close the card view dialog (_showAddCardForm)
+                  },
+                  child: const Text(
+                    "Ok",
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showErrorDialog(String errorMessage) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.red, // Red color
+                    shape: BoxShape.circle,
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: const Icon(
+                    Icons.error,
+                    size: 60,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  "Error!",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red, // Red color
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  errorMessage,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 16, color: Colors.black),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: const Text(
+                    "Ok",
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _showAddCardForm() {
