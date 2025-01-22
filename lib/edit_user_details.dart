@@ -1,7 +1,6 @@
 import 'package:flutter_project_hayleys/home_page.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
-import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 

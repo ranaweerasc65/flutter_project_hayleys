@@ -3,7 +3,6 @@ import 'illness_page.dart';
 import 'bills_page.dart';
 import 'prescriptions_page.dart';
 import 'reports_page.dart';
-import 'others_page.dart';
 import 'insurance_card.dart';
 import 'settings.dart';
 import 'profile.dart';
@@ -37,6 +36,7 @@ class _DashboardPageState extends State<Dashboard> {
 
     // Print the customerId here
     print('Customer ID: ${widget.customerId}');
+    print('${widget.phoneNo}');
 
     _pages = [
       DashboardContent(
@@ -45,7 +45,7 @@ class _DashboardPageState extends State<Dashboard> {
         customerId: widget.customerId,
       ),
       ProfilePage(customerId: widget.customerId),
-      InsuranceCardPage(customerId: widget.customerId),
+      InsuranceCardPage(customerId: widget.customerId, phoneNo: widget.phoneNo),
       SettingsPage(customerId: widget.customerId),
     ];
   }

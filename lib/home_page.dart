@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_project_hayleys/dashboard.dart';
 import 'login_screen.dart';
-import 'profile.dart';
 import 'approvals.dart';
 import 'primary_user_details.dart';
 import 'user_details.dart';
