@@ -25,7 +25,7 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
   final TextEditingController insuranceCompanyNameController =
       TextEditingController();
 
-  List<Map<String, String>> addedCards = [];
+  List<Map<String, dynamic>> addedCards = [];
 
   @override
   void initState() {
@@ -34,26 +34,9 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
     print('INSURANCE CARD SCREEN');
     print('Customer ID: ${widget.customerId}');
     print('Logged in user phone no: ${widget.phoneNo}');
-  }
 
-  // Future<void> _addCard() async {
-  //   // Simulate adding a card
-  //   if (_formKey.currentState!.validate()) {
-  //     setState(() {
-  //       addedCards.add({
-  //         'insuranceCompanyName': insuranceCompanyNameController.text,
-  //         'cardHolderName': cardHolderNameController.text,
-  //         'membershipNo': membershipNoController.text,
-  //         'policyNo': policyNoController.text,
-  //       });
-  //       insuranceCompanyNameController.clear();
-  //       cardHolderNameController.clear();
-  //       membershipNoController.clear();
-  //       policyNoController.clear();
-  //     });
-  //     Navigator.pop(context); // Close the popup
-  //   }
-  // }
+    _fetchAddedCards();
+  }
 
   Future<void> _addCard() async {
     print('insurance_card.dart');
@@ -115,6 +98,8 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
             _showSuccessDialog(
                 'Insurance card details added successfully\nInsurance ID: $insuranceId',
                 insuranceId);
+            // Refresh the list of cards
+            _fetchAddedCards();
           } else {
             _showErrorDialog(
                 jsonResponse['message'] ?? "An unknown error occurred.");
@@ -263,6 +248,12 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
   }
 
   void _showAddCardForm() {
+    // Reset the controllers
+    insuranceCompanyNameController.clear();
+    cardHolderNameController.clear();
+    membershipNoController.clear();
+    policyNoController.clear();
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -406,7 +397,6 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
     );
   }
 
-  // Helper function to build form labels with required asterisk
   Widget buildLabel(String labelText) {
     return Row(
       children: [
@@ -438,6 +428,36 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
       insuranceCompanyNameController.clear();
     });
     await Future.delayed(const Duration(seconds: 1));
+  }
+
+  Future<void> _fetchAddedCards() async {
+    final url = Uri.parse(
+      "http://172.16.200.79/flutter_project_hayleys/php/get_insurance_cards.php?customers_id=${widget.customerId}",
+    );
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        print("status = 200");
+        print(
+            'Response body: ${response.body}'); // Print the body of the response
+        final data = jsonDecode(response.body);
+
+        if (data['status'] == 'success') {
+          print("status = success");
+          setState(() {
+            addedCards = List<Map<String, dynamic>>.from(data['addedCards']);
+          });
+        } else {
+          print('Error: ${data['message']}');
+        }
+      } else {
+        print('Failed to load cards: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching cards: $e');
+    }
   }
 
   @override
@@ -484,67 +504,218 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
       ),
       backgroundColor: Colors.white,
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Added Cards",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            addedCards.isEmpty
-                ? const Text(
-                    "No cards added yet.",
-                    style: TextStyle(color: Colors.grey),
-                  )
-                : Expanded(
-                    child: ListView.builder(
-                      itemCount: addedCards.length,
-                      itemBuilder: (context, index) {
-                        final card = addedCards[index];
-                        return Card(
-                          elevation: 4,
-                          margin: const EdgeInsets.symmetric(vertical: 8),
-                          child: ListTile(
-                            title: Text(card['insuranceCompanyName'] ?? ""),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                    "Card Holder: ${card['cardHolderName'] ?? ''}"),
-                                Text(
-                                    "Membership No: ${card['membershipNo'] ?? ''}"),
-                                Text("Policy No: ${card['policyNo'] ?? ''}"),
-                              ],
+        padding: const EdgeInsets.all(40.0),
+        child: SingleChildScrollView(
+          // Added SingleChildScrollView
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Added Cards",
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              addedCards.isEmpty
+                  ? const Text(
+                      "No cards added yet.",
+                      style: TextStyle(color: Colors.grey),
+                    )
+                  : LayoutBuilder(
+                      builder: (context, constraints) {
+                        if (constraints.maxWidth < 600) {
+                          // Small screen, use ListView
+                          return ListView.builder(
+                            shrinkWrap:
+                                true, // To prevent ListView from taking full height
+                            physics:
+                                const NeverScrollableScrollPhysics(), // Disable scrolling of ListView
+                            itemCount: addedCards.length,
+                            itemBuilder: (context, index) {
+                              final card = addedCards[index];
+                              return Card(
+                                color: Colors.blue.shade50,
+                                elevation: 4,
+                                margin: const EdgeInsets.symmetric(vertical: 8),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        card['insurance_company'] ??
+                                            "Unknown Company",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.person,
+                                              color: Colors.blue),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            "Card Holder Name: ${card['insurance_card_holder_name'] ?? 'N/A'}",
+                                            style: const TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.black),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.card_membership,
+                                              color: Colors.green),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            "Membership No: ${card['insurance_membership_no'] ?? 'N/A'}",
+                                            style: const TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.black),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.policy,
+                                              color: Colors.orange),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            "Policy No: ${card['insurance_policy_no'] ?? 'N/A'}",
+                                            style: const TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.black),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        } else {
+                          // Large screen, use GridView
+                          return GridView.builder(
+                            shrinkWrap:
+                                true, // To prevent GridView from taking full height
+                            physics:
+                                const NeverScrollableScrollPhysics(), // Disable scrolling of GridView
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2, // Number of cards in a row
+                              crossAxisSpacing: 10, // Spacing between columns
+                              mainAxisSpacing: 10, // Spacing between rows
+                              childAspectRatio:
+                                  5 / 2, // Adjust the card height/width ratio
                             ),
-                          ),
-                        );
+                            itemCount: addedCards.length,
+                            itemBuilder: (context, index) {
+                              final card = addedCards[index];
+                              return Card(
+                                color: Colors.blue.shade50,
+                                elevation: 4,
+                                margin: const EdgeInsets.symmetric(vertical: 8),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        card['insurance_company'] ??
+                                            "Unknown Company",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.person,
+                                              color: Colors.blue),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            "Card Holder Name: ${card['insurance_card_holder_name'] ?? 'N/A'}",
+                                            style: const TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.black),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.card_membership,
+                                              color: Colors.green),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            "Membership No: ${card['insurance_membership_no'] ?? 'N/A'}",
+                                            style: const TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.black),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.policy,
+                                              color: Colors.orange),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            "Policy No: ${card['insurance_policy_no'] ?? 'N/A'}",
+                                            style: const TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.black),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        }
                       },
                     ),
+              const SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  onPressed: _showAddCardForm,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue[800],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                    minimumSize: const Size(200, 50),
                   ),
-            const SizedBox(height: 20),
-            Center(
-              child: ElevatedButton(
-                onPressed: _showAddCardForm,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue[800],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                  minimumSize: const Size(200, 50),
-                ),
-                child: const Text(
-                  "Add a New Card",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                  child: const Text(
+                    "Add a New Card",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
