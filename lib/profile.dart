@@ -16,6 +16,7 @@ class _ProfilePageState extends State<ProfilePage> {
     print('Customer ID: ${widget.customerId}');
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

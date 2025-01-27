@@ -19,7 +19,7 @@ if (!$customerId) {
     exit();
 }
 
-$sql = "SELECT insurance_company, insurance_card_holder_name, insurance_membership_no, insurance_policy_no FROM insurance WHERE CUSTOMERS_ID = ?";
+$sql = "SELECT insurance_id, insurance_company, insurance_card_holder_name, insurance_membership_no, insurance_policy_no FROM insurance WHERE CUSTOMERS_ID = ?";
 $stmt = $conn_hayleys_medicalapp->prepare($sql);
 
 if ($stmt) {

@@ -922,8 +922,6 @@ class _EditUserDetailsState extends State<EditUserDetails> {
     );
   }
 
-  // Function to show confirmation dialog
-  // Function to show confirmation dialog
   void _showConfirmationDialog() {
     showDialog(
       context: context,

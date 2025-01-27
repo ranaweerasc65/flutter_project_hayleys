@@ -36,7 +36,7 @@ class _DashboardPageState extends State<Dashboard> {
 
     // Print the customerId here
     print('Customer ID: ${widget.customerId}');
-    print('${widget.phoneNo}');
+    print(widget.phoneNo);
 
     _pages = [
       DashboardContent(
@@ -114,6 +114,7 @@ class DashboardContent extends StatefulWidget {
       required this.phoneNo,
       required this.customerId});
 
+  @override
   State<DashboardContent> createState() => _DashboardContentState();
 }
 
