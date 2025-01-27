@@ -68,12 +68,12 @@ if ($insurance_id) {
         $insurance_membership_no,
         $insurance_policy_no, 
         $insurance_company,
-        $insurance_id // This is the ID of the customer we are updating
+        $insurance_id // This is the ID of the card we are updating
     );
 
     // Execute the query and check for success
     if ($stmt->execute()) {
-        echo json_encode(array("status" => "success", "message" => "Insurance card details updated successfully"));
+        echo json_encode(array("status" => "success", "message" => "Insurance card details updated successfully","insurance_id" => $insurance_id ));
     } else {
         echo json_encode(array("status" => "error", "message" => "Failed to update insurance card details: " . $stmt->error));
     }

@@ -904,76 +904,45 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
                                                                 Row(
                                                                   mainAxisAlignment:
                                                                       MainAxisAlignment
-                                                                          .spaceEvenly,
+                                                                          .center,
                                                                   children: [
-                                                                    ElevatedButton(
-                                                                      onPressed:
-                                                                          () {
-                                                                        // Call the update function here
-                                                                        _fetchExistingDetails(
-                                                                            card['insurance_id']);
-                                                                      },
-                                                                      style: ElevatedButton
-                                                                          .styleFrom(
-                                                                        backgroundColor:
-                                                                            Colors.blue[800],
+                                                                    Padding(
+                                                                      padding: const EdgeInsets
+                                                                          .symmetric(
+                                                                          horizontal:
+                                                                              10),
+                                                                      child:
+                                                                          MaterialButton(
+                                                                        onPressed:
+                                                                            () {
+                                                                          // Pass the `insurance_id` to the confirmation dialog
+                                                                          _showConfirmationDialog(
+                                                                              card['insurance_id']);
+                                                                        },
+                                                                        height:
+                                                                            50,
+                                                                        minWidth:
+                                                                            MediaQuery.of(context).size.width *
+                                                                                0.4,
+                                                                        color: Colors
+                                                                            .blue[800],
                                                                         shape:
                                                                             RoundedRectangleBorder(
                                                                           borderRadius:
                                                                               BorderRadius.circular(50),
                                                                         ),
-                                                                        minimumSize: const Size(
-                                                                            200,
-                                                                            50),
-                                                                      ),
-                                                                      child:
-                                                                          const Text(
-                                                                        "Update Card",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          color:
-                                                                              Colors.white,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                          fontSize:
-                                                                              16,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                    MaterialButton(
-                                                                      onPressed:
-                                                                          () =>
-                                                                              _showClearFormDialog(context),
-                                                                      height:
-                                                                          50,
-                                                                      minWidth:
-                                                                          200,
-                                                                      shape:
-                                                                          RoundedRectangleBorder(
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(50),
-                                                                        side:
-                                                                            BorderSide(
-                                                                          color:
-                                                                              Colors.blue[800]!,
-                                                                          width:
-                                                                              2.0,
-                                                                        ),
-                                                                      ),
-                                                                      child:
-                                                                          const Text(
-                                                                        "Clear Form",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          color: Color.fromARGB(
-                                                                              255,
-                                                                              2,
-                                                                              99,
-                                                                              178),
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                          fontSize:
-                                                                              16,
+                                                                        child:
+                                                                            const Center(
+                                                                          child:
+                                                                              Text(
+                                                                            "Save Changes",
+                                                                            style:
+                                                                                TextStyle(
+                                                                              color: Colors.white,
+                                                                              fontWeight: FontWeight.bold,
+                                                                              fontSize: 16,
+                                                                            ),
+                                                                          ),
                                                                         ),
                                                                       ),
                                                                     ),
@@ -1028,6 +997,173 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _saveDetails(int? insuranceId) async {
+    print('Save details $insuranceId');
+
+    final mandatoryFields = {
+      "Insurance Company Name": insuranceCompanyNameController.text,
+      "Card Holder Name": cardHolderNameController.text,
+      "Membership No": membershipNoController.text,
+      "Policy No": policyNoController.text,
+    };
+
+    final missingFields = mandatoryFields.entries
+        .where((entry) => entry.value.trim().isEmpty)
+        .map((entry) => entry.key)
+        .toList();
+
+    print('Mandatory Fields Check: $mandatoryFields');
+    print('Missing Fields: $missingFields');
+
+    if (missingFields.isNotEmpty) {
+      _showErrorDialog(
+          "Please fill all the mandatory fields before submitting.");
+      return;
+    }
+
+    if (_formKey.currentState!.validate()) {
+      final cardDetails = {
+        "phone_no": widget.phoneNo,
+        "customers_id": widget.customerId.toString(),
+        "insurance_card_holder_name": cardHolderNameController.text,
+        "insurance_membership_no": membershipNoController.text,
+        "insurance_policy_no": policyNoController.text,
+        "insurance_company": insuranceCompanyNameController.text,
+        if (insuranceId != null)
+          "insurance_id":
+              insuranceId.toString(), // Pass `insurance_id` if it exists
+      };
+
+      print('Card Details: $cardDetails');
+
+      try {
+        final response = await http.post(
+          Uri.parse(
+              "http://172.16.200.79/flutter_project_hayleys/php/insurance_card.php"),
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: cardDetails,
+        );
+
+        print('Response: ${response.body}');
+
+        if (response.statusCode == 200) {
+          final jsonResponse = jsonDecode(response.body);
+          if (jsonResponse['status'] == 'success') {
+            final updatedInsuranceId =
+                jsonResponse['insurance_id']; // Extract updated insurance_id
+            print('Insurance ID: $updatedInsuranceId');
+            _showSuccessDialog(
+                'Insurance card details updated successfully\nInsurance ID: $updatedInsuranceId',
+                updatedInsuranceId);
+            _fetchAddedCards(); // Refresh the list of cards
+          } else {
+            _showErrorDialog(
+                jsonResponse['message'] ?? "An unknown error occurred.");
+          }
+        } else {
+          _showErrorDialog("Server returned an error: ${response.statusCode}");
+        }
+      } catch (e) {
+        _showErrorDialog("An error occurred: $e");
+        print("Error: $e");
+      }
+    }
+  }
+
+  Future<void> _showConfirmationDialog(int insuranceId) async {
+    print("confirmation dialog $insuranceId");
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: SizedBox(
+              width: 300, // Fixed width for the dialog
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.orange, // Use orange for a neutral tone
+                      shape: BoxShape.circle,
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: const Icon(
+                      Icons.info,
+                      size: 60,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Confirmation",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange, // Match icon color
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Are you sure you want to save the details?",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: const Text(
+                          "No",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color(0xFF00C853), // Green color
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                          _saveDetails(
+                              insuranceId); // Now call the save details function
+                        },
+                        child: const Text(
+                          "Yes",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
