@@ -20,31 +20,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
-  final PageController _pageController = PageController();
-  late final List<Widget> _pages;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _pages = [
-      HomeContent(userName: widget.userName, phoneNo: widget.phoneNo),
-      //const ProfilePage(firstName: '',),
-      const ApprovalsPage(),
-    ];
-  }
-
-  void _onPageChanged(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
 
   void _onItemTapped(int index) {
     setState(() {
       _currentIndex = index;
     });
-    _pageController.jumpToPage(index);
   }
 
   Future<void> _logout(BuildContext context) async {
@@ -54,64 +34,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        automaticallyImplyLeading: false,
-        actions: [
-          TextButton.icon(
-            onPressed: () => _logout(context),
-            icon: const Icon(Icons.logout, color: Colors.black),
-            label: const Text(
-              'Logout',
-              style: TextStyle(color: Colors.black),
-            ),
-          ),
-        ],
-      ),
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: _onPageChanged,
-        children: _pages,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.approval),
-            label: 'Approvals',
-          ),
-        ],
-        selectedItemColor: Colors.blue.shade800,
-        unselectedItemColor: Colors.grey,
-      ),
-    );
-  }
-}
-
-class HomeContent extends StatefulWidget {
-  final String userName;
-  final String phoneNo; // Add this line to accept the phone number
-
-  const HomeContent({super.key, required this.userName, required this.phoneNo});
-
-  @override
-  _HomeContentState createState() => _HomeContentState();
-}
-
-class _HomeContentState extends State<HomeContent> {
   int? customerId;
 
   final List<String> MyConnections = [];
@@ -134,130 +56,54 @@ class _HomeContentState extends State<HomeContent> {
     fetchConnections();
   }
 
-  void addConnection(List<String> connectionList) {
-    setState(() {
-      connectionList.add(
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
-      );
-    });
-  }
-
-  Future<void> fetchConnections() async {
-    print("fetchConnections");
-    final url = Uri.parse(
-        'http://172.16.200.79/flutter_project_hayleys/php/get_connections.php?phone_no=${widget.phoneNo}');
-
-    //192.168.62.145
-    //172.16.200.79
-    try {
-      final response = await http.get(url);
-
-      if (response.statusCode == 200) {
-        print("status = 200");
-
-        print('Response body: ${response.body}');
-
-        final data = jsonDecode(response.body);
-
-        if (data['status'] == 'success') {
-          print("status = success");
-          setState(() {
-            connections = List<Map<String, dynamic>>.from(data['connections']);
-          });
-        } else {
-          print('Error: ${data['message']}');
-        }
-      } else {
-        print('Server Error: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error fetching connections: $e');
-    }
-  }
-
-  Future<void> fetchEmployeeId() async {
-    final url = Uri.parse(
-        'http://172.16.200.79/flutter_project_hayleys/php/fetch_primary_user_details.php?phone_no=${widget.phoneNo}');
-
-    try {
-      final response = await http.get(url);
-
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-
-        if (responseData['status'] == 'success') {
-          setState(() {
-            customerId = responseData['existing_data']['CUSTOMERS_ID'];
-          });
-        } else {
-          showError(responseData['message']);
-        }
-      } else {
-        showError('Failed to fetch customer data');
-      }
-    } catch (e) {
-      showError('Error occurred: $e');
-    }
-  }
-
-  Future<void> fetchCustomerId() async {
-    final url = Uri.parse(
-        'http://172.16.200.79/flutter_project_hayleys/php/fetch_user_details.php?phone_no=${widget.phoneNo}');
-
-    try {
-      final response = await http.get(url);
-
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-
-        if (responseData['status'] == 'success') {
-          setState(() {
-            customerId = responseData['existing_data']['CUSTOMERS_ID'];
-          });
-        } else {
-          showError(responseData['message']);
-        }
-      } else {
-        showError('Failed to fetch customer data');
-      }
-    } catch (e) {
-      showError('Error occurred: $e');
-    }
-  }
-
-  void showError(String message) {
-    // Print the error message to the terminal
-    print('Error: $message');
-
-    // Display the error message in a dialog
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Error'),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Scaffold(
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(60.0),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.blue.shade900,
+                  Colors.blue.shade800,
+                  Colors.blue.shade400,
+                ],
+              ),
+            ),
+            child: AppBar(
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+              automaticallyImplyLeading: false,
+              actions: [
+                TextButton.icon(
+                  onPressed: () => _logout(context),
+                  icon: const Icon(Icons.logout, color: Colors.white),
+                  label: const Text(
+                    'Logout',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        body: Column(
           children: [
+            // Merged Card - Full Width with Rounded Bottom Corners
             Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+              margin: EdgeInsets.zero, // Removes extra space around the card
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
               ),
               elevation: 4,
               child: Container(
+                width: double.infinity, // Ensures full width
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
@@ -268,57 +114,58 @@ class _HomeContentState extends State<HomeContent> {
                       Colors.blue.shade400,
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(20),
+                    bottomRight: Radius.circular(20),
+                  ),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Welcome!",
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 196, 222, 241),
-                              fontSize: 40,
+                padding: const EdgeInsets.all(20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Welcome!",
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 196, 222, 241),
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: Text(
+                            '${getGreeting()}, ${widget.userName}',
+                            style: const TextStyle(
+                              color: Color.fromARGB(255, 223, 234, 242),
+                              fontSize: 28,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 5),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 16),
-                            child: Text(
-                              '${getGreeting()}, ${widget.userName}',
-                              style: const TextStyle(
-                                color: Color.fromARGB(255, 223, 234, 242),
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          const Text(
-                            "How is it going today?",
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Color.fromARGB(255, 199, 195, 195),
-                            ),
-                          ),
-                        ],
-                      ),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: Image.asset(
-                          'assets/user.png',
-                          fit: BoxFit.cover,
-                          width: 200,
-                          height: 200,
                         ),
+                        const SizedBox(height: 5),
+                        const Text(
+                          "How is it going today?",
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Color.fromARGB(255, 199, 195, 195),
+                          ),
+                        ),
+                      ],
+                    ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.asset(
+                        'assets/user.png',
+                        fit: BoxFit.cover,
+                        width: 200,
+                        height: 200,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -619,6 +466,117 @@ class _HomeContentState extends State<HomeContent> {
             ),
           ],
         ));
+  }
+
+  void addConnection(List<String> connectionList) {
+    setState(() {
+      connectionList.add(
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png',
+      );
+    });
+  }
+
+  Future<void> fetchConnections() async {
+    print("fetchConnections");
+    final url = Uri.parse(
+        'http://172.16.200.79/flutter_project_hayleys/php/get_connections.php?phone_no=${widget.phoneNo}');
+
+    //192.168.62.145
+    //172.16.200.79
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        print("status = 200");
+
+        print('Response body: ${response.body}');
+
+        final data = jsonDecode(response.body);
+
+        if (data['status'] == 'success') {
+          print("status = success");
+          setState(() {
+            connections = List<Map<String, dynamic>>.from(data['connections']);
+          });
+        } else {
+          print('Error: ${data['message']}');
+        }
+      } else {
+        print('Server Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching connections: $e');
+    }
+  }
+
+  Future<void> fetchEmployeeId() async {
+    final url = Uri.parse(
+        'http://172.16.200.79/flutter_project_hayleys/php/fetch_primary_user_details.php?phone_no=${widget.phoneNo}');
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+
+        if (responseData['status'] == 'success') {
+          setState(() {
+            customerId = responseData['existing_data']['CUSTOMERS_ID'];
+          });
+        } else {
+          showError(responseData['message']);
+        }
+      } else {
+        showError('Failed to fetch customer data');
+      }
+    } catch (e) {
+      showError('Error occurred: $e');
+    }
+  }
+
+  Future<void> fetchCustomerId() async {
+    final url = Uri.parse(
+        'http://172.16.200.79/flutter_project_hayleys/php/fetch_user_details.php?phone_no=${widget.phoneNo}');
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+
+        if (responseData['status'] == 'success') {
+          setState(() {
+            customerId = responseData['existing_data']['CUSTOMERS_ID'];
+          });
+        } else {
+          showError(responseData['message']);
+        }
+      } else {
+        showError('Failed to fetch customer data');
+      }
+    } catch (e) {
+      showError('Error occurred: $e');
+    }
+  }
+
+  void showError(String message) {
+    // Print the error message to the terminal
+    print('Error: $message');
+
+    // Display the error message in a dialog
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 }
 

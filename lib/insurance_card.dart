@@ -555,7 +555,6 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
       body: Padding(
         padding: const EdgeInsets.all(40.0),
         child: SingleChildScrollView(
-          // Added SingleChildScrollView
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -571,396 +570,57 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
                     )
                   : LayoutBuilder(
                       builder: (context, constraints) {
-                        return GridView.builder(
-                          shrinkWrap:
-                              true, // To prevent GridView from taking full height
-                          physics:
-                              const NeverScrollableScrollPhysics(), // Disable scrolling of GridView
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2, // Number of cards in a row
-                            crossAxisSpacing: 10, // Spacing between columns
-                            mainAxisSpacing: 10, // Spacing between rows
-                            childAspectRatio:
-                                5 / 2, // Adjust the card height/width ratio
-                          ),
-                          itemCount: addedCards.length,
-                          itemBuilder: (context, index) {
-                            final card = addedCards[index];
-                            return Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                gradient: const LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    Color.fromARGB(255, 135, 59, 18),
-                                    Color.fromARGB(255, 17, 25, 105)
-                                  ], // Adjust these colors to match your design
-                                ),
-                              ),
-                              child: Card(
-                                color: Colors
-                                    .transparent, // Make the card transparent to show the gradient
-                                elevation: 6,
-                                margin: const EdgeInsets.symmetric(vertical: 8),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Stack(
-                                    children: [
-                                      // Main content column
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          // Insurance Company Name
-                                          Text(
-                                            card['insurance_company'] ??
-                                                "Unknown Company",
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 6),
-                                          // Card Holder Name
-                                          Center(
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize
-                                                  .min, // Ensures the column takes minimum height
-                                              children: [
-                                                Text(
-                                                  card['insurance_card_holder_name']
-                                                          ?.toString() ??
-                                                      'N/A',
-                                                  style: const TextStyle(
-                                                    fontSize: 18,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                                const SizedBox(
-                                                    height:
-                                                        2), // Adds spacing between text elements
-                                                const Text(
-                                                  "Card Holder Name",
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.white70,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          const SizedBox(height: 16),
-                                          // Membership No and Policy No
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Column(
-                                                children: [
-                                                  Text(
-                                                    card['insurance_membership_no']
-                                                            ?.toString() ??
-                                                        'N/A',
-                                                    style: const TextStyle(
-                                                      fontSize: 18,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                  const Text(
-                                                    "Membership No",
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.white70,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Column(
-                                                children: [
-                                                  Text(
-                                                    card['insurance_policy_no']
-                                                            ?.toString() ??
-                                                        'N/A',
-                                                    style: const TextStyle(
-                                                      fontSize: 18,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                  const Text(
-                                                    "Policy No",
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.white70,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      // Edit and Delete buttons positioned at the bottom-right
-                                      Positioned(
-                                        bottom: 0,
-                                        right: 0,
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            // Edit Button
-                                            IconButton(
-                                              onPressed: () {
-                                                print(
-                                                    "Edit button pressed for insurance_id: ${card['insurance_id']} customers_id=${widget.customerId} phone_no=${widget.phoneNo}");
-                                                // Set the controllers with the existing card details
-                                                insuranceCompanyNameController
-                                                        .text =
-                                                    card['insurance_company'] ??
-                                                        '';
-                                                cardHolderNameController
-                                                    .text = card[
-                                                        'insurance_card_holder_name'] ??
-                                                    '';
-                                                membershipNoController
-                                                    .text = card[
-                                                        'insurance_membership_no'] ??
-                                                    '';
-                                                policyNoController.text = card[
-                                                        'insurance_policy_no'] ??
-                                                    '';
+                        if (constraints.maxWidth < 600) {
+                          // For small screens, use ListView
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: addedCards.length,
+                            itemBuilder: (context, index) {
+                              final card = addedCards[index];
+                              return _buildCardItem(card);
+                            },
+                          );
+                        } else {
+                          // For large screens, use GridView
 
-                                                // Show the edit dialog
-                                                showDialog(
-                                                  context: context,
-                                                  builder:
-                                                      (BuildContext context) {
-                                                    return Dialog(
-                                                      backgroundColor:
-                                                          Colors.white,
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(15),
-                                                      ),
-                                                      child:
-                                                          SingleChildScrollView(
-                                                        child: Column(
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          children: [
-                                                            // Header section with close button
-                                                            Container(
-                                                              decoration:
-                                                                  const BoxDecoration(
-                                                                color: Color
-                                                                    .fromARGB(
-                                                                        255,
-                                                                        5,
-                                                                        94,
-                                                                        166),
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .only(
-                                                                  topLeft: Radius
-                                                                      .circular(
-                                                                          15),
-                                                                  topRight: Radius
-                                                                      .circular(
-                                                                          15),
-                                                                ),
-                                                              ),
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .symmetric(
-                                                                      vertical:
-                                                                          16,
-                                                                      horizontal:
-                                                                          20),
-                                                              child: Stack(
-                                                                children: [
-                                                                  const Align(
-                                                                    alignment:
-                                                                        Alignment
-                                                                            .centerLeft,
-                                                                    child: Text(
-                                                                      "Edit Insurance Card",
-                                                                      style:
-                                                                          TextStyle(
-                                                                        fontSize:
-                                                                            20,
-                                                                        fontWeight:
-                                                                            FontWeight.bold,
-                                                                        color: Colors
-                                                                            .white,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                  Align(
-                                                                    alignment:
-                                                                        Alignment
-                                                                            .centerRight,
-                                                                    child:
-                                                                        GestureDetector(
-                                                                      onTap:
-                                                                          () {
-                                                                        Navigator.of(context)
-                                                                            .pop(); // Close the dialog
-                                                                      },
-                                                                      child:
-                                                                          const CircleAvatar(
-                                                                        backgroundColor: Color.fromARGB(
-                                                                            0,
-                                                                            227,
-                                                                            4,
-                                                                            4),
-                                                                        radius:
-                                                                            16,
-                                                                        child:
-                                                                            Icon(
-                                                                          Icons
-                                                                              .close,
-                                                                          color:
-                                                                              Colors.white,
-                                                                          size:
-                                                                              20,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            // Form content
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(
-                                                                      16.0),
-                                                              child: Form(
-                                                                key: _formKey,
-                                                                child: Column(
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                  children: [
-                                                                    buildLabel(
-                                                                        "Insurance Company Name"),
-                                                                    buildTextField(
-                                                                      insuranceCompanyNameController,
-                                                                      "Enter the Insurance Company Name",
-                                                                    ),
-                                                                    const SizedBox(
-                                                                        height:
-                                                                            16),
-                                                                    buildLabel(
-                                                                        "Card Holder Name"),
-                                                                    buildTextField(
-                                                                      cardHolderNameController,
-                                                                      "Enter the card holder name",
-                                                                    ),
-                                                                    const SizedBox(
-                                                                        height:
-                                                                            16),
-                                                                    buildLabel(
-                                                                        "Membership No."),
-                                                                    buildTextField(
-                                                                      membershipNoController,
-                                                                      "Enter the membership number",
-                                                                    ),
-                                                                    const SizedBox(
-                                                                        height:
-                                                                            16),
-                                                                    buildLabel(
-                                                                        "Policy No."),
-                                                                    buildTextField(
-                                                                      policyNoController,
-                                                                      "Enter the policy number",
-                                                                    ),
-                                                                    const SizedBox(
-                                                                        height:
-                                                                            20),
-                                                                    Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .center,
-                                                                      children: [
-                                                                        Padding(
-                                                                          padding: const EdgeInsets
-                                                                              .symmetric(
-                                                                              horizontal: 10),
-                                                                          child:
-                                                                              MaterialButton(
-                                                                            onPressed:
-                                                                                () {
-                                                                              // Pass the `insurance_id` to the confirmation dialog
-                                                                              _showConfirmationDialog(card['insurance_id']);
-                                                                            },
-                                                                            height:
-                                                                                50,
-                                                                            minWidth:
-                                                                                MediaQuery.of(context).size.width * 0.4,
-                                                                            color:
-                                                                                Colors.blue[800],
-                                                                            shape:
-                                                                                RoundedRectangleBorder(
-                                                                              borderRadius: BorderRadius.circular(50),
-                                                                            ),
-                                                                            child:
-                                                                                const Center(
-                                                                              child: Text(
-                                                                                "Save Changes",
-                                                                                style: TextStyle(
-                                                                                  color: Colors.white,
-                                                                                  fontWeight: FontWeight.bold,
-                                                                                  fontSize: 16,
-                                                                                ),
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                );
-                                              },
-                                              icon: const Icon(Icons.edit,
-                                                  color: Colors.red),
-                                            ),
-                                            // Delete Button
-                                            IconButton(
-                                              onPressed: () {
-                                                print(
-                                                    "Delete button pressed for insurance_id: ${card['insurance_id']} customers_id=${widget.customerId} phone_no=${widget.phoneNo}");
-                                                _showDeleteConfirmationDialog(
-                                                    card['insurance_id']);
-                                              },
-                                              icon: const Icon(Icons.delete,
-                                                  color: Colors.red),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        );
+                          // Fixed height for grid items
+                          const fixedHeight = 240.0;
+
+                          // Calculate the width of each item based on the screen width and crossAxisCount
+                          final screenWidth = constraints.maxWidth;
+                          const crossAxisCount = 2; // Number of items per row
+                          const crossAxisSpacing =
+                              10.0; // Spacing between items horizontally
+                          const mainAxisSpacing = 10.0; // Spacing between rows
+
+                          // Calculate the available width for each item
+                          final availableWidthForItems = screenWidth -
+                              (crossAxisSpacing * (crossAxisCount - 1));
+                          final itemWidth =
+                              availableWidthForItems / crossAxisCount;
+
+                          // Calculate the childAspectRatio based on the fixed height and calculated width
+                          final childAspectRatio = itemWidth / fixedHeight;
+
+                          return GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: crossAxisCount,
+                              childAspectRatio:
+                                  childAspectRatio, // Dynamic aspect ratio
+                              crossAxisSpacing: crossAxisSpacing,
+                              mainAxisSpacing: mainAxisSpacing,
+                            ),
+                            itemCount: addedCards.length,
+                            itemBuilder: (context, index) {
+                              final card = addedCards[index];
+                              return _buildCardItem(card);
+                            },
+                          );
+                        }
                       },
                     ),
               const SizedBox(height: 20),
@@ -990,6 +650,404 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
       ),
     );
   }
+
+  Widget _buildCardItem(Map<String, dynamic> card) {
+    return Container(
+      height: 250.0, // Fixed height for the card
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color.fromARGB(255, 135, 59, 18),
+            Color.fromARGB(255, 17, 25, 105)
+          ],
+        ),
+      ),
+      child: Card(
+        color: Colors.transparent,
+        elevation: 6,
+        margin: EdgeInsets.zero, // Remove margin to avoid extra space
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Stack(
+          fit: StackFit.expand, // Ensure the Stack fills the entire card
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0), // Adjust padding as needed
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    card['insurance_company'] ?? "Unknown Company",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          card['insurance_card_holder_name']?.toString() ??
+                              'N/A',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        const Text(
+                          "Card Holder Name",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        children: [
+                          Text(
+                            card['insurance_membership_no']?.toString() ??
+                                'N/A',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const Text(
+                            "Membership No",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Text(
+                            card['insurance_policy_no']?.toString() ?? 'N/A',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const Text(
+                            "Policy No",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              bottom:
+                  8, // Adjust this value to move buttons closer to the bottom
+              right: 8, // Adjust this value to move buttons closer to the right
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      _showEditDialog(card);
+                    },
+                    icon: const Icon(Icons.edit, color: Colors.red),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      print(
+                          "Delete button pressed for insurance_id: ${card['insurance_id']} customers_id=${widget.customerId} phone_no=${widget.phoneNo}");
+                      _showDeleteConfirmationDialog(card['insurance_id']);
+                    },
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     appBar: AppBar(
+  //       title: const Text(
+  //         'Insurance Card Details',
+  //         style: TextStyle(
+  //           fontWeight: FontWeight.bold,
+  //           fontSize: 24,
+  //           color: Colors.white,
+  //         ),
+  //       ),
+  //       automaticallyImplyLeading: false,
+  //       centerTitle: true,
+  //       backgroundColor: Colors.blue.shade800,
+  //       leading: IconButton(
+  //         icon: const Icon(Icons.arrow_back, color: Colors.white),
+  //         onPressed: () {
+  //           Navigator.pop(context);
+  //         },
+  //       ),
+  //       actions: [
+  //         Padding(
+  //           padding: const EdgeInsets.only(right: 16),
+  //           child: GestureDetector(
+  //             onTap: () {
+  //               _showExitConfirmationDialog(context);
+  //             },
+  //             child: const Center(
+  //               child: Text(
+  //                 'Cancel',
+  //                 style: TextStyle(
+  //                   color: Colors.white,
+  //                   fontSize: 16,
+  //                   fontWeight: FontWeight.bold,
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //     backgroundColor: Colors.white,
+  //     body: Padding(
+  //       padding: const EdgeInsets.all(40.0),
+  //       child: SingleChildScrollView(
+  //         // Added SingleChildScrollView
+  //         child: Column(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: [
+  //             const Text(
+  //               "Added Cards",
+  //               style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+  //             ),
+  //             const SizedBox(height: 8),
+  //             addedCards.isEmpty
+  //                 ? const Text(
+  //                     "No cards added yet.",
+  //                     style: TextStyle(color: Colors.grey),
+  //                   )
+  //                 : LayoutBuilder(
+  //                     builder: (context, constraints) {
+  //                       return GridView.builder(
+  //                         shrinkWrap:
+  //                             true, // To prevent GridView from taking full height
+  //                         physics:
+  //                             const NeverScrollableScrollPhysics(), // Disable scrolling of GridView
+  //                         gridDelegate:
+  //                             const SliverGridDelegateWithFixedCrossAxisCount(
+  //                           crossAxisCount: 2, // Number of cards in a row
+  //                           crossAxisSpacing: 10, // Spacing between columns
+  //                           mainAxisSpacing: 10, // Spacing between rows
+  //                           childAspectRatio:
+  //                               5 / 2, // Adjust the card height/width ratio
+  //                         ),
+  //                         itemCount: addedCards.length,
+  //                         itemBuilder: (context, index) {
+  //                           final card = addedCards[index];
+  //                           return Container(
+  //                             decoration: BoxDecoration(
+  //                               borderRadius: BorderRadius.circular(20),
+  //                               gradient: const LinearGradient(
+  //                                 begin: Alignment.topLeft,
+  //                                 end: Alignment.bottomRight,
+  //                                 colors: [
+  //                                   Color.fromARGB(255, 135, 59, 18),
+  //                                   Color.fromARGB(255, 17, 25, 105)
+  //                                 ],
+  //                               ),
+  //                             ),
+  //                             child: Card(
+  //                               color: Colors
+  //                                   .transparent, // Make the card transparent to show the gradient
+  //                               elevation: 6,
+  //                               margin: const EdgeInsets.symmetric(vertical: 8),
+  //                               shape: RoundedRectangleBorder(
+  //                                 borderRadius: BorderRadius.circular(16),
+  //                               ),
+  //                               child: Padding(
+  //                                 padding: const EdgeInsets.all(16.0),
+  //                                 child: Stack(
+  //                                   children: [
+  //                                     // Main content column
+  //                                     Column(
+  //                                       crossAxisAlignment:
+  //                                           CrossAxisAlignment.start,
+  //                                       children: [
+  //                                         // Insurance Company Name
+  //                                         Text(
+  //                                           card['insurance_company'] ??
+  //                                               "Unknown Company",
+  //                                           style: const TextStyle(
+  //                                             fontWeight: FontWeight.bold,
+  //                                             fontSize: 20,
+  //                                             color: Colors.white,
+  //                                           ),
+  //                                         ),
+  //                                         const SizedBox(height: 6),
+  //                                         // Card Holder Name
+  //                                         Center(
+  //                                           child: Column(
+  //                                             mainAxisSize: MainAxisSize
+  //                                                 .min, // Ensures the column takes minimum height
+  //                                             children: [
+  //                                               Text(
+  //                                                 card['insurance_card_holder_name']
+  //                                                         ?.toString() ??
+  //                                                     'N/A',
+  //                                                 style: const TextStyle(
+  //                                                   fontSize: 18,
+  //                                                   color: Colors.white,
+  //                                                 ),
+  //                                               ),
+  //                                               const SizedBox(
+  //                                                   height:
+  //                                                       2), // Adds spacing between text elements
+  //                                               const Text(
+  //                                                 "Card Holder Name",
+  //                                                 style: TextStyle(
+  //                                                   fontSize: 12,
+  //                                                   color: Colors.white70,
+  //                                                 ),
+  //                                               ),
+  //                                             ],
+  //                                           ),
+  //                                         ),
+  //                                         const SizedBox(height: 16),
+  //                                         // Membership No and Policy No
+  //                                         Row(
+  //                                           mainAxisAlignment:
+  //                                               MainAxisAlignment.spaceBetween,
+  //                                           children: [
+  //                                             Column(
+  //                                               children: [
+  //                                                 Text(
+  //                                                   card['insurance_membership_no']
+  //                                                           ?.toString() ??
+  //                                                       'N/A',
+  //                                                   style: const TextStyle(
+  //                                                     fontSize: 18,
+  //                                                     color: Colors.white,
+  //                                                   ),
+  //                                                 ),
+  //                                                 const Text(
+  //                                                   "Membership No",
+  //                                                   style: TextStyle(
+  //                                                     fontSize: 12,
+  //                                                     color: Colors.white70,
+  //                                                   ),
+  //                                                 ),
+  //                                               ],
+  //                                             ),
+  //                                             Column(
+  //                                               children: [
+  //                                                 Text(
+  //                                                   card['insurance_policy_no']
+  //                                                           ?.toString() ??
+  //                                                       'N/A',
+  //                                                   style: const TextStyle(
+  //                                                     fontSize: 18,
+  //                                                     color: Colors.white,
+  //                                                   ),
+  //                                                 ),
+  //                                                 const Text(
+  //                                                   "Policy No",
+  //                                                   style: TextStyle(
+  //                                                     fontSize: 12,
+  //                                                     color: Colors.white70,
+  //                                                   ),
+  //                                                 ),
+  //                                               ],
+  //                                             ),
+  //                                           ],
+  //                                         ),
+  //                                       ],
+  //                                     ),
+  //                                     // Edit and Delete buttons positioned at the bottom-right
+  //                                     Align(
+  //                                       alignment: Alignment.bottomRight,
+  //                                       child: Row(
+  //                                         mainAxisSize: MainAxisSize.min,
+  //                                         children: [
+  //                                           // Edit Button
+  //                                           IconButton(
+  //                                             onPressed: () {
+  //                                               _showEditDialog(
+  //                                                   card); // Call the function instead of inline logic
+  //                                             },
+  //                                             icon: const Icon(Icons.edit,
+  //                                                 color: Colors.red),
+  //                                           ),
+  //                                           // Delete Button
+  //                                           IconButton(
+  //                                             onPressed: () {
+  //                                               print(
+  //                                                   "Delete button pressed for insurance_id: ${card['insurance_id']} customers_id=${widget.customerId} phone_no=${widget.phoneNo}");
+  //                                               _showDeleteConfirmationDialog(
+  //                                                   card['insurance_id']);
+  //                                             },
+  //                                             icon: const Icon(Icons.delete,
+  //                                                 color: Colors.red),
+  //                                           ),
+  //                                         ],
+  //                                       ),
+  //                                     ),
+  //                                   ],
+  //                                 ),
+  //                               ),
+  //                             ),
+  //                           );
+  //                         },
+  //                       );
+  //                     },
+  //                   ),
+  //             const SizedBox(height: 20),
+  //             Center(
+  //               child: ElevatedButton(
+  //                 onPressed: _showAddCardForm,
+  //                 style: ElevatedButton.styleFrom(
+  //                   backgroundColor: Colors.blue[800],
+  //                   shape: RoundedRectangleBorder(
+  //                     borderRadius: BorderRadius.circular(50),
+  //                   ),
+  //                   minimumSize: const Size(200, 50),
+  //                 ),
+  //                 child: const Text(
+  //                   "Add a New Card",
+  //                   style: TextStyle(
+  //                     color: Colors.white,
+  //                     fontWeight: FontWeight.bold,
+  //                     fontSize: 16,
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   void _showDeleteConfirmationDialog(int insuranceId) {
     showDialog(
@@ -1397,5 +1455,147 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
     cardHolderNameController.clear();
     membershipNoController.clear();
     policyNoController.clear();
+  }
+
+  void _showEditDialog(Map<String, dynamic> card) {
+    print(
+        "Edit button pressed for insurance_id: ${card['insurance_id']} customers_id=${widget.customerId} phone_no=${widget.phoneNo}");
+
+    // Set the controllers with the existing card details
+    insuranceCompanyNameController.text = card['insurance_company'] ?? '';
+    cardHolderNameController.text = card['insurance_card_holder_name'] ?? '';
+    membershipNoController.text = card['insurance_membership_no'] ?? '';
+    policyNoController.text = card['insurance_policy_no'] ?? '';
+
+    // Show the edit dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header section with close button
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Color.fromARGB(255, 5, 94, 166),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(15),
+                      topRight: Radius.circular(15),
+                    ),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                  child: Stack(
+                    children: [
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Edit Insurance Card",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                          },
+                          child: const CircleAvatar(
+                            backgroundColor: Color.fromARGB(0, 227, 4, 4),
+                            radius: 16,
+                            child: Icon(
+                              Icons.close,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Form content
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        buildLabel("Insurance Company Name"),
+                        buildTextField(
+                          insuranceCompanyNameController,
+                          "Enter the Insurance Company Name",
+                        ),
+                        const SizedBox(height: 16),
+                        buildLabel("Card Holder Name"),
+                        buildTextField(
+                          cardHolderNameController,
+                          "Enter the card holder name",
+                        ),
+                        const SizedBox(height: 16),
+                        buildLabel("Membership No."),
+                        buildTextField(
+                          membershipNoController,
+                          "Enter the membership number",
+                        ),
+                        const SizedBox(height: 16),
+                        buildLabel("Policy No."),
+                        buildTextField(
+                          policyNoController,
+                          "Enter the policy number",
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: MaterialButton(
+                                onPressed: () {
+                                  _showConfirmationDialog(card['insurance_id']);
+                                },
+                                height: 50,
+                                minWidth:
+                                    MediaQuery.of(context).size.width * 0.4,
+                                color: Colors.blue[800],
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    "Save Changes",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }
