@@ -15,9 +15,15 @@ class ApprovalsPage extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        automaticallyImplyLeading: false,
         centerTitle: true,
         backgroundColor: Colors.blue.shade800,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(
+                context); // Navigates back to the previous screen (HomeScreen)
+          },
+        ),
       ),
       body: const Center(
         child: Text(

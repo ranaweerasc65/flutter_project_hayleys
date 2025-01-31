@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_project_hayleys/approvals.dart';
 import 'package:flutter_project_hayleys/dashboard.dart';
 import 'login_screen.dart';
-import 'approvals.dart';
 import 'primary_user_details.dart';
 import 'user_details.dart';
 import 'package:http/http.dart' as http;
@@ -19,24 +19,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
-
-  Future<void> _logout(BuildContext context) async {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
-    );
-  }
-
   int? customerId;
 
-  final List<String> MyConnections = [];
+  //final List<String> MyConnections = [];
 
   //List<String> Connections = [];
   List<Map<String, dynamic>> connections = [];
@@ -59,9 +44,119 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(60.0),
-          child: Container(
+      drawer: Drawer(
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  DrawerHeader(
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade900,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const CircleAvatar(
+                          radius: 40,
+                          backgroundImage: AssetImage('assets/user.png'),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          widget.userName,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          widget.phoneNo,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.dashboard, color: Colors.blue),
+                    title: const Text('Dashboard'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ApprovalsPage()),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.person, color: Colors.green),
+                    title: const Text('Profile'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ApprovalsPage()),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.receipt, color: Colors.orange),
+                    title: const Text('Bills & Payments'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ApprovalsPage()),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.history, color: Colors.purple),
+                    title: const Text('Claim History'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ApprovalsPage()),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.help, color: Colors.red),
+                    title: const Text('Support'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ApprovalsPage()),
+                      );
+                    },
+                  ),
+                  const Divider(),
+                ],
+              ),
+            ),
+            // Logout button at the bottom
+            ListTile(
+              leading: const Icon(Icons.logout, color: Colors.black),
+              title: const Text('Logout'),
+              onTap: () {
+                Navigator.pop(context);
+                _showLogoutConfirmationDialog(context);
+              },
+            ),
+          ],
+        ),
+      ),
+      body: Column(
+        children: [
+          // Gradient Header
+          Container(
+            padding: const EdgeInsets.only(bottom: 20),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -72,231 +167,164 @@ class _HomeScreenState extends State<HomeScreen> {
                   Colors.blue.shade400,
                 ],
               ),
-            ),
-            child: AppBar(
-              elevation: 0,
-              backgroundColor: Colors.transparent,
-              automaticallyImplyLeading: false,
-              actions: [
-                TextButton.icon(
-                  onPressed: () => _logout(context),
-                  icon: const Icon(Icons.logout, color: Colors.white),
-                  label: const Text(
-                    'Logout',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        body: Column(
-          children: [
-            // Merged Card - Full Width with Rounded Bottom Corners
-            Card(
-              margin: EdgeInsets.zero, // Removes extra space around the card
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(20),
-                  bottomRight: Radius.circular(20),
-                ),
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(20),
+                bottomRight: Radius.circular(20),
               ),
-              elevation: 4,
-              child: Container(
-                width: double.infinity, // Ensures full width
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.blue.shade900,
-                      Colors.blue.shade800,
-                      Colors.blue.shade400,
-                    ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AppBar(
+                  elevation: 0,
+                  backgroundColor: Colors.transparent,
+                  automaticallyImplyLeading: false,
+                  leading: Builder(
+                    builder: (context) => IconButton(
+                      icon: const Icon(Icons.menu, color: Colors.white),
+                      onPressed: () {
+                        Scaffold.of(context).openDrawer();
+                      },
+                    ),
                   ),
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
-                  ),
+                  actions: [
+                    // Notification Button
+                    IconButton(
+                      icon:
+                          const Icon(Icons.notifications, color: Colors.white),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text("Notifications"),
+                              content: const Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ListTile(
+                                    leading: Icon(Icons.medical_services,
+                                        color: Colors.blue),
+                                    title: Text(
+                                        "Your latest medical bill has been updated."),
+                                  ),
+                                  Divider(),
+                                  ListTile(
+                                    leading: Icon(Icons.attach_money,
+                                        color: Colors.green),
+                                    title: Text(
+                                        "Insurance claim processed successfully."),
+                                  ),
+                                  Divider(),
+                                  ListTile(
+                                    leading:
+                                        Icon(Icons.warning, color: Colors.red),
+                                    title: Text("Pending payment due soon!"),
+                                  ),
+                                ],
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text("Close"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
+
+                    // Logout Button
+                    IconButton(
+                      icon: const Icon(Icons.logout, color: Colors.white),
+                      onPressed: () => _showLogoutConfirmationDialog(context),
+                    ),
+                  ],
                 ),
-                padding: const EdgeInsets.all(20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Welcome!",
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 196, 222, 241),
-                            fontSize: 40,
-                            fontWeight: FontWeight.bold,
-                          ),
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Row(
+                    children: [
+                      // Profile Image - Circular
+                      ClipOval(
+                        child: Image.asset(
+                          'assets/user.png',
+                          fit: BoxFit.cover,
+                          width: 80, // Adjust size as needed
+                          height: 80,
                         ),
-                        const SizedBox(height: 5),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: Text(
-                            '${getGreeting()}, ${widget.userName}',
-                            style: const TextStyle(
-                              color: Color.fromARGB(255, 223, 234, 242),
-                              fontSize: 28,
+                      ),
+                      const SizedBox(
+                          width: 15), // Spacing between image and text
+
+                      // Text Section
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Welcome!",
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 196, 222, 241),
+                              fontSize: 32,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 5),
-                        const Text(
-                          "How is it going today?",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Color.fromARGB(255, 199, 195, 195),
-                          ),
-                        ),
-                      ],
-                    ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.asset(
-                        'assets/user.png',
-                        fit: BoxFit.cover,
-                        width: 200,
-                        height: 200,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            // FLOW TREE CONNECTION UI SETUP - 17/12/2024
-
-            const SizedBox(height: 10),
-
-            // Employee details
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: GestureDetector(
-                onTap: () async {
-                  await fetchEmployeeId();
-                  print('Fetched Employee Id: $customerId');
-                  if (customerId != null) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Dashboard(
-                          phoneNo: widget.phoneNo,
-                          userName: widget.userName,
-                          customerId:
-                              customerId!, // Pass customerId to Dashboard
-                        ),
-                      ),
-                    );
-                  } else {
-                    showError('Employee ID is null'); // Handle error case
-                  }
-                },
-                child: Stack(
-                  children: [
-                    // Main Container
-                    Container(
-                      width: 120, // Adjust the width as needed
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color.fromRGBO(27, 86, 225, 0.298),
-                            blurRadius: 20,
-                            offset: Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // Profile Picture
-                          Container(
-                            height: 100,
-                            width: 100,
-                            margin: const EdgeInsets.only(top: 16),
-                            child: ClipOval(
-                              child: Image.asset(
-                                'assets/user.png',
-                                fit: BoxFit.cover,
-                              ),
+                          const SizedBox(height: 5),
+                          Text(
+                            "Hello, ${widget.userName}",
+                            style: const TextStyle(
+                              color: Color.fromARGB(255, 223, 234, 242),
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 5),
+                          const Text(
+                            "How is it going today?",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Color.fromARGB(255, 234, 232, 232),
+                            ),
+                          ),
                         ],
                       ),
-                    ),
-                    // Edit Button Positioned at the Top-Right
-                    Positioned(
-                      top: 5,
-                      right: 5,
-                      child: GestureDetector(
-                        onTap: () {
-                          // Navigate to UserDetails form to edit the connection
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+
+          // Main Content (Employee details & connections)
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Employee Details Section
+                  Center(
+                    child: GestureDetector(
+                      onTap: () async {
+                        await fetchEmployeeId();
+                        print('Fetched Employee Id: $customerId');
+                        if (customerId != null) {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => PrimaryUserDetails(
+                              builder: (context) => Dashboard(
                                 phoneNo: widget.phoneNo,
                                 userName: widget.userName,
+                                customerId: customerId!,
                               ),
                             ),
                           );
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.7),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.edit,
-                            size: 20,
-                            color: Color.fromARGB(255, 243, 33, 89),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // connections
-
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: const Text(
-                "My Connections",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            SizedBox(
-              height: 160,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  ...connections.map((connection) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                        } else {
+                          showError('Employee ID is null');
+                        }
+                      },
                       child: Stack(
                         children: [
-                          // Main Container
                           Container(
                             width: 120,
                             decoration: BoxDecoration(
@@ -313,87 +341,35 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    print(
-                                        '${connection['CUSTOMERS_FIRST_NAME']} ${connection['CUSTOMERS_LAST_NAME']}');
-                                    // Navigate to the Dashboard page
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => Dashboard(
-                                          phoneNo: widget.phoneNo,
-                                          userName: widget.userName,
-                                          customerId:
-                                              connection['CUSTOMERS_ID'],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: Container(
-                                    height: 100,
-                                    width: 100,
-                                    margin: const EdgeInsets.only(top: 16),
-                                    child: ClipOval(
-                                      child: Image.asset(
-                                        'assets/user.png',
-                                        fit: BoxFit.cover,
-                                      ),
+                                Container(
+                                  height: 100,
+                                  width: 100,
+                                  margin: const EdgeInsets.only(top: 16),
+                                  child: ClipOval(
+                                    child: Image.asset(
+                                      'assets/user.png',
+                                      fit: BoxFit.cover,
                                     ),
                                   ),
                                 ),
                                 const SizedBox(height: 10),
-                                Column(
-                                  children: [
-                                    Text(
-                                      '${connection['CUSTOMERS_FIRST_NAME']} ${connection['CUSTOMERS_LAST_NAME']}',
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    Text(
-                                      'ID: ${connection['CUSTOMERS_ID']}',
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color.fromARGB(255, 102, 99, 99),
-                                      ),
-                                    ),
-                                  ],
-                                ),
                               ],
                             ),
                           ),
-                          // Edit Button
                           Positioned(
                             top: 5,
                             right: 5,
                             child: GestureDetector(
                               onTap: () {
-                                // Navigate to the EditUserDetails screen and pass the customer details
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => EditUserDetails(
+                                    builder: (context) => PrimaryUserDetails(
                                       phoneNo: widget.phoneNo,
                                       userName: widget.userName,
-                                      customerId: connection['CUSTOMERS_ID'],
                                     ),
                                   ),
-                                ).then((updatedConnection) {
-                                  // Handle the updated connection data
-                                  if (updatedConnection != null) {
-                                    setState(() {
-                                      connection['CUSTOMERS_FIRST_NAME'] =
-                                          updatedConnection["first_name"];
-                                      connection['CUSTOMERS_LAST_NAME'] =
-                                          updatedConnection["last_name"];
-                                    });
-                                  }
-                                });
+                                );
                               },
                               child: Container(
                                 padding: const EdgeInsets.all(5),
@@ -411,61 +387,271 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       ),
-                    );
-                  }),
+                    ),
+                  ),
 
-                  // Add New Connection Button
-                  GestureDetector(
-                    onTap: () async {
-                      final updatedConnections = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => UserDetails(
-                            phoneNo: widget.phoneNo,
-                            userName: widget.userName,
+                  const SizedBox(height: 20),
+
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: const Text(
+                      "My Connections",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  SizedBox(
+                    height: 160,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        ...connections.map((connection) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: Stack(
+                              children: [
+                                // Main Container
+                                Container(
+                                  width: 120,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color:
+                                            Color.fromRGBO(27, 86, 225, 0.298),
+                                        blurRadius: 20,
+                                        offset: Offset(0, 10),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          print(
+                                              '${connection['CUSTOMERS_FIRST_NAME']} ${connection['CUSTOMERS_LAST_NAME']}');
+                                          // Navigate to the Dashboard page
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => Dashboard(
+                                                phoneNo: widget.phoneNo,
+                                                userName: widget.userName,
+                                                customerId:
+                                                    connection['CUSTOMERS_ID'],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          height: 100,
+                                          width: 100,
+                                          margin:
+                                              const EdgeInsets.only(top: 16),
+                                          child: ClipOval(
+                                            child: Image.asset(
+                                              'assets/user.png',
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Column(
+                                        children: [
+                                          Text(
+                                            '${connection['CUSTOMERS_FIRST_NAME']} ${connection['CUSTOMERS_LAST_NAME']}',
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          Text(
+                                            'ID: ${connection['CUSTOMERS_ID']}',
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w400,
+                                              color: Color.fromARGB(
+                                                  255, 102, 99, 99),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                // Edit Button
+                                Positioned(
+                                  top: 5,
+                                  right: 5,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      // Navigate to the EditUserDetails screen and pass the customer details
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => EditUserDetails(
+                                            phoneNo: widget.phoneNo,
+                                            userName: widget.userName,
+                                            customerId:
+                                                connection['CUSTOMERS_ID'],
+                                          ),
+                                        ),
+                                      ).then((updatedConnection) {
+                                        // Handle the updated connection data
+                                        if (updatedConnection != null) {
+                                          setState(() {
+                                            connection['CUSTOMERS_FIRST_NAME'] =
+                                                updatedConnection["first_name"];
+                                            connection['CUSTOMERS_LAST_NAME'] =
+                                                updatedConnection["last_name"];
+                                          });
+                                        }
+                                      });
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(5),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.7),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(
+                                        Icons.edit,
+                                        size: 20,
+                                        color: Color.fromARGB(255, 243, 33, 89),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+
+                        // Add New Connection Button
+                        GestureDetector(
+                          onTap: () async {
+                            final updatedConnections = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => UserDetails(
+                                  phoneNo: widget.phoneNo,
+                                  userName: widget.userName,
+                                ),
+                              ),
+                            );
+
+                            if (updatedConnections != null) {
+                              // Update the Connections list with the new data
+                              setState(() {
+                                // Connections = updatedConnections;
+                              });
+                            }
+                          },
+                          child: Container(
+                            width: 120,
+                            height: 120,
+                            margin: const EdgeInsets.symmetric(horizontal: 12),
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(255, 255, 255, 255),
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Color.fromRGBO(27, 86, 225, 0.298),
+                                  blurRadius: 20,
+                                  offset: Offset(0, 10),
+                                ),
+                              ],
+                            ),
+                            child: const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.add,
+                                  size: 50,
+                                  color: Colors.orange,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      );
-
-                      if (updatedConnections != null) {
-                        // Update the Connections list with the new data
-                        setState(() {
-                          // Connections = updatedConnections;
-                        });
-                      }
-                    },
-                    child: Container(
-                      width: 120,
-                      height: 120,
-                      margin: const EdgeInsets.symmetric(horizontal: 12),
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 255, 255, 255),
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color.fromRGBO(27, 86, 225, 0.298),
-                            blurRadius: 20,
-                            offset: Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.add,
-                            size: 50,
-                            color: Colors.orange,
-                          ),
-                        ],
-                      ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showLogoutConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          title: const Text(
+            "Logout Confirmation",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          content: const Text(
+            "Are you sure you want to logout?",
+            style: TextStyle(fontSize: 16, color: Colors.black87),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.grey,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                _logout(context); // Call the logout function
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.red,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text("Logout"),
+            ),
           ],
-        ));
+        );
+      },
+    );
+  }
+
+// Logout Function
+  Future<void> _logout(BuildContext context) async {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
   }
 
   void addConnection(List<String> connectionList) {

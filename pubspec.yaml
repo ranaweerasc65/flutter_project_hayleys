@@ -67,6 +67,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/app_logo.png
+    - assets/new_app_logo.png
     - assets/shape.png
     - assets/user.png
     - assets/sick.png
