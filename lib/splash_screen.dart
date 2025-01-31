@@ -40,16 +40,13 @@ class InitState extends State<SplashScreen> {
       body: Stack(
         children: [
           Container(
-              decoration: const BoxDecoration(
-                  gradient: LinearGradient(colors: [
-            Color.fromARGB(255, 5, 5, 172), // Deep Orange
-            Color.fromARGB(255, 46, 65, 210), // Light Orange
-            Color.fromARGB(255, 98, 155, 221), // Soft Peach
-          ], begin: Alignment.topCenter, end: Alignment.bottomCenter))),
+            decoration: const BoxDecoration(
+              color: Colors.white, // Set background color to white
+            ),
+          ),
           Center(
-            // child: Image.asset("assets/app_logo.png"),
             child: Image.asset("assets/new_app_logo.png"),
-          )
+          ),
         ],
       ),
     );
