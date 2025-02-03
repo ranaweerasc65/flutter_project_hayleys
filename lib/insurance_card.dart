@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class InsuranceCardPage extends StatefulWidget {
   final int customerId;
@@ -16,6 +17,7 @@ class InsuranceCardPage extends StatefulWidget {
 }
 
 class _InsuranceCardPageState extends State<InsuranceCardPage> {
+  bool _isLoading = false;
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController membershipNoController = TextEditingController();
@@ -480,6 +482,10 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
   }
 
   Future<void> _fetchAddedCards() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     print("Fetching added cards...");
     final url = Uri.parse(
       "http://172.16.200.79/flutter_project_hayleys/php/get_insurance_cards.php?customers_id=${widget.customerId}",
@@ -489,8 +495,7 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
-        print(
-            'Response body: ${response.body}'); // Print the body of the response
+        print('Response body: ${response.body}');
         final data = jsonDecode(response.body);
 
         if (data['status'] == 'success') {
@@ -506,6 +511,10 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
       }
     } catch (e) {
       print('Error fetching cards: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -563,66 +572,64 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              addedCards.isEmpty
-                  ? const Text(
-                      "No cards added yet.",
-                      style: TextStyle(color: Colors.grey),
+
+              // Show loading animation while fetching cards
+              _isLoading
+                  ? Center(
+                      child: LoadingAnimationWidget.halfTriangleDot(
+                        color: const Color.fromARGB(255, 243, 107, 33),
+                        size: 30,
+                      ),
                     )
-                  : LayoutBuilder(
-                      builder: (context, constraints) {
-                        if (constraints.maxWidth < 600) {
-                          // For small screens, use ListView
-                          return ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: addedCards.length,
-                            itemBuilder: (context, index) {
-                              final card = addedCards[index];
-                              return _buildCardItem(card);
-                            },
-                          );
-                        } else {
-                          // For large screens, use GridView
+                  : addedCards.isEmpty
+                      ? const Text(
+                          "No cards added yet.",
+                          style: TextStyle(color: Colors.grey),
+                        )
+                      : LayoutBuilder(
+                          builder: (context, constraints) {
+                            if (constraints.maxWidth < 600) {
+                              return ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: addedCards.length,
+                                itemBuilder: (context, index) {
+                                  final card = addedCards[index];
+                                  return _buildCardItem(card);
+                                },
+                              );
+                            } else {
+                              const fixedHeight = 240.0;
+                              final screenWidth = constraints.maxWidth;
+                              const crossAxisCount = 2;
+                              const crossAxisSpacing = 10.0;
+                              const mainAxisSpacing = 10.0;
 
-                          // Fixed height for grid items
-                          const fixedHeight = 240.0;
+                              final availableWidthForItems = screenWidth -
+                                  (crossAxisSpacing * (crossAxisCount - 1));
+                              final itemWidth =
+                                  availableWidthForItems / crossAxisCount;
+                              final childAspectRatio = itemWidth / fixedHeight;
 
-                          // Calculate the width of each item based on the screen width and crossAxisCount
-                          final screenWidth = constraints.maxWidth;
-                          const crossAxisCount = 2; // Number of items per row
-                          const crossAxisSpacing =
-                              10.0; // Spacing between items horizontally
-                          const mainAxisSpacing = 10.0; // Spacing between rows
-
-                          // Calculate the available width for each item
-                          final availableWidthForItems = screenWidth -
-                              (crossAxisSpacing * (crossAxisCount - 1));
-                          final itemWidth =
-                              availableWidthForItems / crossAxisCount;
-
-                          // Calculate the childAspectRatio based on the fixed height and calculated width
-                          final childAspectRatio = itemWidth / fixedHeight;
-
-                          return GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: crossAxisCount,
-                              childAspectRatio:
-                                  childAspectRatio, // Dynamic aspect ratio
-                              crossAxisSpacing: crossAxisSpacing,
-                              mainAxisSpacing: mainAxisSpacing,
-                            ),
-                            itemCount: addedCards.length,
-                            itemBuilder: (context, index) {
-                              final card = addedCards[index];
-                              return _buildCardItem(card);
-                            },
-                          );
-                        }
-                      },
-                    ),
+                              return GridView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: crossAxisCount,
+                                  childAspectRatio: childAspectRatio,
+                                  crossAxisSpacing: crossAxisSpacing,
+                                  mainAxisSpacing: mainAxisSpacing,
+                                ),
+                                itemCount: addedCards.length,
+                                itemBuilder: (context, index) {
+                                  final card = addedCards[index];
+                                  return _buildCardItem(card);
+                                },
+                              );
+                            }
+                          },
+                        ),
               const SizedBox(height: 20),
               Center(
                 child: ElevatedButton(
@@ -650,6 +657,147 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
       ),
     );
   }
+
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     appBar: AppBar(
+  //       title: const Text(
+  //         'Insurance Card Details',
+  //         style: TextStyle(
+  //           fontWeight: FontWeight.bold,
+  //           fontSize: 24,
+  //           color: Colors.white,
+  //         ),
+  //       ),
+  //       automaticallyImplyLeading: false,
+  //       centerTitle: true,
+  //       backgroundColor: Colors.blue.shade800,
+  //       leading: IconButton(
+  //         icon: const Icon(Icons.arrow_back, color: Colors.white),
+  //         onPressed: () {
+  //           Navigator.pop(context);
+  //         },
+  //       ),
+  //       actions: [
+  //         Padding(
+  //           padding: const EdgeInsets.only(right: 16),
+  //           child: GestureDetector(
+  //             onTap: () {
+  //               _showExitConfirmationDialog(context);
+  //             },
+  //             child: const Center(
+  //               child: Text(
+  //                 'Cancel',
+  //                 style: TextStyle(
+  //                   color: Colors.white,
+  //                   fontSize: 16,
+  //                   fontWeight: FontWeight.bold,
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //     backgroundColor: Colors.white,
+  //     body: Padding(
+  //       padding: const EdgeInsets.all(40.0),
+  //       child: SingleChildScrollView(
+  //         child: Column(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: [
+  //             const Text(
+  //               "Added Cards",
+  //               style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+  //             ),
+  //             const SizedBox(height: 8),
+  //             addedCards.isEmpty
+  //                 ? const Text(
+  //                     "No cards added yet.",
+  //                     style: TextStyle(color: Colors.grey),
+  //                   )
+  //                 : LayoutBuilder(
+  //                     builder: (context, constraints) {
+  //                       if (constraints.maxWidth < 600) {
+  //                         // For small screens, use ListView
+  //                         return ListView.builder(
+  //                           shrinkWrap: true,
+  //                           physics: const NeverScrollableScrollPhysics(),
+  //                           itemCount: addedCards.length,
+  //                           itemBuilder: (context, index) {
+  //                             final card = addedCards[index];
+  //                             return _buildCardItem(card);
+  //                           },
+  //                         );
+  //                       } else {
+  //                         // For large screens, use GridView
+
+  //                         // Fixed height for grid items
+  //                         const fixedHeight = 240.0;
+
+  //                         // Calculate the width of each item based on the screen width and crossAxisCount
+  //                         final screenWidth = constraints.maxWidth;
+  //                         const crossAxisCount = 2; // Number of items per row
+  //                         const crossAxisSpacing =
+  //                             10.0; // Spacing between items horizontally
+  //                         const mainAxisSpacing = 10.0; // Spacing between rows
+
+  //                         // Calculate the available width for each item
+  //                         final availableWidthForItems = screenWidth -
+  //                             (crossAxisSpacing * (crossAxisCount - 1));
+  //                         final itemWidth =
+  //                             availableWidthForItems / crossAxisCount;
+
+  //                         // Calculate the childAspectRatio based on the fixed height and calculated width
+  //                         final childAspectRatio = itemWidth / fixedHeight;
+
+  //                         return GridView.builder(
+  //                           shrinkWrap: true,
+  //                           physics: const NeverScrollableScrollPhysics(),
+  //                           gridDelegate:
+  //                               SliverGridDelegateWithFixedCrossAxisCount(
+  //                             crossAxisCount: crossAxisCount,
+  //                             childAspectRatio:
+  //                                 childAspectRatio, // Dynamic aspect ratio
+  //                             crossAxisSpacing: crossAxisSpacing,
+  //                             mainAxisSpacing: mainAxisSpacing,
+  //                           ),
+  //                           itemCount: addedCards.length,
+  //                           itemBuilder: (context, index) {
+  //                             final card = addedCards[index];
+  //                             return _buildCardItem(card);
+  //                           },
+  //                         );
+  //                       }
+  //                     },
+  //                   ),
+  //             const SizedBox(height: 20),
+  //             Center(
+  //               child: ElevatedButton(
+  //                 onPressed: _showAddCardForm,
+  //                 style: ElevatedButton.styleFrom(
+  //                   backgroundColor: Colors.blue[800],
+  //                   shape: RoundedRectangleBorder(
+  //                     borderRadius: BorderRadius.circular(50),
+  //                   ),
+  //                   minimumSize: const Size(200, 50),
+  //                 ),
+  //                 child: const Text(
+  //                   "Add a New Card",
+  //                   style: TextStyle(
+  //                     color: Colors.white,
+  //                     fontWeight: FontWeight.bold,
+  //                     fontSize: 16,
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildCardItem(Map<String, dynamic> card) {
     return Container(
