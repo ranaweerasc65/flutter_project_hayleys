@@ -3,6 +3,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+
 // Include database connection
 include('connect.php');
 
@@ -43,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Handle INSERT/UPDATE request (existing logic)
         $missingFields = [];
         $requiredFields = [
-            'phone_no', 'customers_id', 'insurance_card_holder_name', 'insurance_membership_no', 'insurance_policy_no', 
+            'customers_id', 'insurance_card_holder_name', 'insurance_membership_no', 'insurance_policy_no', 
             'insurance_company'
         ];
 
@@ -58,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit();
         }
 
-        $phone_no = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['phone_no']);
+       // $phone_no = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['phone_no']);
         $customers_id = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_id']);
         $insurance_card_holder_name = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['insurance_card_holder_name']);
         $insurance_membership_no = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['insurance_membership_no']);
@@ -70,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($insurance_id) {
             // UPDATE query
             $sql = "UPDATE insurance SET 
-                    phone_no = ?, customers_id = ?, insurance_card_holder_name = ?, insurance_membership_no = ?, 
+                    customers_id = ?, insurance_card_holder_name = ?, insurance_membership_no = ?, 
                     insurance_policy_no = ?, insurance_company = ?
                     WHERE INSURANCE_ID = ?";
 
@@ -82,8 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             $stmt->bind_param(
-                "sssssss",
-                $phone_no,
+                "ssssss",
+               
                 $customers_id,
                 $insurance_card_holder_name,
                 $insurance_membership_no,
@@ -99,8 +100,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         } else {
             // INSERT query
-            $sql = "INSERT INTO insurance (phone_no, customers_id, insurance_card_holder_name, insurance_membership_no, insurance_policy_no, insurance_company) 
-                    VALUES (?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO insurance (customers_id, insurance_card_holder_name, insurance_membership_no, insurance_policy_no, insurance_company) 
+                    VALUES (?, ?, ?, ?, ?)";
 
             $stmt = $conn_hayleys_medicalapp->prepare($sql);
 
@@ -110,8 +111,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             $stmt->bind_param(
-                "ssssss",
-                $phone_no,
+                "sssss",
+               
                 $customers_id,
                 $insurance_card_holder_name,
                 $insurance_membership_no,

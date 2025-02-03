@@ -65,7 +65,7 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
 
     if (_formKey.currentState!.validate()) {
       final cardDetails = {
-        "phone_no": widget.phoneNo, // Ensure widget.phoneNo is a String
+        //"phone_no": widget.phoneNo, // Ensure widget.phoneNo is a String
         "customers_id": widget.customerId.toString(), // Convert int to String
         "insurance_card_holder_name": cardHolderNameController.text,
         "insurance_membership_no": membershipNoController.text,
@@ -775,7 +775,7 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
                   IconButton(
                     onPressed: () {
                       print(
-                          "Delete button pressed for insurance_id: ${card['insurance_id']} customers_id=${widget.customerId} phone_no=${widget.phoneNo}");
+                          "Delete button pressed for insurance_id: ${card['insurance_id']} customers_id=${widget.customerId} ");
                       _showDeleteConfirmationDialog(card['insurance_id']);
                     },
                     icon: const Icon(Icons.delete, color: Colors.red),
@@ -788,266 +788,6 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
       ),
     );
   }
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     appBar: AppBar(
-  //       title: const Text(
-  //         'Insurance Card Details',
-  //         style: TextStyle(
-  //           fontWeight: FontWeight.bold,
-  //           fontSize: 24,
-  //           color: Colors.white,
-  //         ),
-  //       ),
-  //       automaticallyImplyLeading: false,
-  //       centerTitle: true,
-  //       backgroundColor: Colors.blue.shade800,
-  //       leading: IconButton(
-  //         icon: const Icon(Icons.arrow_back, color: Colors.white),
-  //         onPressed: () {
-  //           Navigator.pop(context);
-  //         },
-  //       ),
-  //       actions: [
-  //         Padding(
-  //           padding: const EdgeInsets.only(right: 16),
-  //           child: GestureDetector(
-  //             onTap: () {
-  //               _showExitConfirmationDialog(context);
-  //             },
-  //             child: const Center(
-  //               child: Text(
-  //                 'Cancel',
-  //                 style: TextStyle(
-  //                   color: Colors.white,
-  //                   fontSize: 16,
-  //                   fontWeight: FontWeight.bold,
-  //                 ),
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //     backgroundColor: Colors.white,
-  //     body: Padding(
-  //       padding: const EdgeInsets.all(40.0),
-  //       child: SingleChildScrollView(
-  //         // Added SingleChildScrollView
-  //         child: Column(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           children: [
-  //             const Text(
-  //               "Added Cards",
-  //               style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-  //             ),
-  //             const SizedBox(height: 8),
-  //             addedCards.isEmpty
-  //                 ? const Text(
-  //                     "No cards added yet.",
-  //                     style: TextStyle(color: Colors.grey),
-  //                   )
-  //                 : LayoutBuilder(
-  //                     builder: (context, constraints) {
-  //                       return GridView.builder(
-  //                         shrinkWrap:
-  //                             true, // To prevent GridView from taking full height
-  //                         physics:
-  //                             const NeverScrollableScrollPhysics(), // Disable scrolling of GridView
-  //                         gridDelegate:
-  //                             const SliverGridDelegateWithFixedCrossAxisCount(
-  //                           crossAxisCount: 2, // Number of cards in a row
-  //                           crossAxisSpacing: 10, // Spacing between columns
-  //                           mainAxisSpacing: 10, // Spacing between rows
-  //                           childAspectRatio:
-  //                               5 / 2, // Adjust the card height/width ratio
-  //                         ),
-  //                         itemCount: addedCards.length,
-  //                         itemBuilder: (context, index) {
-  //                           final card = addedCards[index];
-  //                           return Container(
-  //                             decoration: BoxDecoration(
-  //                               borderRadius: BorderRadius.circular(20),
-  //                               gradient: const LinearGradient(
-  //                                 begin: Alignment.topLeft,
-  //                                 end: Alignment.bottomRight,
-  //                                 colors: [
-  //                                   Color.fromARGB(255, 135, 59, 18),
-  //                                   Color.fromARGB(255, 17, 25, 105)
-  //                                 ],
-  //                               ),
-  //                             ),
-  //                             child: Card(
-  //                               color: Colors
-  //                                   .transparent, // Make the card transparent to show the gradient
-  //                               elevation: 6,
-  //                               margin: const EdgeInsets.symmetric(vertical: 8),
-  //                               shape: RoundedRectangleBorder(
-  //                                 borderRadius: BorderRadius.circular(16),
-  //                               ),
-  //                               child: Padding(
-  //                                 padding: const EdgeInsets.all(16.0),
-  //                                 child: Stack(
-  //                                   children: [
-  //                                     // Main content column
-  //                                     Column(
-  //                                       crossAxisAlignment:
-  //                                           CrossAxisAlignment.start,
-  //                                       children: [
-  //                                         // Insurance Company Name
-  //                                         Text(
-  //                                           card['insurance_company'] ??
-  //                                               "Unknown Company",
-  //                                           style: const TextStyle(
-  //                                             fontWeight: FontWeight.bold,
-  //                                             fontSize: 20,
-  //                                             color: Colors.white,
-  //                                           ),
-  //                                         ),
-  //                                         const SizedBox(height: 6),
-  //                                         // Card Holder Name
-  //                                         Center(
-  //                                           child: Column(
-  //                                             mainAxisSize: MainAxisSize
-  //                                                 .min, // Ensures the column takes minimum height
-  //                                             children: [
-  //                                               Text(
-  //                                                 card['insurance_card_holder_name']
-  //                                                         ?.toString() ??
-  //                                                     'N/A',
-  //                                                 style: const TextStyle(
-  //                                                   fontSize: 18,
-  //                                                   color: Colors.white,
-  //                                                 ),
-  //                                               ),
-  //                                               const SizedBox(
-  //                                                   height:
-  //                                                       2), // Adds spacing between text elements
-  //                                               const Text(
-  //                                                 "Card Holder Name",
-  //                                                 style: TextStyle(
-  //                                                   fontSize: 12,
-  //                                                   color: Colors.white70,
-  //                                                 ),
-  //                                               ),
-  //                                             ],
-  //                                           ),
-  //                                         ),
-  //                                         const SizedBox(height: 16),
-  //                                         // Membership No and Policy No
-  //                                         Row(
-  //                                           mainAxisAlignment:
-  //                                               MainAxisAlignment.spaceBetween,
-  //                                           children: [
-  //                                             Column(
-  //                                               children: [
-  //                                                 Text(
-  //                                                   card['insurance_membership_no']
-  //                                                           ?.toString() ??
-  //                                                       'N/A',
-  //                                                   style: const TextStyle(
-  //                                                     fontSize: 18,
-  //                                                     color: Colors.white,
-  //                                                   ),
-  //                                                 ),
-  //                                                 const Text(
-  //                                                   "Membership No",
-  //                                                   style: TextStyle(
-  //                                                     fontSize: 12,
-  //                                                     color: Colors.white70,
-  //                                                   ),
-  //                                                 ),
-  //                                               ],
-  //                                             ),
-  //                                             Column(
-  //                                               children: [
-  //                                                 Text(
-  //                                                   card['insurance_policy_no']
-  //                                                           ?.toString() ??
-  //                                                       'N/A',
-  //                                                   style: const TextStyle(
-  //                                                     fontSize: 18,
-  //                                                     color: Colors.white,
-  //                                                   ),
-  //                                                 ),
-  //                                                 const Text(
-  //                                                   "Policy No",
-  //                                                   style: TextStyle(
-  //                                                     fontSize: 12,
-  //                                                     color: Colors.white70,
-  //                                                   ),
-  //                                                 ),
-  //                                               ],
-  //                                             ),
-  //                                           ],
-  //                                         ),
-  //                                       ],
-  //                                     ),
-  //                                     // Edit and Delete buttons positioned at the bottom-right
-  //                                     Align(
-  //                                       alignment: Alignment.bottomRight,
-  //                                       child: Row(
-  //                                         mainAxisSize: MainAxisSize.min,
-  //                                         children: [
-  //                                           // Edit Button
-  //                                           IconButton(
-  //                                             onPressed: () {
-  //                                               _showEditDialog(
-  //                                                   card); // Call the function instead of inline logic
-  //                                             },
-  //                                             icon: const Icon(Icons.edit,
-  //                                                 color: Colors.red),
-  //                                           ),
-  //                                           // Delete Button
-  //                                           IconButton(
-  //                                             onPressed: () {
-  //                                               print(
-  //                                                   "Delete button pressed for insurance_id: ${card['insurance_id']} customers_id=${widget.customerId} phone_no=${widget.phoneNo}");
-  //                                               _showDeleteConfirmationDialog(
-  //                                                   card['insurance_id']);
-  //                                             },
-  //                                             icon: const Icon(Icons.delete,
-  //                                                 color: Colors.red),
-  //                                           ),
-  //                                         ],
-  //                                       ),
-  //                                     ),
-  //                                   ],
-  //                                 ),
-  //                               ),
-  //                             ),
-  //                           );
-  //                         },
-  //                       );
-  //                     },
-  //                   ),
-  //             const SizedBox(height: 20),
-  //             Center(
-  //               child: ElevatedButton(
-  //                 onPressed: _showAddCardForm,
-  //                 style: ElevatedButton.styleFrom(
-  //                   backgroundColor: Colors.blue[800],
-  //                   shape: RoundedRectangleBorder(
-  //                     borderRadius: BorderRadius.circular(50),
-  //                   ),
-  //                   minimumSize: const Size(200, 50),
-  //                 ),
-  //                 child: const Text(
-  //                   "Add a New Card",
-  //                   style: TextStyle(
-  //                     color: Colors.white,
-  //                     fontWeight: FontWeight.bold,
-  //                     fontSize: 16,
-  //                   ),
-  //                 ),
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   void _showDeleteConfirmationDialog(int insuranceId) {
     showDialog(
@@ -1067,7 +807,7 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
                 children: [
                   Container(
                     decoration: const BoxDecoration(
-                      color: Colors.red, // Red for delete warning
+                      color: Colors.red,
                       shape: BoxShape.circle,
                     ),
                     padding: const EdgeInsets.all(16),
@@ -1098,14 +838,13 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
                     children: [
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Colors.grey, // Neutral color for cancel
+                          backgroundColor: Colors.grey,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                         onPressed: () {
-                          Navigator.of(context).pop(); // Close the dialog
+                          Navigator.of(context).pop();
                         },
                         child: const Text(
                           "No",
@@ -1114,13 +853,13 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red, // Red for delete action
+                          backgroundColor: Colors.red,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                         onPressed: () async {
-                          Navigator.of(context).pop(); // Close the dialog
+                          Navigator.of(context).pop();
                           final response =
                               await deleteInsuranceCard(insuranceId);
                           if (response['status'] == 'success') {
@@ -1193,7 +932,7 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
 
     if (_formKey.currentState!.validate()) {
       final cardDetails = {
-        "phone_no": widget.phoneNo,
+        //"phone_no": widget.phoneNo,
         "customers_id": widget.customerId.toString(),
         "insurance_card_holder_name": cardHolderNameController.text,
         "insurance_membership_no": membershipNoController.text,
@@ -1459,7 +1198,7 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
 
   void _showEditDialog(Map<String, dynamic> card) {
     print(
-        "Edit button pressed for insurance_id: ${card['insurance_id']} customers_id=${widget.customerId} phone_no=${widget.phoneNo}");
+        "Edit button pressed for insurance_id: ${card['insurance_id']} customers_id=${widget.customerId} ");
 
     // Set the controllers with the existing card details
     insuranceCompanyNameController.text = card['insurance_company'] ?? '';

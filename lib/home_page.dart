@@ -234,11 +234,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     ),
 
-                    // Logout Button
-                    IconButton(
-                      icon: const Icon(Icons.logout, color: Colors.white),
-                      onPressed: () => _showLogoutConfirmationDialog(context),
-                    ),
+                    // // Logout Button
+                    // IconButton(
+                    //   icon: const Icon(Icons.logout, color: Colors.white),
+                    //   onPressed: () => _showLogoutConfirmationDialog(context),
+                    // ),
                   ],
                 ),
                 Padding(
@@ -271,7 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const SizedBox(height: 5),
                           Text(
-                            "Hello, ${widget.userName}",
+                            "${widget.userName}",
                             style: const TextStyle(
                               color: Color.fromARGB(255, 223, 234, 242),
                               fontSize: 24,
