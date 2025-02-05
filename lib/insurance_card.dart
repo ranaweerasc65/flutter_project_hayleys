@@ -40,6 +40,82 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
     _fetchAddedCards();
   }
 
+  // Future<void> _addCard() async {
+  //   print('insurance_card.dart');
+  //   print('_addCard function');
+
+  //   // Mandatory fields to check
+  //   final mandatoryFields = {
+  //     "Insurance Company Name": insuranceCompanyNameController.text,
+  //     "Card Holder Name": cardHolderNameController.text,
+  //     "Membership No": membershipNoController.text,
+  //     "Policy No": policyNoController.text,
+  //   };
+
+  //   // Check for missing mandatory fields
+  //   final missingFields = mandatoryFields.entries
+  //       .where((entry) => entry.value.toString().trim().isEmpty)
+  //       .map((entry) => entry.key)
+  //       .toList();
+
+  //   if (missingFields.isNotEmpty) {
+  //     // Show error message for missing mandatory fields
+  //     _showErrorDialog(
+  //         "Please fill all the mandatory fields before submitting.");
+  //     return;
+  //   }
+
+  //   if (_formKey.currentState!.validate()) {
+  //     final cardDetails = {
+  //       //"phone_no": widget.phoneNo, // Ensure widget.phoneNo is a String
+  //       "customers_id": widget.customerId.toString(), // Convert int to String
+  //       "insurance_card_holder_name": cardHolderNameController.text,
+  //       "insurance_membership_no": membershipNoController.text,
+  //       "insurance_policy_no": policyNoController.text,
+  //       "insurance_company": insuranceCompanyNameController.text,
+  //     };
+
+  //     // Print card details for debugging
+  //     print('Card Details: $cardDetails');
+
+  //     try {
+  //       final response = await http.post(
+  //         Uri.parse(
+  //             "http://172.16.200.79/flutter_project_hayleys/php/insurance_card.php"),
+  //         headers: {
+  //           "Content-Type": "application/x-www-form-urlencoded",
+  //         },
+  //         body: cardDetails,
+  //       );
+
+  //       // Print response body for debugging
+  //       print('Response: ${response.body}');
+
+  //       if (response.statusCode == 200) {
+  //         final jsonResponse = jsonDecode(response.body);
+  //         if (jsonResponse['status'] == 'success') {
+  //           final insuranceId =
+  //               jsonResponse['insurance_id']; // Extract insurance_id
+  //           print('Insurance ID: $insuranceId');
+  //           _showSuccessDialog(
+  //               'Insurance card details added successfully\nInsurance ID: $insuranceId',
+  //               insuranceId);
+  //           // Refresh the list of cards
+  //           _fetchAddedCards();
+  //         } else {
+  //           _showErrorDialog(
+  //               jsonResponse['message'] ?? "An unknown error occurred.");
+  //         }
+  //       } else {
+  //         _showErrorDialog("Server returned an error: ${response.statusCode}");
+  //       }
+  //     } catch (e) {
+  //       _showErrorDialog("An error occurred: $e");
+  //       print("Error: $e");
+  //     }
+  //   }
+  // }
+
   Future<void> _addCard() async {
     print('insurance_card.dart');
     print('_addCard function');
@@ -59,7 +135,6 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
         .toList();
 
     if (missingFields.isNotEmpty) {
-      // Show error message for missing mandatory fields
       _showErrorDialog(
           "Please fill all the mandatory fields before submitting.");
       return;
@@ -67,7 +142,6 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
 
     if (_formKey.currentState!.validate()) {
       final cardDetails = {
-        //"phone_no": widget.phoneNo, // Ensure widget.phoneNo is a String
         "customers_id": widget.customerId.toString(), // Convert int to String
         "insurance_card_holder_name": cardHolderNameController.text,
         "insurance_membership_no": membershipNoController.text,
@@ -75,31 +149,28 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
         "insurance_company": insuranceCompanyNameController.text,
       };
 
-      // Print card details for debugging
       print('Card Details: $cardDetails');
 
       try {
         final response = await http.post(
           Uri.parse(
               "http://172.16.200.79/flutter_project_hayleys/php/insurance_card.php"),
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
+          headers: {"Content-Type": "application/x-www-form-urlencoded"},
           body: cardDetails,
         );
 
-        // Print response body for debugging
         print('Response: ${response.body}');
 
         if (response.statusCode == 200) {
           final jsonResponse = jsonDecode(response.body);
           if (jsonResponse['status'] == 'success') {
-            final insuranceId =
-                jsonResponse['insurance_id']; // Extract insurance_id
+            final insuranceId = jsonResponse['insurance_id'];
             print('Insurance ID: $insuranceId');
+
             _showSuccessDialog(
                 'Insurance card details added successfully\nInsurance ID: $insuranceId',
                 insuranceId);
+
             // Refresh the list of cards
             _fetchAddedCards();
           } else {
@@ -486,7 +557,7 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
       _isLoading = true;
     });
 
-    print("Fetching added cards...");
+    print("Fetching added cards for customer id ${widget.customerId}...");
     final url = Uri.parse(
       "http://172.16.200.79/flutter_project_hayleys/php/get_insurance_cards.php?customers_id=${widget.customerId}",
     );
@@ -657,147 +728,6 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
       ),
     );
   }
-
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     appBar: AppBar(
-  //       title: const Text(
-  //         'Insurance Card Details',
-  //         style: TextStyle(
-  //           fontWeight: FontWeight.bold,
-  //           fontSize: 24,
-  //           color: Colors.white,
-  //         ),
-  //       ),
-  //       automaticallyImplyLeading: false,
-  //       centerTitle: true,
-  //       backgroundColor: Colors.blue.shade800,
-  //       leading: IconButton(
-  //         icon: const Icon(Icons.arrow_back, color: Colors.white),
-  //         onPressed: () {
-  //           Navigator.pop(context);
-  //         },
-  //       ),
-  //       actions: [
-  //         Padding(
-  //           padding: const EdgeInsets.only(right: 16),
-  //           child: GestureDetector(
-  //             onTap: () {
-  //               _showExitConfirmationDialog(context);
-  //             },
-  //             child: const Center(
-  //               child: Text(
-  //                 'Cancel',
-  //                 style: TextStyle(
-  //                   color: Colors.white,
-  //                   fontSize: 16,
-  //                   fontWeight: FontWeight.bold,
-  //                 ),
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //     backgroundColor: Colors.white,
-  //     body: Padding(
-  //       padding: const EdgeInsets.all(40.0),
-  //       child: SingleChildScrollView(
-  //         child: Column(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           children: [
-  //             const Text(
-  //               "Added Cards",
-  //               style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-  //             ),
-  //             const SizedBox(height: 8),
-  //             addedCards.isEmpty
-  //                 ? const Text(
-  //                     "No cards added yet.",
-  //                     style: TextStyle(color: Colors.grey),
-  //                   )
-  //                 : LayoutBuilder(
-  //                     builder: (context, constraints) {
-  //                       if (constraints.maxWidth < 600) {
-  //                         // For small screens, use ListView
-  //                         return ListView.builder(
-  //                           shrinkWrap: true,
-  //                           physics: const NeverScrollableScrollPhysics(),
-  //                           itemCount: addedCards.length,
-  //                           itemBuilder: (context, index) {
-  //                             final card = addedCards[index];
-  //                             return _buildCardItem(card);
-  //                           },
-  //                         );
-  //                       } else {
-  //                         // For large screens, use GridView
-
-  //                         // Fixed height for grid items
-  //                         const fixedHeight = 240.0;
-
-  //                         // Calculate the width of each item based on the screen width and crossAxisCount
-  //                         final screenWidth = constraints.maxWidth;
-  //                         const crossAxisCount = 2; // Number of items per row
-  //                         const crossAxisSpacing =
-  //                             10.0; // Spacing between items horizontally
-  //                         const mainAxisSpacing = 10.0; // Spacing between rows
-
-  //                         // Calculate the available width for each item
-  //                         final availableWidthForItems = screenWidth -
-  //                             (crossAxisSpacing * (crossAxisCount - 1));
-  //                         final itemWidth =
-  //                             availableWidthForItems / crossAxisCount;
-
-  //                         // Calculate the childAspectRatio based on the fixed height and calculated width
-  //                         final childAspectRatio = itemWidth / fixedHeight;
-
-  //                         return GridView.builder(
-  //                           shrinkWrap: true,
-  //                           physics: const NeverScrollableScrollPhysics(),
-  //                           gridDelegate:
-  //                               SliverGridDelegateWithFixedCrossAxisCount(
-  //                             crossAxisCount: crossAxisCount,
-  //                             childAspectRatio:
-  //                                 childAspectRatio, // Dynamic aspect ratio
-  //                             crossAxisSpacing: crossAxisSpacing,
-  //                             mainAxisSpacing: mainAxisSpacing,
-  //                           ),
-  //                           itemCount: addedCards.length,
-  //                           itemBuilder: (context, index) {
-  //                             final card = addedCards[index];
-  //                             return _buildCardItem(card);
-  //                           },
-  //                         );
-  //                       }
-  //                     },
-  //                   ),
-  //             const SizedBox(height: 20),
-  //             Center(
-  //               child: ElevatedButton(
-  //                 onPressed: _showAddCardForm,
-  //                 style: ElevatedButton.styleFrom(
-  //                   backgroundColor: Colors.blue[800],
-  //                   shape: RoundedRectangleBorder(
-  //                     borderRadius: BorderRadius.circular(50),
-  //                   ),
-  //                   minimumSize: const Size(200, 50),
-  //                 ),
-  //                 child: const Text(
-  //                   "Add a New Card",
-  //                   style: TextStyle(
-  //                     color: Colors.white,
-  //                     fontWeight: FontWeight.bold,
-  //                     fontSize: 16,
-  //                   ),
-  //                 ),
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   Widget _buildCardItem(Map<String, dynamic> card) {
     return Container(
