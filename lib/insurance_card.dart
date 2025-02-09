@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -19,6 +20,7 @@ class InsuranceCardPage extends StatefulWidget {
 class _InsuranceCardPageState extends State<InsuranceCardPage> {
   bool _isLoading = false;
   final _formKey = GlobalKey<FormState>();
+  Set<int> revealedCards = {}; // Track revealed card IDs
 
   final TextEditingController membershipNoController = TextEditingController();
   final TextEditingController policyNoController = TextEditingController();
@@ -26,6 +28,8 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
       TextEditingController();
   final TextEditingController insuranceCompanyNameController =
       TextEditingController();
+
+  int? primaryUserId; // Store the primary user ID
 
   List<Map<String, dynamic>> addedCards = [];
 
@@ -39,82 +43,6 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
 
     _fetchAddedCards();
   }
-
-  // Future<void> _addCard() async {
-  //   print('insurance_card.dart');
-  //   print('_addCard function');
-
-  //   // Mandatory fields to check
-  //   final mandatoryFields = {
-  //     "Insurance Company Name": insuranceCompanyNameController.text,
-  //     "Card Holder Name": cardHolderNameController.text,
-  //     "Membership No": membershipNoController.text,
-  //     "Policy No": policyNoController.text,
-  //   };
-
-  //   // Check for missing mandatory fields
-  //   final missingFields = mandatoryFields.entries
-  //       .where((entry) => entry.value.toString().trim().isEmpty)
-  //       .map((entry) => entry.key)
-  //       .toList();
-
-  //   if (missingFields.isNotEmpty) {
-  //     // Show error message for missing mandatory fields
-  //     _showErrorDialog(
-  //         "Please fill all the mandatory fields before submitting.");
-  //     return;
-  //   }
-
-  //   if (_formKey.currentState!.validate()) {
-  //     final cardDetails = {
-  //       //"phone_no": widget.phoneNo, // Ensure widget.phoneNo is a String
-  //       "customers_id": widget.customerId.toString(), // Convert int to String
-  //       "insurance_card_holder_name": cardHolderNameController.text,
-  //       "insurance_membership_no": membershipNoController.text,
-  //       "insurance_policy_no": policyNoController.text,
-  //       "insurance_company": insuranceCompanyNameController.text,
-  //     };
-
-  //     // Print card details for debugging
-  //     print('Card Details: $cardDetails');
-
-  //     try {
-  //       final response = await http.post(
-  //         Uri.parse(
-  //             "http://172.16.200.79/flutter_project_hayleys/php/insurance_card.php"),
-  //         headers: {
-  //           "Content-Type": "application/x-www-form-urlencoded",
-  //         },
-  //         body: cardDetails,
-  //       );
-
-  //       // Print response body for debugging
-  //       print('Response: ${response.body}');
-
-  //       if (response.statusCode == 200) {
-  //         final jsonResponse = jsonDecode(response.body);
-  //         if (jsonResponse['status'] == 'success') {
-  //           final insuranceId =
-  //               jsonResponse['insurance_id']; // Extract insurance_id
-  //           print('Insurance ID: $insuranceId');
-  //           _showSuccessDialog(
-  //               'Insurance card details added successfully\nInsurance ID: $insuranceId',
-  //               insuranceId);
-  //           // Refresh the list of cards
-  //           _fetchAddedCards();
-  //         } else {
-  //           _showErrorDialog(
-  //               jsonResponse['message'] ?? "An unknown error occurred.");
-  //         }
-  //       } else {
-  //         _showErrorDialog("Server returned an error: ${response.statusCode}");
-  //       }
-  //     } catch (e) {
-  //       _showErrorDialog("An error occurred: $e");
-  //       print("Error: $e");
-  //     }
-  //   }
-  // }
 
   Future<void> _addCard() async {
     print('insurance_card.dart');
@@ -154,7 +82,9 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
       try {
         final response = await http.post(
           Uri.parse(
-              "http://172.16.200.79/flutter_project_hayleys/php/insurance_card.php"),
+              "http://192.168.8.100/flutter_project_hayleys/php/insurance_card.php"),
+//172.16.200.79
+
           headers: {"Content-Type": "application/x-www-form-urlencoded"},
           body: cardDetails,
         );
@@ -503,54 +433,109 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
     await Future.delayed(const Duration(seconds: 1));
   }
 
-  Future<void> _fetchExistingDetails(int insuranceId) async {
-    print('Fetching card details...');
-    print('Insurance ID at successdialog: $insuranceId');
+  // Future<void> _fetchAddedCards() async {
+  //   setState(() {
+  //     _isLoading = true;
+  //   });
 
-    setState(() {
-      // isLoading = true; // Start loading
-    });
+  //   print("Fetching added cards for customer id ${widget.customerId}...");
+  //   final url = Uri.parse(
+  //     "http://172.16.200.79/flutter_project_hayleys/php/get_insurance_cards.php?customers_id=${widget.customerId}",
+  //   );
 
-    try {
-      final url = Uri.parse(
-          "http://172.16.200.79/flutter_project_hayleys/php/fetch_insurance_card.php?INSURANCE_ID=$insuranceId}");
+  //   try {
+  //     final response = await http.get(url);
 
-      // Send the GET request
-      final response = await http.get(url);
+  //     if (response.statusCode == 200) {
+  //       print('Response body: ${response.body}');
+  //       final data = jsonDecode(response.body);
 
-      if (response.statusCode == 200) {
-        print('Response body _fetchExistingDetails: ${response.body}');
+  //       if (data['status'] == 'success') {
+  //         print("status = success");
+  //         setState(() {
+  //           primaryUserId = data['primaryUserId'];
+  //           addedCards = List<Map<String, dynamic>>.from(data['addedCards']);
+  //         });
+  //       } else {
+  //         print('Error: ${data['message']}');
+  //       }
+  //     } else {
+  //       print('Failed to load cards: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching cards: $e');
+  //   } finally {
+  //     setState(() {
+  //       _isLoading = false;
+  //     });
+  //   }
+  // }
 
-        final jsonResponse = jsonDecode(response.body);
-        if (jsonResponse['status'] == 'success') {
-          // Parse the existing data and populate the form fields
-          var existingData = jsonResponse['customer_data'];
+//   Future<void> _fetchAddedCards() async {
+//     setState(() {
+//       _isLoading = true;
+//     });
 
-          setState(() {
-            membershipNoController.text =
-                existingData['INSURANCE_MEMBERSHIP_NO'];
-            policyNoController.text = existingData['INSURANCE_POLICY_NO'];
-            cardHolderNameController.text =
-                existingData['INSURANCE_CARD_HOLDER_NAME'];
-            insuranceCompanyNameController.text =
-                existingData['INSURANCE_COMPANY_NAME'];
-          });
-        } else {
-          _showErrorDialog(
-              jsonResponse['message'] ?? "Failed to fetch details.");
-        }
-      } else {
-        _showErrorDialog("Failed to fetch details. Please try again later.");
-      }
-    } catch (e) {
-      _showErrorDialog("An error occurred: $e");
-      print("Error: $e");
-    } finally {
-      setState(() {
-        // isLoading = false; // Stop loading
-      });
-    }
-  }
+//     print("Fetching added cards for customer id ${widget.customerId}...");
+//     final url = Uri.parse(
+//       "http://192.168.8.100/flutter_project_hayleys/php/get_insurance_cards.php?customers_id=${widget.customerId}",
+//     );
+// //172.16.200.79
+//     try {
+//       final response = await http.get(url);
+
+//       if (response.statusCode == 200) {
+//         // print response body
+//         print('Response body: ${response.body}');
+
+//         final data = jsonDecode(response.body);
+
+//         if (data['status'] == 'success') {
+//           print("status = success");
+//           print("Primary User ID: ${data['primaryUserId']}");
+//           print("----------------------");
+
+//           List<Map<String, dynamic>> rawCards =
+//               List<Map<String, dynamic>>.from(data['addedCards']);
+//           Set<int> uniqueInsuranceIds = {}; // Track unique insurance IDs
+//           List<Map<String, dynamic>> filteredCards = [];
+
+//           for (var card in rawCards) {
+//             print("Insurance ID: ${card['insurance_id']}");
+//             print("Insurance Company: ${card['insurance_company']}");
+//             print("Card Holder Name: ${card['insurance_card_holder_name']}");
+//             print("Membership No: ${card['insurance_membership_no']}");
+//             print("Policy No: ${card['insurance_policy_no']}");
+//             print("Is Revealed: ${card['is_revealed']}");
+//             print("Customer ID: ${card['customers_id']}");
+//             print("----------------------"); // Separator for readability
+
+//             int insuranceId = card['insurance_id'];
+//             if (!uniqueInsuranceIds.contains(insuranceId)) {
+//               uniqueInsuranceIds.add(insuranceId);
+//               filteredCards.add(card);
+//             }
+//           }
+
+//           setState(() {
+//             primaryUserId = data['primaryUserId'];
+//             debugPrint('ok ${filteredCards.toString()}');
+//             addedCards = filteredCards;
+//           });
+//         } else {
+//           print('Error: ${data['message']}');
+//         }
+//       } else {
+//         print('Failed to load cards: ${response.statusCode}');
+//       }
+//     } catch (e) {
+//       print('Error fetching cards: $e');
+//     } finally {
+//       setState(() {
+//         _isLoading = false;
+//       });
+//     }
+//   }
 
   Future<void> _fetchAddedCards() async {
     setState(() {
@@ -559,7 +544,7 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
 
     print("Fetching added cards for customer id ${widget.customerId}...");
     final url = Uri.parse(
-      "http://172.16.200.79/flutter_project_hayleys/php/get_insurance_cards.php?customers_id=${widget.customerId}",
+      "http://192.168.8.100/flutter_project_hayleys/php/get_insurance_cards.php?customers_id=${widget.customerId}",
     );
 
     try {
@@ -570,9 +555,68 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
         final data = jsonDecode(response.body);
 
         if (data['status'] == 'success') {
-          print("status = success");
+          print("Primary User ID: ${data['primaryUserId']}");
+          print("----------------------");
+
+          List<Map<String, dynamic>> rawCards =
+              List<Map<String, dynamic>>.from(data['addedCards']);
+
+          // Store the added cards into the addedCards list
           setState(() {
-            addedCards = List<Map<String, dynamic>>.from(data['addedCards']);
+            addedCards =
+                rawCards; // Assuming addedCards is a List<Map<String, dynamic>>
+          });
+
+          // Debug print the addedCards list
+          debugPrint('Added Cards: ${addedCards.toString()}');
+
+          Set<int> uniqueInsuranceIds = {}; // Track unique insurance IDs
+          List<Map<String, dynamic>> filteredCards = [];
+
+          // Create a map to track insurance_id and their associated customer_ids
+          Map<int, Set<int>> insuranceCustomerIds = {};
+
+          for (var card in rawCards) {
+            int insuranceId = card['insurance_id'];
+            int cardCustomerId =
+                card['customers_id']; // Get the customer ID for this card
+
+            // Store all customer ids for each insurance_id
+            if (!insuranceCustomerIds.containsKey(insuranceId)) {
+              insuranceCustomerIds[insuranceId] = {};
+            }
+            insuranceCustomerIds[insuranceId]?.add(cardCustomerId);
+
+            // ✅ Filter: Only add cards where customers_id == widget.customerId
+            if (cardCustomerId == widget.customerId &&
+                !uniqueInsuranceIds.contains(insuranceId)) {
+              uniqueInsuranceIds.add(insuranceId);
+              filteredCards.add(card);
+
+              // Print details of the selected card
+              print("Filtered Cards");
+              print(
+                  "Insurance ID: ${card['insurance_id']}, Is Revealed: ${card['is_revealed']}, Customer ID: ${card['customers_id']}");
+            }
+          }
+
+          // Now, we can pass primaryUserOwnership as a boolean to each card
+          for (var card in filteredCards) {
+            int insuranceId = card['insurance_id'];
+            bool primaryUserOwnership = insuranceCustomerIds[insuranceId]
+                    ?.contains(data['primaryUserId']) ??
+                false;
+
+            // Add primaryUserOwnership to the card map
+            card['primaryUserOwnership'] = primaryUserOwnership;
+            print(
+                "primaryUserOwnership: $primaryUserOwnership for ${card['insurance_id']}");
+            print("----------------------");
+          }
+
+          setState(() {
+            primaryUserId = data['primaryUserId'];
+            addedCards = filteredCards;
           });
         } else {
           print('Error: ${data['message']}');
@@ -666,7 +710,8 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
                                 itemCount: addedCards.length,
                                 itemBuilder: (context, index) {
                                   final card = addedCards[index];
-                                  return _buildCardItem(card);
+                                  return checkingRequirements(
+                                      card, card['primaryUserOwnership']);
                                 },
                               );
                             } else {
@@ -695,7 +740,8 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
                                 itemCount: addedCards.length,
                                 itemBuilder: (context, index) {
                                   final card = addedCards[index];
-                                  return _buildCardItem(card);
+                                  return checkingRequirements(
+                                      card, card['primaryUserOwnership']);
                                 },
                               );
                             }
@@ -729,33 +775,107 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
     );
   }
 
-  Widget _buildCardItem(Map<String, dynamic> card) {
+  Widget checkingRequirements(
+      Map<String, dynamic> card, bool primaryUserOwnership) {
+    int cardId = card['insurance_id'];
+    bool isRevealed = card['is_revealed'] == 1;
+    bool primaryUserOwnership = card['primaryUserOwnership'] ?? false;
+    print("-------------------");
+    print("Processing insurance card: $cardId, Is Revealed: $isRevealed");
+    print("-------------------");
+    bool isPrimaryUserPage = primaryUserId == card['customers_id'] &&
+        primaryUserId == widget.customerId;
+
+    // bool isPrimaryUserCardInConnection =
+    //     !isPrimaryUserPage && primaryUserId == card['customers_id'];
+    bool isPrimaryUserCardInConnection =
+        !isPrimaryUserPage && primaryUserOwnership;
+
+    bool shouldApplySpecialChanges =
+        !isPrimaryUserPage && isPrimaryUserCardInConnection;
+
+    print("isPrimaryUserPage: $isPrimaryUserPage");
+    print("isPrimaryUserCardInConnection: $isPrimaryUserCardInConnection");
+    print("shouldApplySpecialChanges: $shouldApplySpecialChanges");
+    print("isRevealed: $isRevealed");
+    print("primaryUserOwnership: $primaryUserOwnership");
+
+    return _buildCardItem(
+      card,
+      isPrimaryUserPage,
+      isPrimaryUserCardInConnection,
+      shouldApplySpecialChanges,
+      isRevealed,
+      primaryUserOwnership,
+    );
+  }
+
+  Widget _buildCardItem(
+    Map<String, dynamic> card,
+    bool isPrimaryUserPage,
+    bool isPrimaryUserCardInConnection,
+    bool shouldApplySpecialChanges,
+    bool isRevealed,
+    bool primaryUserOwnership,
+  ) {
+    print("-------------------");
+    print("Building card item...");
+
+    print("Insurance ID: ${card['insurance_id']}");
+    print("Customer ID: ${card['customers_id']}");
+    print("isPrimaryUserPage: $isPrimaryUserPage");
+    print("primaryUserOwnership: $primaryUserOwnership");
+    print("isPrimaryUserCardInConnection: $isPrimaryUserCardInConnection");
+    print("shouldApplySpecialChanges: $shouldApplySpecialChanges");
+    print("Is Revealed: $isRevealed");
+
     return Container(
-      height: 250.0, // Fixed height for the card
+      height: 250.0,
       margin: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color.fromARGB(255, 135, 59, 18),
-            Color.fromARGB(255, 17, 25, 105)
-          ],
-        ),
+        gradient: shouldApplySpecialChanges
+            ? const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color.fromARGB(255, 38, 40, 38),
+                  Color.fromARGB(255, 0, 128, 0)
+                ],
+              )
+            : const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color.fromARGB(255, 135, 59, 18),
+                  Color.fromARGB(255, 17, 25, 105)
+                ],
+              ),
       ),
       child: Card(
         color: Colors.transparent,
         elevation: 6,
-        margin: EdgeInsets.zero, // Remove margin to avoid extra space
+        margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
         child: Stack(
-          fit: StackFit.expand, // Ensure the Stack fills the entire card
+          fit: StackFit.expand,
           children: [
+            //Apply blur effect if not revealed
+            if (shouldApplySpecialChanges && !isRevealed)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                  child: Container(
+                    color: Colors.white.withOpacity(0.7),
+                  ),
+                ),
+              ),
+
             Padding(
-              padding: const EdgeInsets.all(16.0), // Adjust padding as needed
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -838,32 +958,305 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
               ),
             ),
             Positioned(
-              bottom:
-                  8, // Adjust this value to move buttons closer to the bottom
-              right: 8, // Adjust this value to move buttons closer to the right
+              bottom: 8,
+              right: 8,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  IconButton(
-                    onPressed: () {
-                      _showEditDialog(card);
-                    },
-                    icon: const Icon(Icons.edit, color: Colors.red),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      print(
-                          "Delete button pressed for insurance_id: ${card['insurance_id']} customers_id=${widget.customerId} ");
-                      _showDeleteConfirmationDialog(card['insurance_id']);
-                    },
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                  ),
+                  if (shouldApplySpecialChanges && !isRevealed)
+                    IconButton(
+                      onPressed: () {
+                        _confirmCardReveal(
+                            card['insurance_id'], widget.customerId);
+                      },
+                      icon: const Icon(Icons.add, color: Colors.green),
+                    )
+                  else if (shouldApplySpecialChanges && isRevealed)
+                    IconButton(
+                      onPressed: () {
+                        _confirmCardHide(
+                            card['insurance_id'], widget.customerId);
+                      },
+                      icon: const Icon(Icons.remove, color: Colors.orange),
+                    )
+                  else ...[
+                    IconButton(
+                      onPressed: () {
+                        _showEditDialog(card);
+                      },
+                      icon: const Icon(Icons.edit, color: Colors.red),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        _showDeleteConfirmationDialog(card['insurance_id']);
+                      },
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                    ),
+                  ],
                 ],
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _handlePlusButtonAction(int cardId, int customerId) async {
+    print("-----------");
+    print("Plus button clicked for card ID: $cardId customer id: $customerId");
+    print("-----------");
+    // Perform the HTTP request first
+    final url = Uri.parse(
+        "http://192.168.8.100/flutter_project_hayleys/php/employer_insurance_card.php");
+//172.16.200.79
+    final response = await http.post(url, body: {
+      'action': 'REVEAL', // Send action as "REVEAL"
+      'insurance_id': cardId.toString(),
+      'customers_id': customerId.toString(), // Use customers_id here
+    });
+
+    // Print the response status and body for debugging
+    print("Response status: ${response.statusCode}");
+    print("Response body: ${response.body}");
+
+    if (response.statusCode == 200) {
+      // Parse response if you want to handle the updated `is_revealed` value
+      final data = jsonDecode(response.body);
+      int isRevealed = data['is_revealed'];
+
+      if (isRevealed == 1) {
+        setState(() {
+          revealedCards
+              .add(cardId); // Reveal the card if the response indicates success
+        });
+        print("Card revealed successfully");
+
+        // ✅ Fetch the updated card list immediately
+        await _fetchAddedCards();
+      } else {
+        print("Failed to reveal card due to unexpected response");
+      }
+    } else {
+      print("Failed to reveal card");
+    }
+  }
+
+  Future<void> _handleMinusButtonAction(int cardId, int customerId) async {
+    print("-----------");
+    print("Minus button clicked for card ID: $cardId customer id: $customerId");
+    print("-----------");
+
+    final url = Uri.parse(
+        "http://192.168.8.100/flutter_project_hayleys/php/employer_insurance_card.php");
+
+    final response = await http.post(url, body: {
+      'action': 'HIDE', // Send action as "HIDE"
+      'insurance_id': cardId.toString(),
+      'customers_id': customerId.toString(),
+    });
+
+    // Print the response status and body for debugging
+    print("Response status: ${response.statusCode}");
+    print("Response body: ${response.body}");
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      int isRevealed = data['is_revealed'];
+
+      if (isRevealed == 0) {
+        setState(() {
+          revealedCards.remove(cardId); // Hide the card only after confirmation
+        });
+        print("Card hidden successfully");
+
+        // ✅ Fetch the updated card list immediately
+        await _fetchAddedCards();
+      } else {
+        print("Failed to hide card due to unexpected response");
+      }
+    } else {
+      print("Failed to hide card");
+    }
+  }
+
+  void _confirmCardReveal(int cardId, int customerId) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: SizedBox(
+              width: 300, // Fixed width for the dialog
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.orange, // Orange for a neutral tone
+                      shape: BoxShape.circle,
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: const Icon(
+                      Icons.info,
+                      size: 60,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Confirm Action",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange, // Match icon color
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Are you sure you want to reveal this insurance card? Once revealed, it will be visible to the employer.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: const Text(
+                          "Cancel",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF00C853), // Green
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                          _handlePlusButtonAction(
+                              cardId, customerId); // Proceed
+                        },
+                        child: const Text(
+                          "Reveal",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _confirmCardHide(int cardId, int customerId) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: SizedBox(
+              width: 300, // Fixed width for the dialog
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.red, // Red to indicate removal
+                      shape: BoxShape.circle,
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: const Icon(
+                      Icons.warning_amber_rounded,
+                      size: 60,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Confirm Action",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red, // Match icon color
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Are you sure you want to hide this insurance card? Once hidden, it will no longer be visible for you.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: const Text(
+                          "Cancel",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red, // Red for "Hide"
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                          _handleMinusButtonAction(
+                              cardId, customerId); // Proceed
+                        },
+                        child: const Text(
+                          "Hide",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -968,7 +1361,8 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
 
   Future<Map<String, dynamic>> deleteInsuranceCard(int insuranceId) async {
     final url = Uri.parse(
-        'http://172.16.200.79/flutter_project_hayleys/php/insurance_card.php'); // Replace with your backend URL
+        'http://192.168.8.100/flutter_project_hayleys/php/insurance_card.php');
+    //172.16.200.79
     final response = await http.post(
       url,
       body: {
@@ -1026,7 +1420,8 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
       try {
         final response = await http.post(
           Uri.parse(
-              "http://172.16.200.79/flutter_project_hayleys/php/insurance_card.php"),
+              "http://192.168.8.100/flutter_project_hayleys/php/insurance_card.php"),
+          //172.16.200.79
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
           },

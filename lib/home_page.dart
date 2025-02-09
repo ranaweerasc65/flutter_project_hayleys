@@ -7,6 +7,7 @@ import 'primary_user_details.dart';
 import 'user_details.dart';
 import 'package:http/http.dart' as http;
 import 'edit_user_details.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -20,6 +21,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int? customerId;
+  bool _isLoading = false;
 
   //final List<String> MyConnections = [];
 
@@ -88,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ApprovalsPage()),
+                            builder: (context) => const ApprovalsPage()),
                       );
                     },
                   ),
@@ -99,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ApprovalsPage()),
+                            builder: (context) => const ApprovalsPage()),
                       );
                     },
                   ),
@@ -110,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ApprovalsPage()),
+                            builder: (context) => const ApprovalsPage()),
                       );
                     },
                   ),
@@ -121,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ApprovalsPage()),
+                            builder: (context) => const ApprovalsPage()),
                       );
                     },
                   ),
@@ -271,7 +273,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const SizedBox(height: 5),
                           Text(
-                            "${widget.userName}",
+                            widget.userName,
                             style: const TextStyle(
                               color: Color.fromARGB(255, 223, 234, 242),
                               fontSize: 24,
@@ -295,127 +297,47 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // Main Content (Employee details & connections)
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Employee Details Section
-                  Center(
-                    child: GestureDetector(
-                      onTap: () async {
-                        await fetchEmployeeId();
-                        print('Fetched Employee Id: $customerId');
-                        if (customerId != null) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Dashboard(
-                                phoneNo: widget.phoneNo,
-                                userName: widget.userName,
-                                customerId: customerId!,
-                              ),
-                            ),
-                          );
-                        } else {
-                          showError('Employee ID is null');
-                        }
-                      },
-                      child: Stack(
-                        children: [
-                          Container(
-                            width: 120,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Color.fromRGBO(27, 86, 225, 0.298),
-                                  blurRadius: 20,
-                                  offset: Offset(0, 10),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  height: 100,
-                                  width: 100,
-                                  margin: const EdgeInsets.only(top: 16),
-                                  child: ClipOval(
-                                    child: Image.asset(
-                                      'assets/user.png',
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                              ],
-                            ),
-                          ),
-                          Positioned(
-                            top: 5,
-                            right: 5,
-                            child: GestureDetector(
-                              onTap: () {
+          // Show loading animation while fetching connections
+          _isLoading
+              ? Center(
+                  child: LoadingAnimationWidget.halfTriangleDot(
+                    //horizontalRotatingDots
+                    color: const Color.fromARGB(255, 243, 107, 33),
+                    size: 30,
+                  ),
+                )
+              :
+
+              // Main Content (Employee details & connections)
+              Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Employee Details Section
+                        Center(
+                          child: GestureDetector(
+                            onTap: () async {
+                              await fetchEmployeeId();
+                              print('Fetched Employee Id: $customerId');
+                              if (customerId != null) {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => PrimaryUserDetails(
+                                    builder: (context) => Dashboard(
                                       phoneNo: widget.phoneNo,
                                       userName: widget.userName,
+                                      customerId: customerId!,
                                     ),
                                   ),
                                 );
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.7),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.edit,
-                                  size: 20,
-                                  color: Color.fromARGB(255, 243, 33, 89),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: const Text(
-                      "My Connections",
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  SizedBox(
-                    height: 160,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        ...connections.map((connection) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                              } else {
+                                showError('Employee ID is null');
+                              }
+                            },
                             child: Stack(
                               children: [
-                                // Main Container
                                 Container(
                                   width: 120,
                                   decoration: BoxDecoration(
@@ -433,90 +355,36 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          print(
-                                              '${connection['CUSTOMERS_FIRST_NAME']} ${connection['CUSTOMERS_LAST_NAME']}');
-                                          // Navigate to the Dashboard page
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => Dashboard(
-                                                phoneNo: widget.phoneNo,
-                                                userName: widget.userName,
-                                                customerId:
-                                                    connection['CUSTOMERS_ID'],
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: Container(
-                                          height: 100,
-                                          width: 100,
-                                          margin:
-                                              const EdgeInsets.only(top: 16),
-                                          child: ClipOval(
-                                            child: Image.asset(
-                                              'assets/user.png',
-                                              fit: BoxFit.cover,
-                                            ),
+                                      Container(
+                                        height: 100,
+                                        width: 100,
+                                        margin: const EdgeInsets.only(top: 16),
+                                        child: ClipOval(
+                                          child: Image.asset(
+                                            'assets/user.png',
+                                            fit: BoxFit.cover,
                                           ),
                                         ),
                                       ),
                                       const SizedBox(height: 10),
-                                      Column(
-                                        children: [
-                                          Text(
-                                            '${connection['CUSTOMERS_FIRST_NAME']} ${connection['CUSTOMERS_LAST_NAME']}',
-                                            textAlign: TextAlign.center,
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                          Text(
-                                            'ID: ${connection['CUSTOMERS_ID']}',
-                                            textAlign: TextAlign.center,
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w400,
-                                              color: Color.fromARGB(
-                                                  255, 102, 99, 99),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
                                     ],
                                   ),
                                 ),
-                                // Edit Button
                                 Positioned(
                                   top: 5,
                                   right: 5,
                                   child: GestureDetector(
                                     onTap: () {
-                                      // Navigate to the EditUserDetails screen and pass the customer details
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => EditUserDetails(
+                                          builder: (context) =>
+                                              PrimaryUserDetails(
                                             phoneNo: widget.phoneNo,
                                             userName: widget.userName,
-                                            customerId:
-                                                connection['CUSTOMERS_ID'],
                                           ),
                                         ),
-                                      ).then((updatedConnection) {
-                                        // Handle the updated connection data
-                                        if (updatedConnection != null) {
-                                          setState(() {
-                                            connection['CUSTOMERS_FIRST_NAME'] =
-                                                updatedConnection["first_name"];
-                                            connection['CUSTOMERS_LAST_NAME'] =
-                                                updatedConnection["last_name"];
-                                          });
-                                        }
-                                      });
+                                      );
                                     },
                                     child: Container(
                                       padding: const EdgeInsets.all(5),
@@ -534,63 +402,224 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ],
                             ),
-                          );
-                        }),
+                          ),
+                        ),
 
-                        // Add New Connection Button
-                        GestureDetector(
-                          onTap: () async {
-                            final updatedConnections = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => UserDetails(
-                                  phoneNo: widget.phoneNo,
-                                  userName: widget.userName,
+                        const SizedBox(height: 20),
+
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                          child: const Text(
+                            "My Connections",
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        SizedBox(
+                          height: 160,
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: [
+                              ...connections.map((connection) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12),
+                                  child: Stack(
+                                    children: [
+                                      // Main Container
+                                      Container(
+                                        width: 120,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          boxShadow: const [
+                                            BoxShadow(
+                                              color: Color.fromRGBO(
+                                                  27, 86, 225, 0.298),
+                                              blurRadius: 20,
+                                              offset: Offset(0, 10),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () {
+                                                print(
+                                                    '${connection['CUSTOMERS_FIRST_NAME']} ${connection['CUSTOMERS_LAST_NAME']}');
+                                                // Navigate to the Dashboard page
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        Dashboard(
+                                                      phoneNo: widget.phoneNo,
+                                                      userName: widget.userName,
+                                                      customerId: connection[
+                                                          'CUSTOMERS_ID'],
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              child: Container(
+                                                height: 100,
+                                                width: 100,
+                                                margin: const EdgeInsets.only(
+                                                    top: 16),
+                                                child: ClipOval(
+                                                  child: Image.asset(
+                                                    'assets/user.png',
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10),
+                                            Column(
+                                              children: [
+                                                Text(
+                                                  '${connection['CUSTOMERS_FIRST_NAME']} ${connection['CUSTOMERS_LAST_NAME']}',
+                                                  textAlign: TextAlign.center,
+                                                  style: const TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  'ID: ${connection['CUSTOMERS_ID']}',
+                                                  textAlign: TextAlign.center,
+                                                  style: const TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w400,
+                                                    color: Color.fromARGB(
+                                                        255, 102, 99, 99),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      // Edit Button
+                                      Positioned(
+                                        top: 5,
+                                        right: 5,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            // Navigate to the EditUserDetails screen and pass the customer details
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    EditUserDetails(
+                                                  phoneNo: widget.phoneNo,
+                                                  userName: widget.userName,
+                                                  customerId: connection[
+                                                      'CUSTOMERS_ID'],
+                                                ),
+                                              ),
+                                            ).then((updatedConnection) {
+                                              // Handle the updated connection data
+                                              if (updatedConnection != null) {
+                                                setState(() {
+                                                  connection[
+                                                          'CUSTOMERS_FIRST_NAME'] =
+                                                      updatedConnection[
+                                                          "first_name"];
+                                                  connection[
+                                                          'CUSTOMERS_LAST_NAME'] =
+                                                      updatedConnection[
+                                                          "last_name"];
+                                                });
+                                              }
+                                            });
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.all(5),
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  Colors.white.withOpacity(0.7),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: const Icon(
+                                              Icons.edit,
+                                              size: 20,
+                                              color: Color.fromARGB(
+                                                  255, 243, 33, 89),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }),
+
+                              // Add New Connection Button
+                              GestureDetector(
+                                onTap: () async {
+                                  final updatedConnections =
+                                      await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => UserDetails(
+                                        phoneNo: widget.phoneNo,
+                                        userName: widget.userName,
+                                      ),
+                                    ),
+                                  );
+
+                                  if (updatedConnections != null) {
+                                    // Update the Connections list with the new data
+                                    setState(() {
+                                      // Connections = updatedConnections;
+                                    });
+                                  }
+                                },
+                                child: Container(
+                                  width: 120,
+                                  height: 120,
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 12),
+                                  decoration: BoxDecoration(
+                                    color: const Color.fromARGB(
+                                        255, 255, 255, 255),
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color:
+                                            Color.fromRGBO(27, 86, 225, 0.298),
+                                        blurRadius: 20,
+                                        offset: Offset(0, 10),
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.add,
+                                        size: 50,
+                                        color: Colors.orange,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            );
-
-                            if (updatedConnections != null) {
-                              // Update the Connections list with the new data
-                              setState(() {
-                                // Connections = updatedConnections;
-                              });
-                            }
-                          },
-                          child: Container(
-                            width: 120,
-                            height: 120,
-                            margin: const EdgeInsets.symmetric(horizontal: 12),
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 255, 255, 255),
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Color.fromRGBO(27, 86, 225, 0.298),
-                                  blurRadius: 20,
-                                  offset: Offset(0, 10),
-                                ),
-                              ],
-                            ),
-                            child: const Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.add,
-                                  size: 50,
-                                  color: Colors.orange,
-                                ),
-                              ],
-                            ),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
+                ),
         ],
       ),
     );
@@ -662,19 +691,54 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  // Future<void> fetchConnections() async {
+  //   print("fetchConnections");
+  //   final url = Uri.parse(
+  //       'http://172.16.200.79/flutter_project_hayleys/php/get_connections.php?phone_no=${widget.phoneNo}');
+
+  //   //192.168.62.145
+  //   //172.16.200.79
+  //   try {
+  //     final response = await http.get(url);
+
+  //     if (response.statusCode == 200) {
+  //       print("status = 200");
+
+  //       print('Response body: ${response.body}');
+
+  //       final data = jsonDecode(response.body);
+
+  //       if (data['status'] == 'success') {
+  //         print("status = success");
+  //         setState(() {
+  //           connections = List<Map<String, dynamic>>.from(data['connections']);
+  //         });
+  //       } else {
+  //         print('Error: ${data['message']}');
+  //       }
+  //     } else {
+  //       print('Server Error: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching connections: $e');
+  //   }
+  // }
+
   Future<void> fetchConnections() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     print("fetchConnections");
     final url = Uri.parse(
-        'http://172.16.200.79/flutter_project_hayleys/php/get_connections.php?phone_no=${widget.phoneNo}');
+        'http://192.168.8.100/flutter_project_hayleys/php/get_connections.php?phone_no=${widget.phoneNo}');
 
-    //192.168.62.145
-    //172.16.200.79
+//172.16.200.79
     try {
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
         print("status = 200");
-
         print('Response body: ${response.body}');
 
         final data = jsonDecode(response.body);
@@ -692,13 +756,17 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } catch (e) {
       print('Error fetching connections: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
   Future<void> fetchEmployeeId() async {
     final url = Uri.parse(
-        'http://172.16.200.79/flutter_project_hayleys/php/fetch_primary_user_details.php?phone_no=${widget.phoneNo}');
-
+        'http://192.168.8.100/flutter_project_hayleys/php/fetch_primary_user_details.php?phone_no=${widget.phoneNo}');
+//172.16.200.79
     try {
       final response = await http.get(url);
 
@@ -722,8 +790,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchCustomerId() async {
     final url = Uri.parse(
-        'http://172.16.200.79/flutter_project_hayleys/php/fetch_user_details.php?phone_no=${widget.phoneNo}');
+        'http://192.168.8.100/flutter_project_hayleys/php/fetch_user_details.php?phone_no=${widget.phoneNo}');
 
+//172.16.200.79
     try {
       final response = await http.get(url);
 
