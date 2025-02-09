@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'config.dart';
 import 'illness_page.dart';
 import 'bills_page.dart';
 import 'prescriptions_page.dart';
@@ -134,8 +135,10 @@ class _DashboardContentState extends State<DashboardContent> {
     //print("Customer ID: ${widget.customerId}");
 
     try {
+      // final url = Uri.parse(
+      //     'http://172.16.200.79/flutter_project_hayleys/php/get_First&LastNames.php?customer_id=${widget.customerId}');
       final url = Uri.parse(
-          'http://172.16.200.79/flutter_project_hayleys/php/get_First&LastNames.php?customer_id=${widget.customerId}');
+          "${Config.baseUrl}get_First&LastNames.php?customer_id=${widget.customerId}");
       // print("Constructed URL: $url");
 
       // Sending the GET request
@@ -155,7 +158,7 @@ class _DashboardContentState extends State<DashboardContent> {
         if (data['status'] == 'success') {
           //print("Successfully fetched customer details.");
           setState(() {
-            firstName = data['first_name']; // Update keys to match PHP response
+            firstName = data['first_name'];
             lastName = data['last_name'];
           });
           //print("Updated state: firstName=$firstName, lastName=$lastName");

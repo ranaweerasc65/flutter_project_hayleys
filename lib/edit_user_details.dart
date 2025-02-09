@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'config.dart';
+
 class EditUserDetails extends StatefulWidget {
   final int customerId;
   final String phoneNo;
@@ -214,8 +216,10 @@ class _EditUserDetailsState extends State<EditUserDetails> {
     });
 
     try {
+      // final url = Uri.parse(
+      //     "http://172.16.200.79/flutter_project_hayleys/php/fetch_user_details.php?phone_no=${widget.phoneNo}&CUSTOMERS_ID=${widget.customerId}");
       final url = Uri.parse(
-          "http://172.16.200.79/flutter_project_hayleys/php/fetch_user_details.php?phone_no=${widget.phoneNo}&CUSTOMERS_ID=${widget.customerId}");
+          "${Config.baseUrl}fetch_user_details.php?phone_no=${widget.phoneNo}&CUSTOMERS_ID=${widget.customerId}");
 
       // Send the GET request
       final response = await http.get(url);
@@ -369,10 +373,18 @@ class _EditUserDetailsState extends State<EditUserDetails> {
       print('User Details: $userDetails');
 
       try {
+        // final response = await http.post(
+        //   Uri.parse(
+        //       "http://172.16.200.79/flutter_project_hayleys/php/user_details.php"),
+        //   //172.16.200.79
+        //   headers: {
+        //     "Content-Type": "application/x-www-form-urlencoded",
+        //   },
+        //   body: userDetails,
+        // );
+
         final response = await http.post(
-          Uri.parse(
-              "http://172.16.200.79/flutter_project_hayleys/php/user_details.php"),
-          //172.16.200.79
+          Uri.parse("${Config.baseUrl}user_details.php"),
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
           },

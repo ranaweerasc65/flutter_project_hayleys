@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
+import 'config.dart';
+
 class InsuranceCardPage extends StatefulWidget {
   final int customerId;
   final String phoneNo;
@@ -80,11 +82,17 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
       print('Card Details: $cardDetails');
 
       try {
-        final response = await http.post(
-          Uri.parse(
-              "http://192.168.8.100/flutter_project_hayleys/php/insurance_card.php"),
-//172.16.200.79
+//         final response = await http.post(
+//           Uri.parse(
+//               "http://192.168.8.100/flutter_project_hayleys/php/insurance_card.php"),
+// //172.16.200.79
 
+//           headers: {"Content-Type": "application/x-www-form-urlencoded"},
+//           body: cardDetails,
+//         );
+
+        final response = await http.post(
+          Uri.parse("${Config.baseUrl}insurance_card.php"),
           headers: {"Content-Type": "application/x-www-form-urlencoded"},
           body: cardDetails,
         );
@@ -543,8 +551,12 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
     });
 
     print("Fetching added cards for customer id ${widget.customerId}...");
+    // final url = Uri.parse(
+    //   "http://192.168.8.100/flutter_project_hayleys/php/get_insurance_cards.php?customers_id=${widget.customerId}",
+    // );
+
     final url = Uri.parse(
-      "http://192.168.8.100/flutter_project_hayleys/php/get_insurance_cards.php?customers_id=${widget.customerId}",
+      "${Config.baseUrl}get_insurance_cards.php?customers_id=${widget.customerId}",
     );
 
     try {
@@ -1007,8 +1019,12 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
     print("Plus button clicked for card ID: $cardId customer id: $customerId");
     print("-----------");
     // Perform the HTTP request first
+    // final url = Uri.parse(
+    //     "http://192.168.8.100/flutter_project_hayleys/php/employer_insurance_card.php");
     final url = Uri.parse(
-        "http://192.168.8.100/flutter_project_hayleys/php/employer_insurance_card.php");
+      "${Config.baseUrl}employer_insurance_card.php",
+    );
+
 //172.16.200.79
     final response = await http.post(url, body: {
       'action': 'REVEAL', // Send action as "REVEAL"
@@ -1047,8 +1063,11 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
     print("Minus button clicked for card ID: $cardId customer id: $customerId");
     print("-----------");
 
+    // final url = Uri.parse(
+    //     "http://192.168.8.100/flutter_project_hayleys/php/employer_insurance_card.php");
     final url = Uri.parse(
-        "http://192.168.8.100/flutter_project_hayleys/php/employer_insurance_card.php");
+      "${Config.baseUrl}employer_insurance_card.php",
+    );
 
     final response = await http.post(url, body: {
       'action': 'HIDE', // Send action as "HIDE"
@@ -1360,8 +1379,12 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
   }
 
   Future<Map<String, dynamic>> deleteInsuranceCard(int insuranceId) async {
+    // final url = Uri.parse(
+    //     'http://192.168.8.100/flutter_project_hayleys/php/insurance_card.php');
     final url = Uri.parse(
-        'http://192.168.8.100/flutter_project_hayleys/php/insurance_card.php');
+      "${Config.baseUrl}insurance_card.php",
+    );
+
     //172.16.200.79
     final response = await http.post(
       url,
@@ -1418,10 +1441,20 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
       print('Card Details: $cardDetails');
 
       try {
+        // final response = await http.post(
+        //   Uri.parse(
+        //       "http://192.168.8.100/flutter_project_hayleys/php/insurance_card.php"),
+        //   //172.16.200.79
+        //   headers: {
+        //     "Content-Type": "application/x-www-form-urlencoded",
+        //   },
+        //   body: cardDetails,
+        // );
+
         final response = await http.post(
           Uri.parse(
-              "http://192.168.8.100/flutter_project_hayleys/php/insurance_card.php"),
-          //172.16.200.79
+            "${Config.baseUrl}insurance_card.php",
+          ),
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
           },

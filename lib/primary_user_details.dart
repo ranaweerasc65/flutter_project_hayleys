@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 // 31/12/2024 CONNECT WITH THE USER_DETAILS.PHP CODE
 import 'package:http/http.dart' as http;
 
+import 'config.dart';
+
 class PrimaryUserDetails extends StatefulWidget {
   // To accept the phone number - 03/01/2024
   final String phoneNo;
@@ -103,7 +105,7 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
   void initState() {
     super.initState();
 
-    print('user_details.dart');
+    print('PRIMARY USER DETAILS');
 
     // Print phone number to the terminal - 03/01/2024
     print('Logged in user phone number (user_details.dart): ${widget.phoneNo}');
@@ -688,9 +690,16 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
       print('User Details: $userDetails');
 
       try {
+        // final response = await http.post(
+        //   Uri.parse(
+        //       "http://172.16.200.79/flutter_project_hayleys/php/primary_user_details.php"),
+        //   headers: {
+        //     "Content-Type": "application/x-www-form-urlencoded",
+        //   },
+        //   body: userDetails,
+        // );
         final response = await http.post(
-          Uri.parse(
-              "http://172.16.200.79/flutter_project_hayleys/php/primary_user_details.php"),
+          Uri.parse('${Config.baseUrl}primary_user_details.php'),
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
           },
@@ -729,9 +738,11 @@ class _PrimaryUserDetailsFormState extends State<PrimaryUserDetails> {
     print('come to _fetchExistingDetails');
 
     // Prepare the URL with query parameter
+    // final url = Uri.parse(
+    //     "http://172.16.200.79/flutter_project_hayleys/php/fetch_primary_user_details.php?phone_no=${widget.phoneNo}");
     final url = Uri.parse(
-        "http://172.16.200.79/flutter_project_hayleys/php/fetch_primary_user_details.php?phone_no=${widget.phoneNo}");
-    //"http://192.168.136.145/flutter_project_hayleys/php/fetch_primary_user_details.php?phone_no=${widget.phoneNo}");
+      '${Config.baseUrl}fetch_primary_user_details.php?phone_no=${widget.phoneNo}',
+    );
 
     // Send the GET request
     final response = await http.get(url);

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project_hayleys/login_screen.dart';
 import 'package:http/http.dart' as http;
 
+import 'config.dart';
+
 class ChangePasswordScreen extends StatefulWidget {
   final String phoneNo; // Assuming you pass the phone number when navigating
 
@@ -50,9 +52,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
     // Call your API to change the password here (replace with actual URL)
     try {
+      // final response = await http.post(
+      //   Uri.parse(
+      //       'http://172.16.200.79/flutter_project_hayleys/php/change_password.php'), // Replace with actual API URL
+      //   body: {
+      //     'phoneno': widget.phoneNo, // Pass phone number
+      //     'password': password, // Send new password to server
+      //   },
+      // );
+
       final response = await http.post(
-        Uri.parse(
-            'http://172.16.200.79/flutter_project_hayleys/php/change_password.php'), // Replace with actual API URL
+        Uri.parse("${Config.baseUrl}change_password.php"), // Use base URL
         body: {
           'phoneno': widget.phoneNo, // Pass phone number
           'password': password, // Send new password to server

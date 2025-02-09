@@ -4,6 +4,8 @@ import 'package:flutter_project_hayleys/register_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'config.dart';
+
 class Otp extends StatefulWidget {
   final String phoneNo;
   final String userId;
@@ -17,8 +19,9 @@ class Otp extends StatefulWidget {
 
 class _OtpState extends State<Otp> {
   final _otpController = List.generate(6, (index) => TextEditingController());
-  final String apiUrlVerifyOtp =
-      'http://172.16.200.79/flutter_project_hayleys/php/otp.php';
+  // final String apiUrlVerifyOtp =
+  //     'http://172.16.200.79/flutter_project_hayleys/php/otp.php';
+  final String apiUrlVerifyOtp = '${Config.baseUrl}otp.php';
 
   @override
   void dispose() {
@@ -33,8 +36,10 @@ class _OtpState extends State<Otp> {
     print("come to _fetchOtp");
 
     try {
-      final url =
-          Uri.parse('http://172.16.200.79/flutter_project_hayleys/php/otp.php');
+      // final url =
+      //     Uri.parse('http://172.16.200.79/flutter_project_hayleys/php/otp.php');
+      final url = Uri.parse('${Config.baseUrl}otp.php');
+
       print("Fetching OTP from $url");
 
       final response = await http.get(url);

@@ -8,6 +8,7 @@ import 'user_details.dart';
 import 'package:http/http.dart' as http;
 import 'edit_user_details.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'config.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -731,7 +732,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     print("fetchConnections");
     final url = Uri.parse(
-        'http://192.168.8.100/flutter_project_hayleys/php/get_connections.php?phone_no=${widget.phoneNo}');
+        "${Config.baseUrl}get_connections.php?phone_no=${widget.phoneNo}");
 
 //172.16.200.79
     try {
@@ -765,7 +766,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchEmployeeId() async {
     final url = Uri.parse(
-        'http://192.168.8.100/flutter_project_hayleys/php/fetch_primary_user_details.php?phone_no=${widget.phoneNo}');
+        "${Config.baseUrl}fetch_primary_user_details.php?phone_no=${widget.phoneNo}");
 //172.16.200.79
     try {
       final response = await http.get(url);
@@ -790,7 +791,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchCustomerId() async {
     final url = Uri.parse(
-        'http://192.168.8.100/flutter_project_hayleys/php/fetch_user_details.php?phone_no=${widget.phoneNo}');
+        "${Config.baseUrl}fetch_user_details.php?phone_no=${widget.phoneNo}");
 
 //172.16.200.79
     try {

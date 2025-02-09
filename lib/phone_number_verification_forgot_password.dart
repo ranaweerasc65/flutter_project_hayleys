@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_project_hayleys/otp_forgot_password.dart';
 import 'package:animate_do/animate_do.dart';
 
+import 'config.dart';
+
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
 
@@ -38,9 +40,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     });
 
     try {
+      // final response = await http.post(
+      //   Uri.parse(
+      //       'http://172.16.200.79/flutter_project_hayleys/php/forgot_password_otp.php'),
+      //   body: {
+      //     'phoneno': phoneNo,
+      //     'action': 'generate',
+      //   },
+      // );
       final response = await http.post(
-        Uri.parse(
-            'http://172.16.200.79/flutter_project_hayleys/php/forgot_password_otp.php'),
+        Uri.parse('${Config.baseUrl}forgot_password_otp.php'),
         body: {
           'phoneno': phoneNo,
           'action': 'generate',

@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:animate_do/animate_do.dart';
 import 'package:email_validator/email_validator.dart';
 
+import 'config.dart';
+
 class RegisterScreen extends StatefulWidget {
   final String userId;
 
@@ -51,9 +53,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
     // If validation passes, proceed to send data to the server
     try {
+      // final response = await http.post(
+      //   Uri.parse(
+      //       'http://172.16.200.79/flutter_project_hayleys/php/register.php'),
+      //   body: {
+      //     'user_id': userId,
+      //     'fullName': _fullNameController.text.trim(),
+      //     'email': _emailController.text.trim(),
+      //     'password': _passwordController.text.trim(),
+      //   },
+      // );
       final response = await http.post(
-        Uri.parse(
-            'http://172.16.200.79/flutter_project_hayleys/php/register.php'),
+        Uri.parse('${Config.baseUrl}register.php'),
         body: {
           'user_id': userId,
           'fullName': _fullNameController.text.trim(),

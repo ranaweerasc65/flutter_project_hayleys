@@ -10,6 +10,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_project_hayleys/otp.dart';
 import 'package:animate_do/animate_do.dart';
 
+import 'config.dart';
+
 class OtpVerificationScreen extends StatefulWidget {
   const OtpVerificationScreen({super.key});
 
@@ -44,8 +46,14 @@ class _RegisterScreenState extends State<OtpVerificationScreen> {
     }
 
     try {
+      // final response = await http.post(
+      //   Uri.parse('http://172.16.200.79/flutter_project_hayleys/php/otp.php'),
+      //   body: {
+      //     'phoneno': _phonenoController.text.trim(),
+      //   },
+      // );
       final response = await http.post(
-        Uri.parse('http://172.16.200.79/flutter_project_hayleys/php/otp.php'),
+        Uri.parse('${Config.baseUrl}otp.php'),
         body: {
           'phoneno': _phonenoController.text.trim(),
         },

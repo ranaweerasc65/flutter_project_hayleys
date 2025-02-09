@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'home_page.dart';
 import 'package:animate_do/animate_do.dart';
 import 'phone_number_verification_forgot_password.dart';
+import 'config.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -31,8 +32,9 @@ class InitState extends State<LoginScreen> {
     }
 
     final response = await http.post(
-      Uri.parse('http://192.168.8.100/flutter_project_hayleys/php/login.php'),
+      Uri.parse("${Config.baseUrl}login.php"),
       //172.16.200.79
+
       body: {
         'phone_no': phoneNo,
         'password': password,

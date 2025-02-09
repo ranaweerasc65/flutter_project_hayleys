@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_project_hayleys/change_password.dart';
 
+import 'config.dart';
+
 class OtpForgotPassword extends StatefulWidget {
   final String phoneNo;
   final String userId;
@@ -20,8 +22,9 @@ class _OtpForgotPasswordState extends State<OtpForgotPassword> {
 //16/01/2024
   bool isVerifying = false; // Track OTP verification state
   final _otpController = List.generate(6, (index) => TextEditingController());
-  final String apiUrlVerifyOtp =
-      'http://172.16.200.79/flutter_project_hayleys/php/forgot_password_otp.php';
+  // final String apiUrlVerifyOtp =
+  //     'http://172.16.200.79/flutter_project_hayleys/php/forgot_password_otp.php';
+  final String apiUrlVerifyOtp = '${Config.baseUrl}forgot_password_otp.php';
 
   @override
   void dispose() {
@@ -36,8 +39,10 @@ class _OtpForgotPasswordState extends State<OtpForgotPassword> {
     print("come to _fetchOtp");
 
     try {
-      final url = Uri.parse(
-          'http://172.16.200.79/flutter_project_hayleys/php/forgot_password_otp.php');
+      // final url = Uri.parse(
+      //     'http://172.16.200.79/flutter_project_hayleys/php/forgot_password_otp.php');
+      final url = Uri.parse('${Config.baseUrl}forgot_password_otp.php');
+
       print("Fetching OTP from $url");
 
       final response = await http.get(url);
