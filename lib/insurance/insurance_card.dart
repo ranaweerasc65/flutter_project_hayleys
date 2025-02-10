@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
-import 'config.dart';
+import '../config.dart';
 
 class InsuranceCardPage extends StatefulWidget {
   final int customerId;

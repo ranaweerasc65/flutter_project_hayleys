@@ -4,7 +4,7 @@ import '../illness_page.dart';
 import '../bills_page.dart';
 import '../prescriptions_page.dart';
 import '../reports_page.dart';
-import '../insurance_card.dart';
+import '../insurance/insurance_card.dart';
 import '../settings.dart';
 import '../profile.dart';
 import 'package:http/http.dart' as http;
