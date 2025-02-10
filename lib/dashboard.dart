@@ -242,28 +242,6 @@ class _DashboardContentState extends State<DashboardContent> {
                 ),
                 const SizedBox(height: 16),
 
-                // Search Bar and Filter Icon
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.search),
-                          hintText: 'Search',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          fillColor: const Color.fromARGB(255, 232, 233, 235),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
                 // Services Section
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
