@@ -859,7 +859,7 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Color.fromARGB(255, 135, 59, 18),
+                  Color.fromARGB(255, 80, 116, 215),
                   Color.fromARGB(255, 17, 25, 105)
                 ],
               ),

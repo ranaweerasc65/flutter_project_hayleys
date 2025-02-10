@@ -14,50 +14,50 @@ class BottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white, // Set background color for the navbar
+        color: Colors.white,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(25),
           topRight: Radius.circular(25),
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color.fromARGB(255, 126, 99, 244).withOpacity(0.3),
-            spreadRadius: 3,
+            color: Colors.black.withOpacity(0.1), // Subtle shadow
+            spreadRadius: 2,
             blurRadius: 10,
-            offset: const Offset(0, -3), // Shadow directed upwards
+            offset: const Offset(0, -4), // Soft shadow effect
           ),
         ],
       ),
       child: ClipRRect(
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+          topLeft: Radius.circular(25),
+          topRight: Radius.circular(25),
         ),
         child: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           currentIndex: currentIndex,
           onTap: onTap,
-          elevation: 0, // Remove default elevation shadow
-          backgroundColor:
-              Colors.white, // Ensure solid background for shadow visibility
+          elevation: 0, // Remove default elevation
+          backgroundColor: Colors.white, // Clean background
           items: const [
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
+              icon: Icon(Icons.home, size: 28),
+              label: 'Dashboard',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.edit_note),
-              label: 'Inquiries',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
+              icon: Icon(Icons.person, size: 28),
               label: 'Profile',
             ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.health_and_safety, size: 28),
+              label: 'Insurance',
+            ),
           ],
-          selectedItemColor: const Color(0xFF674AEF),
-          unselectedItemColor: Colors.grey,
-          selectedFontSize: 14.0,
-          unselectedFontSize: 12.0,
+          selectedItemColor: Colors.blue.shade900, // Elegant blue shade
+          unselectedItemColor:
+              Colors.grey.shade500, // Softer grey for better contrast
+          selectedFontSize: 15.0,
+          unselectedFontSize: 13.0,
           iconSize: 30.0,
         ),
       ),

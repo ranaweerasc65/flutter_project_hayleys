@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
-class BillsPage extends StatelessWidget {
-  const BillsPage({super.key});
+class PrescriptionsTable extends StatelessWidget {
+  const PrescriptionsTable({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bills Page'),
+        title: const Text('Prescriptions Page'),
         backgroundColor: Colors.blue.shade800,
       ),
       body: const Center(
-        child: Text('This is the Bills Page'),
+        child: Text('This is the Prescriptions Page'),
       ),
     );
   }
