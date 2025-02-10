@@ -978,7 +978,7 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
                   if (shouldApplySpecialChanges && !isRevealed)
                     IconButton(
                       onPressed: () {
-                        _confirmCardReveal(
+                        _showRequestOtpDialog(
                             card['insurance_id'], widget.customerId);
                       },
                       icon: const Icon(Icons.add, color: Colors.green),
@@ -1011,6 +1011,97 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showRequestOtpDialog(int cardId, int customerId) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: SizedBox(
+              width: 300,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.orange, // Orange to indicate verification
+                      shape: BoxShape.circle,
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: const Icon(
+                      Icons.security,
+                      size: 60,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "OTP Verification Required",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange, // Matching the icon color
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Need to verify for the primary user confirmation. Request an OTP to proceed.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey, // Grey for "Cancel"
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: const Text(
+                          "Cancel",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Colors.orange, // Orange for "Request OTP"
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close dialog
+                          _generateOtp(cardId, customerId); // Request OTP
+                        },
+                        child: const Text(
+                          "Request OTP",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -1099,7 +1190,291 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
     }
   }
 
-  void _confirmCardReveal(int cardId, int customerId) {
+  // void _confirmCardReveal(int cardId, int customerId) {
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (BuildContext context) {
+  //       return Dialog(
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(15),
+  //         ),
+  //         child: Padding(
+  //           padding: const EdgeInsets.all(20.0),
+  //           child: SizedBox(
+  //             width: 300, // Fixed width for the dialog
+  //             child: Column(
+  //               mainAxisSize: MainAxisSize.min,
+  //               children: [
+  //                 Container(
+  //                   decoration: const BoxDecoration(
+  //                     color: Colors.orange, // Orange for a neutral tone
+  //                     shape: BoxShape.circle,
+  //                   ),
+  //                   padding: const EdgeInsets.all(16),
+  //                   child: const Icon(
+  //                     Icons.info,
+  //                     size: 60,
+  //                     color: Colors.white,
+  //                   ),
+  //                 ),
+  //                 const SizedBox(height: 20),
+  //                 const Text(
+  //                   "Confirm Action",
+  //                   style: TextStyle(
+  //                     fontSize: 20,
+  //                     fontWeight: FontWeight.bold,
+  //                     color: Colors.orange, // Match icon color
+  //                   ),
+  //                 ),
+  //                 const SizedBox(height: 10),
+  //                 const Text(
+  //                   "Are you sure you want to reveal this insurance card? Once revealed, it will be visible to the employer.",
+  //                   textAlign: TextAlign.center,
+  //                   style: TextStyle(fontSize: 16, color: Colors.black),
+  //                 ),
+  //                 const SizedBox(height: 20),
+  //                 Row(
+  //                   mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //                   children: [
+  //                     ElevatedButton(
+  //                       style: ElevatedButton.styleFrom(
+  //                         backgroundColor: Colors.red,
+  //                         shape: RoundedRectangleBorder(
+  //                           borderRadius: BorderRadius.circular(8),
+  //                         ),
+  //                       ),
+  //                       onPressed: () {
+  //                         Navigator.of(context).pop(); // Close the dialog
+  //                       },
+  //                       child: const Text(
+  //                         "Cancel",
+  //                         style: TextStyle(fontSize: 16, color: Colors.white),
+  //                       ),
+  //                     ),
+  //                     ElevatedButton(
+  //                       style: ElevatedButton.styleFrom(
+  //                         backgroundColor: const Color(0xFF00C853), // Green
+  //                         shape: RoundedRectangleBorder(
+  //                           borderRadius: BorderRadius.circular(8),
+  //                         ),
+  //                       ),
+  //                       onPressed: () {
+  //                         Navigator.of(context).pop(); // Close the dialog
+  //                         _handlePlusButtonAction(
+  //                             cardId, customerId); // Proceed
+  //                       },
+  //                       child: const Text(
+  //                         "Reveal",
+  //                         style: TextStyle(fontSize: 16, color: Colors.white),
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
+
+  // FOR THE OTP ENTER
+
+  // void _confirmCardReveal(int cardId, int customerId) {
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (BuildContext context) {
+  //       List<TextEditingController> otpControllers =
+  //           List.generate(6, (index) => TextEditingController());
+
+  //       return Dialog(
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(15),
+  //         ),
+  //         child: Padding(
+  //           padding: const EdgeInsets.all(20.0),
+  //           child: SizedBox(
+  //             width: 300, // Fixed width for the dialog
+  //             child: Column(
+  //               mainAxisSize: MainAxisSize.min,
+  //               children: [
+  //                 Container(
+  //                   decoration: const BoxDecoration(
+  //                     color: Colors.orange,
+  //                     shape: BoxShape.circle,
+  //                   ),
+  //                   padding: const EdgeInsets.all(16),
+  //                   child: const Icon(
+  //                     Icons.info,
+  //                     size: 60,
+  //                     color: Colors.white,
+  //                   ),
+  //                 ),
+  //                 const SizedBox(height: 20),
+  //                 const Text(
+  //                   "Enter OTP",
+  //                   style: TextStyle(
+  //                     fontSize: 20,
+  //                     fontWeight: FontWeight.bold,
+  //                     color: Colors.orange,
+  //                   ),
+  //                 ),
+  //                 const SizedBox(height: 10),
+  //                 Text(
+  //                   "Please enter the 6-digit OTP sent to the registered mobile number of your primary user ${widget.phoneNo}.",
+  //                   textAlign: TextAlign.center,
+  //                   style: TextStyle(fontSize: 16, color: Colors.black),
+  //                 ),
+  //                 const SizedBox(height: 20),
+  //                 Row(
+  //                   mainAxisAlignment: MainAxisAlignment.center,
+  //                   children: List.generate(6, (index) {
+  //                     return Container(
+  //                       width: 40,
+  //                       margin: const EdgeInsets.symmetric(horizontal: 5),
+  //                       child: TextField(
+  //                         controller: otpControllers[index],
+  //                         keyboardType: TextInputType.number,
+  //                         textAlign: TextAlign.center,
+  //                         maxLength: 1,
+  //                         style: const TextStyle(fontSize: 18),
+  //                         decoration: const InputDecoration(
+  //                           counterText: "",
+  //                           border: OutlineInputBorder(),
+  //                         ),
+  //                         onChanged: (value) {
+  //                           if (value.isNotEmpty && index < 5) {
+  //                             FocusScope.of(context).nextFocus();
+  //                           }
+  //                         },
+  //                       ),
+  //                     );
+  //                   }),
+  //                 ),
+  //                 const SizedBox(height: 20),
+  //                 Row(
+  //                   mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //                   children: [
+  //                     ElevatedButton(
+  //                       style: ElevatedButton.styleFrom(
+  //                         backgroundColor: Colors.red,
+  //                         shape: RoundedRectangleBorder(
+  //                           borderRadius: BorderRadius.circular(8),
+  //                         ),
+  //                       ),
+  //                       onPressed: () {
+  //                         Navigator.of(context).pop(); // Close the dialog
+  //                       },
+  //                       child: const Text(
+  //                         "Cancel",
+  //                         style: TextStyle(fontSize: 16, color: Colors.white),
+  //                       ),
+  //                     ),
+  //                     ElevatedButton(
+  //                       style: ElevatedButton.styleFrom(
+  //                         backgroundColor: const Color(0xFF00C853),
+  //                         shape: RoundedRectangleBorder(
+  //                           borderRadius: BorderRadius.circular(8),
+  //                         ),
+  //                       ),
+  //                       onPressed: () {
+  //                         String otp = otpControllers.map((c) => c.text).join();
+  //                         if (otp.length == 6) {
+  //                           Navigator.of(context).pop(); // Close the dialog
+  //                           _handlePlusButtonAction(cardId, customerId);
+  //                         } else {
+  //                           // Show error message or alert
+  //                           ScaffoldMessenger.of(context).showSnackBar(
+  //                             const SnackBar(
+  //                                 content: Text("Enter complete OTP")),
+  //                           );
+  //                         }
+  //                       },
+  //                       child: const Text(
+  //                         "Verify",
+  //                         style: TextStyle(fontSize: 16, color: Colors.white),
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
+
+  Future<void> _generateOtp(int cardId, int customerId) async {
+    print("Requesting OTP for phone number: ${widget.phoneNo}");
+
+    final url = Uri.parse("${Config.baseUrl}otp_insurance_card_reveal.php");
+
+    final response = await http.post(url, body: {
+      'action': 'generate',
+      'phoneno': widget.phoneNo,
+    });
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      String status = data['status'];
+
+      if (status == 'exists') {
+        print("OTP sent to ${widget.phoneNo}");
+        _confirmCardReveal(cardId, customerId); // Show Enter OTP dialog
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text("Failed to send OTP. Please try again.")),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Error requesting OTP.")),
+      );
+    }
+  }
+
+  Future<void> _verifyOtp(int cardId, int customerId, String otp) async {
+    print("Verifying OTP for card ID: $cardId, customer ID: $customerId");
+
+    final url = Uri.parse("${Config.baseUrl}otp_insurance_card_reveal.php");
+
+    final response = await http.post(url, body: {
+      'action': 'verify',
+      'phoneno': widget.phoneNo,
+      'otp': otp,
+    });
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      String status = data['status'];
+
+      if (status == 'success') {
+        print("✅ OTP verified successfully!");
+
+        // 🔹 Show Success Dialog
+        _showVerificationSuccessDialog(cardId, customerId);
+
+        // 🔹 Call the plus button action after OTP is verified
+        await _handlePlusButtonAction(cardId, customerId);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("❌ Invalid OTP. Please try again.")),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("⚠️ Failed to verify OTP.")),
+      );
+    }
+  }
+
+  void _showVerificationSuccessDialog(int cardId, int customerId) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -1110,51 +1485,157 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
           ),
           child: Padding(
             padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF00C853), // Green color for success
+                    shape: BoxShape.circle,
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: const Icon(
+                    Icons.check_circle,
+                    size: 60,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  "Verification Successful!",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF00C853), // Green color for success
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  "Your OTP has been verified successfully.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16, color: Colors.black),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF00C853),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    // Optionally, navigate to the next screen or perform an action
+                  },
+                  child: const Text(
+                    "OK",
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _confirmCardReveal(int cardId, int customerId) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        List<TextEditingController> otpControllers =
+            List.generate(6, (index) => TextEditingController());
+
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
             child: SizedBox(
-              width: 300, // Fixed width for the dialog
+              width: 350,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.orange, // Orange for a neutral tone
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade900, // ✅ Remove 'const'
                       shape: BoxShape.circle,
                     ),
                     padding: const EdgeInsets.all(16),
-                    child: const Icon(
-                      Icons.info,
+                    child: Icon(
+                      Icons.security,
                       size: 60,
                       color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
-                    "Confirm Action",
+                  Text(
+                    "Enter OTP",
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: Colors.orange, // Match icon color
+                      color: Colors.blue.shade900, // ✅ Remove 'const'
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    "Are you sure you want to reveal this insurance card? Once revealed, it will be visible to the employer.",
+                  Text(
+                    "Enter the 6-digit OTP sent to ${widget.phoneNo}.",
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.black),
+                    style: const TextStyle(fontSize: 16, color: Colors.black87),
                   ),
                   const SizedBox(height: 20),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(6, (index) {
+                      return Container(
+                        width: 45,
+                        margin: const EdgeInsets.symmetric(horizontal: 5),
+                        child: TextField(
+                          controller: otpControllers[index],
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          maxLength: 1,
+                          style: const TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                          decoration: InputDecoration(
+                            counterText: "",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Colors.blue.shade900,
+                                  width: 2), // ✅ Remove 'const'
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          onChanged: (value) {
+                            if (value.isNotEmpty && index < 5) {
+                              FocusScope.of(context).nextFocus();
+                            }
+                          },
+                        ),
+                      );
+                    }),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
+                          backgroundColor: Colors.grey[600],
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(10),
                           ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 12),
                         ),
                         onPressed: () {
-                          Navigator.of(context).pop(); // Close the dialog
+                          Navigator.of(context).pop();
                         },
                         child: const Text(
                           "Cancel",
@@ -1163,18 +1644,39 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF00C853), // Green
+                          backgroundColor:
+                              Colors.blue.shade900, // ✅ Remove 'const'
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(10),
                           ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 12),
                         ),
                         onPressed: () {
-                          Navigator.of(context).pop(); // Close the dialog
-                          _handlePlusButtonAction(
-                              cardId, customerId); // Proceed
+                          String otp = otpControllers.map((c) => c.text).join();
+                          if (otp.length == 6) {
+                            Navigator.of(context).pop();
+                            _verifyOtp(cardId, customerId, otp);
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text("Invalid OTP"),
+                                content: const Text(
+                                    "Please enter all 6 digits of the OTP."),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
+                                    child: const Text("OK"),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
                         },
                         child: const Text(
-                          "Reveal",
+                          "Verify",
                           style: TextStyle(fontSize: 16, color: Colors.white),
                         ),
                       ),
