@@ -92,7 +92,7 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
 //         );
 
         final response = await http.post(
-          Uri.parse("${Config.baseUrl}insurance/insurance_card.php"),
+          Uri.parse("${Config.baseUrl}insurance_card.php"),
           headers: {"Content-Type": "application/x-www-form-urlencoded"},
           body: cardDetails,
         );
@@ -556,7 +556,7 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
     // );
 
     final url = Uri.parse(
-      "${Config.baseUrl}insurance/get_insurance_cards.php?customers_id=${widget.customerId}",
+      "${Config.baseUrl}get_insurance_cards.php?customers_id=${widget.customerId}",
     );
 
     try {
@@ -1113,7 +1113,7 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
     // final url = Uri.parse(
     //     "http://192.168.8.100/flutter_project_hayleys/php/employer_insurance_card.php");
     final url = Uri.parse(
-      "${Config.baseUrl}insurance/employer_insurance_card.php",
+      "${Config.baseUrl}employer_insurance_card.php",
     );
 
 //172.16.200.79
@@ -1157,7 +1157,7 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
     // final url = Uri.parse(
     //     "http://192.168.8.100/flutter_project_hayleys/php/employer_insurance_card.php");
     final url = Uri.parse(
-      "${Config.baseUrl}insurance/employer_insurance_card.php",
+      "${Config.baseUrl}employer_insurance_card.php",
     );
 
     final response = await http.post(url, body: {
@@ -1412,8 +1412,7 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
   Future<void> _generateOtp(int cardId, int customerId) async {
     print("Requesting OTP for phone number: ${widget.phoneNo}");
 
-    final url =
-        Uri.parse("${Config.baseUrl}insurance/otp_insurance_card_reveal.php");
+    final url = Uri.parse("${Config.baseUrl}otp_insurance_card_reveal.php");
 
     final response = await http.post(url, body: {
       'action': 'generate',
