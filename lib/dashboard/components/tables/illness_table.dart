@@ -8,39 +8,37 @@ class IllnessTable extends StatefulWidget {
 }
 
 class _IllnessTableState extends State<IllnessTable> {
-  int _rowsPerPage = 5;
-
   final List<Map<String, dynamic>> _illnessData = [
     {
-      'illness': 'Flu',
-      'diagnosis_date': '2025-01-15',
-      'status': 'Active',
-      'next_follow_up': '2025-02-15',
+      'illness_id': 1,
+      'customer_id': 101,
+      'doctor_id': 501,
+      'illness_name': 'Flu',
+      'illness_symptoms': 'Fever, Cough, Headache',
+      'illness_status': 'Active',
+      'diagnosis_date': '2025-02-10',
+      'next_follow_up': '2025-02-20',
     },
     {
-      'illness': 'Diabetes',
-      'diagnosis_date': '2024-10-10',
-      'status': 'Stable',
-      'next_follow_up': '2025-03-10',
+      'illness_id': 2,
+      'customer_id': 102,
+      'doctor_id': 502,
+      'illness_name': 'Diabetes',
+      'illness_symptoms': 'Increased thirst, Frequent urination',
+      'illness_status': 'Chronic',
+      'diagnosis_date': '2024-05-12',
+      'next_follow_up': '2025-03-01',
     },
     {
-      'illness': 'Asthma',
-      'diagnosis_date': '2023-06-25',
-      'status': 'Controlled',
-      'next_follow_up': '2025-05-20',
-    },
-    {
-      'illness': 'Asthma',
-      'diagnosis_date': '2023-06-25',
-      'status': 'Controlled',
-      'next_follow_up': '2025-05-20',
-    },
-    {
-      'illness': 'Asthma',
-      'diagnosis_date': '2023-06-25',
-      'status': 'Controlled',
-      'next_follow_up': '2025-05-20',
-    },
+      'illness_id': 3,
+      'customer_id': 103,
+      'doctor_id': 503,
+      'illness_name': 'Hypertension',
+      'illness_symptoms': 'High BP, Dizziness',
+      'illness_status': 'Managed',
+      'diagnosis_date': '2023-10-15',
+      'next_follow_up': '2025-06-10',
+    }
   ];
 
   void _refreshData() {
@@ -50,147 +48,181 @@ class _IllnessTableState extends State<IllnessTable> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: () async {
-          _refreshData();
-        },
-        child: Container(
-          color: Colors.white, // Full-page white background
-          child: ListView(
-            children: [
-              Container(
-                color: const Color.fromARGB(
-                    255, 255, 255, 255), // Wraps entire table in white
-                child: PaginatedDataTable(
-                  header: Container(
-                    padding: const EdgeInsets.all(8.0),
-                    child: const Text(
-                      'Illness Records',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
+      backgroundColor: Colors.white,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return RefreshIndicator(
+            onRefresh: () async {
+              _refreshData();
+            },
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.3),
+                        spreadRadius: 3,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: ConstrainedBox(
+                      constraints:
+                          BoxConstraints(minWidth: constraints.maxWidth),
+                      child: DataTable(
+                        headingRowColor:
+                            MaterialStateProperty.all(Colors.blue.shade800),
+                        dataRowColor: MaterialStateProperty.all(Colors.white),
+                        columnSpacing: 20,
+                        columns: const [
+                          DataColumn(
+                              label: Text('ID',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold))),
+                          DataColumn(
+                              label: Text('Name',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold))),
+                          DataColumn(
+                              label: Text('Symptoms',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold))),
+                          DataColumn(
+                              label: Text('Status',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold))),
+                          DataColumn(
+                              label: Text('Diagnosis Date',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold))),
+                          DataColumn(
+                              label: Text('Next Follow-up',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold))),
+                          DataColumn(
+                              label: Text('Actions',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold))),
+                        ],
+                        rows: _illnessData.map((illness) {
+                          return DataRow(cells: [
+                            DataCell(Text(illness['illness_id'].toString())),
+                            DataCell(Text(illness['illness_name'])),
+                            DataCell(Text(illness['illness_symptoms'])),
+                            DataCell(
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 4, horizontal: 8),
+                                decoration: BoxDecoration(
+                                  color: illness['illness_status'] == 'Active'
+                                      ? Colors.green
+                                      : (illness['illness_status'] == 'Chronic'
+                                          ? Colors.red
+                                          : Colors.orange),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Text(
+                                  illness['illness_status'],
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                            DataCell(Text(illness['diagnosis_date'])),
+                            DataCell(Text(illness['next_follow_up'] ?? 'N/A')),
+                            DataCell(
+                              IconButton(
+                                icon: const Icon(Icons.more_vert),
+                                onPressed: () {
+                                  _showOptionsDialog(illness);
+                                },
+                              ),
+                            ),
+                          ]);
+                        }).toList(),
                       ),
                     ),
                   ),
-                  columns: const [
-                    DataColumn(label: Text('Illness/Condition')),
-                    DataColumn(label: Text('Diagnosis Date')),
-                    DataColumn(label: Text('Status')),
-                    DataColumn(label: Text('Next Follow-up')),
-                    DataColumn(label: Text('Actions')),
-                  ],
-                  source: _IllnessTableDataSource(
-                    _illnessData,
-                    context,
-                    _refreshData,
-                  ),
-                  rowsPerPage: _rowsPerPage,
-                  columnSpacing: 20.0,
-                  showCheckboxColumn: false,
-                  onPageChanged: (int rowIndex) {},
-                  headingRowColor: MaterialStateProperty.all(
-                      Colors.white), // White header row
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Row(
-                  children: [
-                    const Text('Rows per page:'),
-                    DropdownButton<int>(
-                      value: _rowsPerPage,
-                      items: [5, 10, 20].map((int value) {
-                        return DropdownMenuItem<int>(
-                          value: value,
-                          child: Text('$value'),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          _rowsPerPage = value!;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
-}
 
-// ✅ FIX: The row background color is set inside the DataTableSource class
-class _IllnessTableDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> illnesses;
-  final BuildContext context;
-  final Function refreshData;
-
-  _IllnessTableDataSource(this.illnesses, this.context, this.refreshData);
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= illnesses.length) return null;
-
-    final illness = illnesses[index];
-
-    return DataRow(
-      color: MaterialStateProperty.all(
-          Colors.white), // ✅ Set row background to white
-      cells: [
-        DataCell(Text(illness['illness'] ?? '')),
-        DataCell(Text(illness['diagnosis_date'] ?? '')),
-        DataCell(Text(illness['status'] ?? '')),
-        DataCell(Text(illness['next_follow_up'] ?? '')),
-        DataCell(
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert),
-            onSelected: (String value) {
-              if (value == 'Edit') {
+  void _showOptionsDialog(Map<String, dynamic> illness) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text('Edit'),
+              onTap: () {
+                Navigator.pop(context);
                 _editIllnessDialog(illness);
-              } else if (value == 'Delete') {
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text('Delete', style: TextStyle(color: Colors.red)),
+              onTap: () {
+                Navigator.pop(context);
                 _deleteIllnessDialog(illness);
-              }
-            },
-            itemBuilder: (BuildContext context) => [
-              const PopupMenuItem(
-                value: 'Edit',
-                child: Text('Edit'),
-              ),
-              const PopupMenuItem(
-                value: 'Delete',
-                child: Text(
-                  'Delete',
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
   void _editIllnessDialog(Map<String, dynamic> illness) {
+    TextEditingController symptomsController =
+        TextEditingController(text: illness['illness_symptoms']);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Edit ${illness['illness']}'),
+        title: Text('Edit Illness ${illness['illness_name']}'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
-              controller: TextEditingController(text: illness['illness']),
-              decoration: const InputDecoration(labelText: 'Illness/Condition'),
+              controller: TextEditingController(text: illness['illness_name']),
+              decoration: const InputDecoration(labelText: 'Illness Name'),
+              readOnly: true,
+            ),
+            TextField(
+              controller: symptomsController,
+              decoration: const InputDecoration(labelText: 'Symptoms'),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () {
-              refreshData();
+              setState(() {
+                illness['illness_symptoms'] = symptomsController.text;
+              });
               Navigator.pop(context);
             },
             child: const Text('Save'),
@@ -209,8 +241,8 @@ class _IllnessTableDataSource extends DataTableSource {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Illness'),
-        content: Text(
-            'Are you sure you want to delete ${illness['illness']} from the list?'),
+        content:
+            Text('Are you sure you want to delete ${illness['illness_name']}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -218,23 +250,15 @@ class _IllnessTableDataSource extends DataTableSource {
           ),
           TextButton(
             onPressed: () {
-              illnesses.remove(illness);
-              refreshData();
+              setState(() {
+                _illnessData.remove(illness);
+              });
               Navigator.pop(context);
             },
-            child: const Text('Delete'),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
     );
   }
-
-  @override
-  bool get isRowCountApproximate => false;
-
-  @override
-  int get rowCount => illnesses.length;
-
-  @override
-  int get selectedRowCount => 0;
 }

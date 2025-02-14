@@ -19,47 +19,71 @@ class InitState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
 
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
 
   String? userName;
 
   Future<void> loginUser() async {
-    final phoneNo = phoneController.text;
-    final password = passwordController.text;
+    setState(() {
+      _isLoading = true; // Show loading indicator
+    });
+
+    final phoneNo = phoneController.text.trim();
+    final password = passwordController.text.trim();
 
     if (phoneNo.isEmpty || password.isEmpty) {
+      setState(() {
+        _isLoading = false; // Stop loading
+      });
       _showErrorDialog('Please enter both phone number and password.');
       return;
     }
 
-    final response = await http.post(
-      Uri.parse("${Config.baseUrl}login.php"),
-      //172.16.200.79
+    try {
+      final response = await http.post(
+        Uri.parse("${Config.baseUrl}login.php"),
+        body: {
+          'phone_no': phoneNo,
+          'password': password,
+        },
+      );
 
-      body: {
-        'phone_no': phoneNo,
-        'password': password,
-      },
-    );
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
 
-    if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
-      if (jsonResponse['status'] == 'success') {
-        userName = jsonResponse['name'];
+        if (jsonResponse['status'] == 'success') {
+          userName = jsonResponse['name'];
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HomeScreen(
-              userName: userName!,
-              phoneNo: phoneNo,
+          setState(() {
+            _isLoading = false; // Stop loading
+          });
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(
+                userName: userName!,
+                phoneNo: phoneNo,
+              ),
             ),
-          ),
-        );
+          );
+        } else {
+          setState(() {
+            _isLoading = false; // Stop loading
+          });
+          _showErrorDialog(jsonResponse['message']);
+        }
       } else {
-        _showErrorDialog(jsonResponse['message']);
+        setState(() {
+          _isLoading = false; // Stop loading
+        });
+        _showErrorDialog('Server error. Please try again.');
       }
-    } else {
-      _showErrorDialog('Server error. Please try again.');
+    } catch (e) {
+      setState(() {
+        _isLoading = false; // Stop loading
+      });
+      _showErrorDialog('Network error. Please check your internet connection.');
     }
   }
 
@@ -261,27 +285,75 @@ class InitState extends State<LoginScreen> {
                             ),
 
                             const SizedBox(height: 20),
+                            // FadeInUp(
+                            //   duration: const Duration(milliseconds: 1600),
+                            //   child: MaterialButton(
+                            //     onPressed: loginUser,
+                            //     height: 50,
+                            //     color: Colors.blue[900],
+                            //     shape: RoundedRectangleBorder(
+                            //       borderRadius: BorderRadius.circular(50),
+                            //     ),
+                            //     child: const Center(
+                            //       child: Text(
+                            //         "Login",
+                            //         style: TextStyle(
+                            //           color: Colors.white,
+                            //           fontSize: 16,
+                            //           fontWeight: FontWeight.bold,
+                            //         ),
+                            //       ),
+                            //     ),
+                            //   ),
+                            // ),
+
                             FadeInUp(
                               duration: const Duration(milliseconds: 1600),
                               child: MaterialButton(
-                                onPressed: loginUser,
+                                onPressed: _isLoading
+                                    ? null
+                                    : loginUser, // Disable button while loading
                                 height: 50,
                                 color: Colors.blue[900],
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(50),
                                 ),
-                                child: const Center(
-                                  child: Text(
-                                    "Login",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                                child: Center(
+                                  child: _isLoading
+                                      ? const Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            SizedBox(
+                                              width: 20,
+                                              height: 20,
+                                              child: CircularProgressIndicator(
+                                                color: Colors.white,
+                                                strokeWidth: 2,
+                                              ),
+                                            ),
+                                            SizedBox(width: 10),
+                                            Text(
+                                              "Logging in...",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : const Text(
+                                          "Login",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
                                 ),
                               ),
                             ),
+
                             const SizedBox(height: 30),
                             FadeInUp(
                               duration: const Duration(milliseconds: 1500),

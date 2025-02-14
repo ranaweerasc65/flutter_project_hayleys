@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'dart:async';
 
 import 'package:flutter_project_hayleys/dashboard/components/tables/illness_table.dart';
 import 'package:flutter_project_hayleys/dashboard/components/tables/bills_table.dart';
 import 'package:flutter_project_hayleys/dashboard/components/tables/reports_table.dart';
 import 'package:flutter_project_hayleys/dashboard/components/tables/prescriptions_table.dart';
+import 'package:flutter_project_hayleys/dashboard/components/tables/others_table.dart';
 
 class TabView extends StatefulWidget {
   final String tabName;
+  final TabController tabController;
 
-  const TabView({Key? key, required this.tabName}) : super(key: key);
+  const TabView({Key? key, required this.tabName, required this.tabController})
+      : super(key: key);
 
   @override
   _TabViewState createState() => _TabViewState();
@@ -22,46 +23,45 @@ class _TabViewState extends State<TabView> {
   List<dynamic> previousInquiries = []; // Store previous data for comparison
   Timer? _timer; // Timer for periodic updates
 
+  final List<String> tabNames = [
+    'Illness',
+    'Prescriptions',
+    'Reports',
+    'Bills',
+    'Others'
+  ];
+
   @override
   void initState() {
     super.initState();
-    if (widget.tabName == 'Illness') {
-      fetchIllness();
-    } else if (widget.tabName == 'Bills') {
-      fetchBills();
-    } else if (widget.tabName == 'Prescriptions') {
-      fetchPrescriptions();
-    } else if (widget.tabName == 'Reports') {
-      fetchReports();
-    }
-
-    // Start a timer to periodically check for updates
+    fetchDataForTab(widget.tabName);
     _startAutoRefresh();
   }
 
   // Start periodic data refresh
   void _startAutoRefresh() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
-      if (widget.tabName == 'Illness') {
-        fetchIllness();
-      } else if (widget.tabName == 'Bills') {
-        fetchBills();
-      } else if (widget.tabName == 'Prescriptions') {
-        fetchPrescriptions();
-      } else if (widget.tabName == 'Reports') {
-        fetchReports();
-      }
+    _timer = Timer.periodic(const Duration(seconds: 5), (Timer t) {
+      fetchDataForTab(widget.tabName);
     });
   }
 
-  // Compare new data with previous data before updating the state
-  void _updateInquiries(List<dynamic> newInquiries) {
-    if (newInquiries.toString() != previousInquiries.toString()) {
-      setState(() {
-        inquiries = newInquiries;
-        previousInquiries =
-            newInquiries; // Update previous data for future comparison
-      });
+  void fetchDataForTab(String tabName) {
+    switch (tabName) {
+      case 'Illness':
+        fetchIllness();
+        break;
+      case 'Prescriptions':
+        fetchPrescriptions();
+        break;
+      case 'Reports':
+        fetchReports();
+        break;
+      case 'Bills':
+        fetchBills();
+        break;
+      case 'Others':
+        fetchOthers();
+        break;
     }
   }
 
@@ -73,16 +73,7 @@ class _TabViewState extends State<TabView> {
 
   Future<void> fetchReports() async {}
 
-  void _showNoDataWarning() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('No inquiries found for this user.'),
-        backgroundColor: const Color.fromARGB(
-            255, 227, 145, 4), // Set the color to orange for warning
-        duration: Duration(seconds: 3), // Show the SnackBar for 3 seconds
-      ),
-    );
-  }
+  Future<void> fetchOthers() async {}
 
   @override
   void dispose() {
@@ -90,24 +81,105 @@ class _TabViewState extends State<TabView> {
     super.dispose();
   }
 
+  Widget getTableWidget() {
+    switch (widget.tabName) {
+      case 'Illness':
+        return const IllnessTable();
+      case 'Prescriptions':
+        return const PrescriptionsTable();
+      case 'Reports':
+        return const ReportsTable();
+      case 'Bills':
+        return const BillsTable();
+      case 'Others':
+        return const OthersTable();
+      default:
+        return Container();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    int currentIndex = tabNames.indexOf(widget.tabName);
+    int lastIndex = tabNames.length - 1;
+
+    // return Padding(
+    //   padding: const EdgeInsets.all(16.0),
+    //   child: Column(
+    //     crossAxisAlignment: CrossAxisAlignment.start,
+    //     children: [
+    //       const SizedBox(height: 20),
+    //       Expanded(child: getTableWidget()),
+    //     ],
+    //   ),
+    // );
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 20),
-          Expanded(
-            child: widget.tabName == 'Illness'
-                ? IllnessTable()
-                : widget.tabName == 'Bills'
-                    ? const BillsTable()
-                    : widget.tabName == 'Prescriptions'
-                        ? const PrescriptionsTable()
-                        : widget.tabName == 'Reports'
-                            ? const ReportsTable()
-                            : Container(),
+          Expanded(child: getTableWidget()),
+
+          // Navigation buttons
+          // Navigation buttons
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              if (currentIndex > 0)
+                ElevatedButton(
+                  onPressed: () =>
+                      widget.tabController.animateTo(currentIndex - 1),
+                  child: const Text('Back'),
+                ),
+              if (currentIndex < lastIndex)
+                Positioned(
+                  bottom: 16, // Positioning from the bottom of the screen
+                  right: 16, // Positioning from the right of the screen
+                  child: ElevatedButton(
+                    onPressed: () =>
+                        widget.tabController.animateTo(currentIndex + 1),
+                    child: Text(
+                      'Next',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color:
+                            Colors.blue.shade800, // Use non-constant expression
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          Colors.white, // Button background color (white)
+                      side: BorderSide(
+                        color: Colors.blue
+                            .shade800, // Button border color (blue shade 800)
+                        width: 2, // Border width
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 16, horizontal: 32),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      elevation: 0, // No shadow
+                    ),
+                  ),
+                ),
+              if (currentIndex == lastIndex)
+                ElevatedButton(
+                  onPressed: () {
+                    // Implement save functionality
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Data saved successfully!")),
+                    );
+                  },
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                  child:
+                      const Text('Save', style: TextStyle(color: Colors.white)),
+                ),
+            ],
           ),
         ],
       ),

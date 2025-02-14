@@ -8,39 +8,43 @@ class ReportsTable extends StatefulWidget {
 }
 
 class _ReportsTableState extends State<ReportsTable> {
-  int _rowsPerPage = 5;
-
   final List<Map<String, dynamic>> _reportsData = [
     {
-      'report_id': 'R001',
-      'patient_name': 'John Doe',
-      'report_type': 'Blood Test',
-      'date_issued': '2025-02-10'
+      'report_id': 1,
+      'customer_id': 101,
+      'illness_id': 201,
+      'report_number': 'R001',
+      'report_type': 'Medical Report',
+      'report_date': '2025-02-10',
+      'report_details': 'Detailed health checkup report',
+      'document_path': 'path/to/document1.pdf',
+      'created_at': '2025-02-10 12:00:00',
+      'updated_at': '2025-02-12 15:30:00',
     },
     {
-      'report_id': 'R002',
-      'patient_name': 'Jane Smith',
-      'report_type': 'X-Ray',
-      'date_issued': '2025-02-12'
+      'report_id': 2,
+      'customer_id': 102,
+      'illness_id': 202,
+      'report_number': 'R002',
+      'report_type': 'Lab Report',
+      'report_date': '2025-03-05',
+      'report_details': 'Blood test results',
+      'document_path': 'path/to/document2.pdf',
+      'created_at': '2025-03-05 14:00:00',
+      'updated_at': '2025-03-06 10:15:00',
     },
     {
-      'report_id': 'R003',
-      'patient_name': 'Alice Brown',
-      'report_type': 'MRI',
-      'date_issued': '2025-02-15'
-    },
-    {
-      'report_id': 'R001',
-      'patient_name': 'John Doe',
-      'report_type': 'Blood Test',
-      'date_issued': '2025-02-10'
-    },
-    {
-      'report_id': 'R002',
-      'patient_name': 'Jane Smith',
-      'report_type': 'X-Ray',
-      'date_issued': '2025-02-12'
-    },
+      'report_id': 3,
+      'customer_id': 103,
+      'illness_id': 203,
+      'report_number': 'R003',
+      'report_type': 'X-Ray Report',
+      'report_date': '2025-04-01',
+      'report_details': 'Chest X-ray analysis',
+      'document_path': 'path/to/document3.pdf',
+      'created_at': '2025-04-01 09:30:00',
+      'updated_at': '2025-04-02 11:45:00',
+    }
   ];
 
   void _refreshData() {
@@ -50,135 +54,182 @@ class _ReportsTableState extends State<ReportsTable> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: () async {
-          _refreshData();
-        },
-        child: Container(
-          color: Colors.white,
-          child: ListView(
-            children: [
-              Container(
-                color: Colors.white,
-                child: PaginatedDataTable(
-                  header: Container(
-                    padding: const EdgeInsets.all(8.0),
-                    child: const Text(
-                      'Medical Reports',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
+      backgroundColor: Colors.white,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return RefreshIndicator(
+            onRefresh: () async {
+              _refreshData();
+            },
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.3),
+                        spreadRadius: 3,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
                       ),
-                    ),
+                    ],
                   ),
-                  columns: const [
-                    DataColumn(label: Text('Report ID')),
-                    DataColumn(label: Text('Patient Name')),
-                    DataColumn(label: Text('Report Type')),
-                    DataColumn(label: Text('Date Issued')),
-                    DataColumn(label: Text('Actions')),
-                  ],
-                  source: _ReportsTableDataSource(
-                    _reportsData,
-                    context,
-                    _refreshData,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: ConstrainedBox(
+                        constraints:
+                            BoxConstraints(minWidth: constraints.maxWidth),
+                        child: DataTable(
+                          headingRowColor:
+                              MaterialStateProperty.all(Colors.blue.shade800),
+                          dataRowColor: MaterialStateProperty.all(Colors.white),
+                          columnSpacing: 20,
+                          columns: const [
+                            DataColumn(
+                                label: Expanded(
+                                    child: Text('Report ID',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold)))),
+                            DataColumn(
+                                label: Expanded(
+                                    child: Text('Report Number',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold)))),
+                            DataColumn(
+                                label: Expanded(
+                                    child: Text('Report Type',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold)))),
+                            DataColumn(
+                                label: Expanded(
+                                    child: Text('Report Date',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold)))),
+                            DataColumn(
+                                label: Expanded(
+                                    child: Text('Details',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold)))),
+                            DataColumn(
+                                label: Expanded(
+                                    child: Text('Document',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold)))),
+                            DataColumn(
+                                label: Expanded(
+                                    child: Text('Actions',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold)))),
+                          ],
+                          rows: _reportsData.map((report) {
+                            return DataRow(cells: [
+                              DataCell(Text(
+                                  report['report_id'].toString())), // Report ID
+                              DataCell(Text(report['report_number'])),
+                              DataCell(Text(report['report_type'])),
+                              DataCell(Text(report['report_date'])),
+                              DataCell(Text(
+                                  report['report_details'] ?? 'No Details')),
+                              DataCell(
+                                TextButton(
+                                  onPressed: () {
+                                    // Implement document opening logic
+                                  },
+                                  child: const Text(
+                                    'View',
+                                    style: TextStyle(color: Colors.blue),
+                                  ),
+                                ),
+                              ),
+                              DataCell(
+                                IconButton(
+                                  icon: const Icon(Icons.more_vert),
+                                  onPressed: () {
+                                    _showOptionsDialog(report);
+                                  },
+                                ),
+                              ),
+                            ]);
+                          }).toList(),
+                        )),
                   ),
-                  rowsPerPage: _rowsPerPage,
-                  columnSpacing: 20.0,
-                  showCheckboxColumn: false,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Row(
-                  children: [
-                    const Text('Rows per page:'),
-                    DropdownButton<int>(
-                      value: _rowsPerPage,
-                      items: [5, 10, 20].map((int value) {
-                        return DropdownMenuItem<int>(
-                          value: value,
-                          child: Text('$value'),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          _rowsPerPage = value!;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
-}
 
-class _ReportsTableDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> reports;
-  final BuildContext context;
-  final Function refreshData;
-
-  _ReportsTableDataSource(this.reports, this.context, this.refreshData);
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= reports.length) return null;
-
-    final report = reports[index];
-
-    return DataRow(
-      color: MaterialStateProperty.all(Colors.white),
-      cells: [
-        DataCell(Text(report['report_id'] ?? '')),
-        DataCell(Text(report['patient_name'] ?? '')),
-        DataCell(Text(report['report_type'] ?? '')),
-        DataCell(Text(report['date_issued'] ?? '')),
-        DataCell(
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert),
-            onSelected: (String value) {
-              if (value == 'Edit') {
+  void _showOptionsDialog(Map<String, dynamic> report) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text('Edit'),
+              onTap: () {
+                Navigator.pop(context);
                 _editReportDialog(report);
-              } else if (value == 'Delete') {
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text('Delete', style: TextStyle(color: Colors.red)),
+              onTap: () {
+                Navigator.pop(context);
                 _deleteReportDialog(report);
-              }
-            },
-            itemBuilder: (BuildContext context) => [
-              const PopupMenuItem(value: 'Edit', child: Text('Edit')),
-              const PopupMenuItem(
-                value: 'Delete',
-                child: Text('Delete', style: TextStyle(color: Colors.red)),
-              ),
-            ],
-          ),
-        ),
-      ],
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
   void _editReportDialog(Map<String, dynamic> report) {
+    TextEditingController detailsController =
+        TextEditingController(text: report['report_details']);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Edit Report ${report['report_id']}'),
+        title: Text('Edit Report ${report['report_number']}'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
-              controller: TextEditingController(text: report['report_type']),
-              decoration: const InputDecoration(labelText: 'Report Type'),
+              controller: TextEditingController(text: report['report_number']),
+              decoration: const InputDecoration(labelText: 'Report Number'),
+              readOnly: true, // Read-only since it's unique
+            ),
+            TextField(
+              controller: detailsController,
+              decoration: const InputDecoration(labelText: 'Report Details'),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () {
-              refreshData();
+              setState(() {
+                report['report_details'] = detailsController.text;
+              });
               Navigator.pop(context);
             },
             child: const Text('Save'),
@@ -198,7 +249,7 @@ class _ReportsTableDataSource extends DataTableSource {
       builder: (context) => AlertDialog(
         title: const Text('Delete Report'),
         content: Text(
-            'Are you sure you want to delete Report ${report['report_id']}?'),
+            'Are you sure you want to delete Report ${report['report_number']}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -206,21 +257,15 @@ class _ReportsTableDataSource extends DataTableSource {
           ),
           TextButton(
             onPressed: () {
-              reports.remove(report);
-              refreshData();
+              setState(() {
+                _reportsData.remove(report);
+              });
               Navigator.pop(context);
             },
-            child: const Text('Delete'),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
     );
   }
-
-  @override
-  bool get isRowCountApproximate => false;
-  @override
-  int get rowCount => reports.length;
-  @override
-  int get selectedRowCount => 0;
 }

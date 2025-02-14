@@ -4,13 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project_hayleys/dashboard/components/bottom_navbar.dart';
 import 'package:flutter_project_hayleys/dashboard/components/tab_view.dart';
 import '../config.dart';
-import 'components/tables/illness_table.dart';
-import 'components/tables/bills_table.dart';
-import 'components/tables/prescriptions_table.dart';
-import '../reports_page.dart';
 import '../insurance/insurance_card.dart';
 import '../settings.dart';
-import '../profile.dart';
+import '../profile/profile.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -25,13 +21,23 @@ class Dashboard extends StatefulWidget {
       required this.phoneNo,
       required this.customerId});
   @override
-  _DashboardPageState createState() => _DashboardPageState();
+  _DashboardState createState() => _DashboardState();
 }
 
-class _DashboardPageState extends State<Dashboard> {
+class _DashboardState extends State<Dashboard>
+    with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
   final PageController _pageController = PageController();
   late final List<Widget> _pages;
+  late TabController _tabController;
+
+  final List<String> tabNames = [
+    'Illness',
+    'Prescriptions',
+    'Reports',
+    'Bills',
+    'Others'
+  ];
 
   @override
   void initState() {
@@ -42,6 +48,7 @@ class _DashboardPageState extends State<Dashboard> {
     // Print the customerId here
     print('Customer ID: ${widget.customerId}');
     print(widget.phoneNo);
+    _tabController = TabController(length: tabNames.length, vsync: this);
 
     _pages = [
       DashboardContent(
@@ -66,6 +73,24 @@ class _DashboardPageState extends State<Dashboard> {
       _currentIndex = index;
     });
     _pageController.jumpToPage(index);
+  }
+
+  void _nextTab() {
+    if (_tabController.index < tabNames.length - 1) {
+      _tabController.animateTo(_tabController.index + 1);
+    }
+  }
+
+  void _previousTab() {
+    if (_tabController.index > 0) {
+      _tabController.animateTo(_tabController.index - 1);
+    }
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
@@ -99,7 +124,8 @@ class DashboardContent extends StatefulWidget {
   State<DashboardContent> createState() => _DashboardContentState();
 }
 
-class _DashboardContentState extends State<DashboardContent> {
+class _DashboardContentState extends State<DashboardContent>
+    with SingleTickerProviderStateMixin {
   String firstName = '';
   String lastName = '';
 
@@ -107,8 +133,19 @@ class _DashboardContentState extends State<DashboardContent> {
   int billsCount = 0;
   int prescriptionsCount = 0;
   int reportsCount = 0;
+  int othersCount = 0;
 
   Timer? _timer; // Declare a Timer
+
+  late TabController _tabController;
+
+  final List<String> tabNames = [
+    'Illness',
+    'Prescriptions',
+    'Reports',
+    'Bills',
+    'Others'
+  ];
 
   @override
   void initState() {
@@ -117,6 +154,7 @@ class _DashboardContentState extends State<DashboardContent> {
     _fetchCustomerDetails();
     _fetchCounts(); // Initial fetch
     _startAutoRefresh(); // Start auto-refreshing
+    _tabController = TabController(length: tabNames.length, vsync: this);
   }
 
   Future<void> _fetchCustomerDetails() async {
@@ -168,6 +206,7 @@ class _DashboardContentState extends State<DashboardContent> {
     await _fetchBillsCount();
     await _fetchPrescriptionsCount();
     await _fetchReportsCount();
+    await _fetchOthersCount();
   }
 
   // Function to periodically refresh the counts
@@ -199,11 +238,14 @@ class _DashboardContentState extends State<DashboardContent> {
     print("_fetchReportsCount");
   }
 
-  @override
+  Future<void> _fetchOthersCount() async {
+    print("_fetchOthersCount");
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 5,
       child: Scaffold(
         appBar: AppBar(
           title: Text(
@@ -255,14 +297,11 @@ class _DashboardContentState extends State<DashboardContent> {
               color: const Color.fromARGB(255, 255, 255,
                   255), // Optional, change the background color of the TabBar container
               child: TabBar(
+                controller: _tabController,
                 tabs: [
                   Tab(
                     icon: const Icon(Icons.local_hospital),
                     text: 'Illness ($illnessCount)',
-                  ),
-                  Tab(
-                    icon: const Icon(Icons.receipt_long),
-                    text: 'Bills ($billsCount)',
                   ),
                   Tab(
                     icon: const Icon(Icons.medication),
@@ -272,27 +311,54 @@ class _DashboardContentState extends State<DashboardContent> {
                     icon: const Icon(Icons.assessment),
                     text: 'Reports ($reportsCount)',
                   ),
+                  Tab(
+                    icon: const Icon(Icons.receipt_long),
+                    text: 'Bills ($billsCount)',
+                  ),
+                  Tab(
+                    icon: const Icon(Icons.document_scanner_rounded),
+                    text: 'Others ($othersCount)',
+                  ),
                 ],
-                labelColor: const Color.fromARGB(255, 7, 46, 205),
+                labelColor: Colors.blue.shade800,
                 unselectedLabelColor: const Color.fromARGB(179, 144, 141, 141),
               ),
             ),
 
             // TabBarView section below the TabBar
+            // Expanded(
+            //   child: Container(
+            //     color: Colors
+            //         .white, // Ensure this section has a pure white background
+            //     child: const TabBarView(
+            //       children: [
+            //         TabView(tabName: 'Illness'),
+            //         TabView(tabName: 'Prescriptions'),
+            //         TabView(tabName: 'Reports'),
+            //         TabView(tabName: 'Bills'),
+            //         TabView(tabName: 'Others'),
+            //       ],
+            //     ),
+            //   ),
+            // )
+
             Expanded(
               child: Container(
-                color: Colors
-                    .white, // Ensure this section has pure white background
-                child: const TabBarView(
+                color: Colors.white,
+                child: TabBarView(
+                  controller: _tabController, // <-- Pass the controller here
                   children: [
-                    TabView(tabName: 'Illness'),
-                    TabView(tabName: 'Bills'),
-                    TabView(tabName: 'Prescriptions'),
-                    TabView(tabName: 'Reports'),
+                    TabView(tabName: 'Illness', tabController: _tabController),
+                    TabView(
+                        tabName: 'Prescriptions',
+                        tabController: _tabController),
+                    TabView(tabName: 'Reports', tabController: _tabController),
+                    TabView(tabName: 'Bills', tabController: _tabController),
+                    TabView(tabName: 'Others', tabController: _tabController),
                   ],
                 ),
               ),
-            ),
+            )
           ],
         ),
       ),

@@ -8,43 +8,36 @@ class BillsTable extends StatefulWidget {
 }
 
 class _BillsTableState extends State<BillsTable> {
-  int _rowsPerPage = 5;
-
   final List<Map<String, dynamic>> _billsData = [
     {
+      'bill_id': 1, // This is the auto-incremented BILL_ID
+      'customer_id': 101, // Corresponds to CUSTOMERS_ID
+      'illness_id': 201, // Corresponds to ILLNESS_ID
       'bill_number': 'B001',
-      'patient_name': 'John Doe',
-      'amount': 250.0,
-      'due_date': '2025-02-15',
-      'status': 'Unpaid'
+      'bill_amount': 250.0, // BILL_AMOUNT
+      'bill_issue_date': '2025-02-15', // BILL_ISSUE_DATE
+      'bill_status': 'Unpaid', // BILL_STATUS
+      'bill_description': 'Treatment for fever', // BILL_DESCRIPTION (nullable)
     },
     {
+      'bill_id': 2,
+      'customer_id': 102,
+      'illness_id': 202,
       'bill_number': 'B002',
-      'patient_name': 'Jane Smith',
-      'amount': 150.5,
-      'due_date': '2025-03-10',
-      'status': 'Paid'
+      'bill_amount': 150.5,
+      'bill_issue_date': '2025-03-10',
+      'bill_status': 'Paid',
+      'bill_description': 'Consultation fee',
     },
     {
+      'bill_id': 3,
+      'customer_id': 103,
+      'illness_id': 203,
       'bill_number': 'B003',
-      'patient_name': 'Alice Brown',
-      'amount': 500.0,
-      'due_date': '2025-02-20',
-      'status': 'Unpaid'
-    },
-    {
-      'bill_number': 'B001',
-      'patient_name': 'John Doe',
-      'amount': 250.0,
-      'due_date': '2025-02-15',
-      'status': 'Unpaid'
-    },
-    {
-      'bill_number': 'B002',
-      'patient_name': 'Jane Smith',
-      'amount': 150.5,
-      'due_date': '2025-03-10',
-      'status': 'Paid'
+      'bill_amount': 500.0,
+      'bill_issue_date': '2025-02-20',
+      'bill_status': 'Unpaid',
+      'bill_description': 'Surgery fee',
     }
   ];
 
@@ -55,120 +48,166 @@ class _BillsTableState extends State<BillsTable> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: () async {
-          _refreshData();
-        },
-        child: Container(
-          color: Colors.white,
-          child: ListView(
-            children: [
-              Container(
-                color: Colors.white,
-                child: PaginatedDataTable(
-                  header: Container(
-                    padding: const EdgeInsets.all(8.0),
-                    child: const Text(
-                      'Bills Records',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
+      backgroundColor: Colors.white,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return RefreshIndicator(
+            onRefresh: () async {
+              _refreshData();
+            },
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white, // Table background
+                    borderRadius: BorderRadius.circular(12), // Rounded corners
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.3), // Soft shadow
+                        spreadRadius: 3,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
                       ),
-                    ),
+                    ],
                   ),
-                  columns: const [
-                    DataColumn(label: Text('Bill Number')),
-                    DataColumn(label: Text('Patient Name')),
-                    DataColumn(label: Text('Amount')),
-                    DataColumn(label: Text('Due Date')),
-                    DataColumn(label: Text('Status')),
-                    DataColumn(label: Text('Actions')),
-                  ],
-                  source: _BillsTableDataSource(
-                    _billsData,
-                    context,
-                    _refreshData,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: ConstrainedBox(
+                        constraints:
+                            BoxConstraints(minWidth: constraints.maxWidth),
+                        child: DataTable(
+                          headingRowColor:
+                              MaterialStateProperty.all(Colors.blue.shade800),
+                          dataRowColor: MaterialStateProperty.all(Colors.white),
+                          columnSpacing: 20,
+                          columns: const [
+                            DataColumn(
+                                label: Expanded(
+                                    child: Text('Bill ID',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold)))),
+                            DataColumn(
+                                label: Expanded(
+                                    child: Text('Bill Number',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold)))),
+                            DataColumn(
+                                label: Expanded(
+                                    child: Text('Amount',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold)))),
+                            DataColumn(
+                                label: Expanded(
+                                    child: Text('Issue Date',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold)))),
+                            DataColumn(
+                                label: Expanded(
+                                    child: Text('Status',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold)))),
+                            DataColumn(
+                                label: Expanded(
+                                    child: Text('Description',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold)))),
+                            DataColumn(
+                                label: Expanded(
+                                    child: Text('Actions',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold)))),
+                          ],
+                          rows: _billsData.map((bill) {
+                            return DataRow(cells: [
+                              DataCell(
+                                  Text(bill['bill_id'].toString())), // Bill ID
+                              DataCell(Text(bill['bill_number'])),
+                              DataCell(Text(
+                                  '\$${bill['bill_amount'].toStringAsFixed(2)}')),
+                              DataCell(Text(bill['bill_issue_date'])),
+                              DataCell(
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 4, horizontal: 8),
+                                  decoration: BoxDecoration(
+                                    color: bill['bill_status'] == 'Paid'
+                                        ? Colors.green
+                                        : (bill['bill_status'] == 'Unpaid'
+                                            ? Colors.red
+                                            : Colors.orange),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: Text(
+                                    bill['bill_status'],
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                              DataCell(Text(bill['bill_description'] ??
+                                  'No Description')),
+                              DataCell(
+                                IconButton(
+                                  icon: const Icon(Icons.more_vert),
+                                  onPressed: () {
+                                    _showOptionsDialog(bill);
+                                  },
+                                ),
+                              ),
+                            ]);
+                          }).toList(),
+                        )),
                   ),
-                  rowsPerPage: _rowsPerPage,
-                  columnSpacing: 20.0,
-                  showCheckboxColumn: false,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Row(
-                  children: [
-                    const Text('Rows per page:'),
-                    DropdownButton<int>(
-                      value: _rowsPerPage,
-                      items: [5, 10, 20].map((int value) {
-                        return DropdownMenuItem<int>(
-                          value: value,
-                          child: Text('$value'),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          _rowsPerPage = value!;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
-}
 
-class _BillsTableDataSource extends DataTableSource {
-  final List<Map<String, dynamic>> bills;
-  final BuildContext context;
-  final Function refreshData;
-
-  _BillsTableDataSource(this.bills, this.context, this.refreshData);
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= bills.length) return null;
-
-    final bill = bills[index];
-
-    return DataRow(
-      color: MaterialStateProperty.all(Colors.white),
-      cells: [
-        DataCell(Text(bill['bill_number'] ?? '')),
-        DataCell(Text(bill['patient_name'] ?? '')),
-        DataCell(Text('\$${bill['amount'].toStringAsFixed(2)}')),
-        DataCell(Text(bill['due_date'] ?? '')),
-        DataCell(Text(bill['status'] ?? '')),
-        DataCell(
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert),
-            onSelected: (String value) {
-              if (value == 'Edit') {
+  void _showOptionsDialog(Map<String, dynamic> bill) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text('Edit'),
+              onTap: () {
+                Navigator.pop(context);
                 _editBillDialog(bill);
-              } else if (value == 'Delete') {
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text('Delete', style: TextStyle(color: Colors.red)),
+              onTap: () {
+                Navigator.pop(context);
                 _deleteBillDialog(bill);
-              }
-            },
-            itemBuilder: (BuildContext context) => [
-              const PopupMenuItem(value: 'Edit', child: Text('Edit')),
-              const PopupMenuItem(
-                value: 'Delete',
-                child: Text('Delete', style: TextStyle(color: Colors.red)),
-              ),
-            ],
-          ),
-        ),
-      ],
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
   void _editBillDialog(Map<String, dynamic> bill) {
+    TextEditingController descriptionController =
+        TextEditingController(text: bill['bill_description']);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -177,15 +216,22 @@ class _BillsTableDataSource extends DataTableSource {
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
-              controller: TextEditingController(text: bill['patient_name']),
-              decoration: const InputDecoration(labelText: 'Patient Name'),
+              controller: TextEditingController(text: bill['bill_number']),
+              decoration: const InputDecoration(labelText: 'Bill Number'),
+              readOnly: true, // Read-only since it's unique
+            ),
+            TextField(
+              controller: descriptionController,
+              decoration: const InputDecoration(labelText: 'Bill Description'),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () {
-              refreshData();
+              setState(() {
+                bill['bill_description'] = descriptionController.text;
+              });
               Navigator.pop(context);
             },
             child: const Text('Save'),
@@ -213,21 +259,15 @@ class _BillsTableDataSource extends DataTableSource {
           ),
           TextButton(
             onPressed: () {
-              bills.remove(bill);
-              refreshData();
+              setState(() {
+                _billsData.remove(bill);
+              });
               Navigator.pop(context);
             },
-            child: const Text('Delete'),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
     );
   }
-
-  @override
-  bool get isRowCountApproximate => false;
-  @override
-  int get rowCount => bills.length;
-  @override
-  int get selectedRowCount => 0;
 }
