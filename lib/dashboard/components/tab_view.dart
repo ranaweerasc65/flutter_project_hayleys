@@ -10,8 +10,13 @@ import 'package:flutter_project_hayleys/dashboard/components/tables/others_table
 class TabView extends StatefulWidget {
   final String tabName;
   final TabController tabController;
+  final int customerId;
 
-  const TabView({Key? key, required this.tabName, required this.tabController})
+  const TabView(
+      {Key? key,
+      required this.tabName,
+      required this.tabController,
+      required this.customerId})
       : super(key: key);
 
   @override
@@ -66,13 +71,9 @@ class _TabViewState extends State<TabView> {
   }
 
   Future<void> fetchIllness() async {}
-
   Future<void> fetchBills() async {}
-
   Future<void> fetchPrescriptions() async {}
-
   Future<void> fetchReports() async {}
-
   Future<void> fetchOthers() async {}
 
   @override
@@ -84,7 +85,9 @@ class _TabViewState extends State<TabView> {
   Widget getTableWidget() {
     switch (widget.tabName) {
       case 'Illness':
-        return const IllnessTable();
+        return IllnessTable(
+          customerId: widget.customerId,
+        );
       case 'Prescriptions':
         return const PrescriptionsTable();
       case 'Reports':
@@ -100,20 +103,6 @@ class _TabViewState extends State<TabView> {
 
   @override
   Widget build(BuildContext context) {
-    int currentIndex = tabNames.indexOf(widget.tabName);
-    int lastIndex = tabNames.length - 1;
-
-    // return Padding(
-    //   padding: const EdgeInsets.all(16.0),
-    //   child: Column(
-    //     crossAxisAlignment: CrossAxisAlignment.start,
-    //     children: [
-    //       const SizedBox(height: 20),
-    //       Expanded(child: getTableWidget()),
-    //     ],
-    //   ),
-    // );
-
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -121,66 +110,6 @@ class _TabViewState extends State<TabView> {
         children: [
           const SizedBox(height: 20),
           Expanded(child: getTableWidget()),
-
-          // Navigation buttons
-          // Navigation buttons
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              if (currentIndex > 0)
-                ElevatedButton(
-                  onPressed: () =>
-                      widget.tabController.animateTo(currentIndex - 1),
-                  child: const Text('Back'),
-                ),
-              if (currentIndex < lastIndex)
-                Positioned(
-                  bottom: 16, // Positioning from the bottom of the screen
-                  right: 16, // Positioning from the right of the screen
-                  child: ElevatedButton(
-                    onPressed: () =>
-                        widget.tabController.animateTo(currentIndex + 1),
-                    child: Text(
-                      'Next',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color:
-                            Colors.blue.shade800, // Use non-constant expression
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Colors.white, // Button background color (white)
-                      side: BorderSide(
-                        color: Colors.blue
-                            .shade800, // Button border color (blue shade 800)
-                        width: 2, // Border width
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 16, horizontal: 32),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      elevation: 0, // No shadow
-                    ),
-                  ),
-                ),
-              if (currentIndex == lastIndex)
-                ElevatedButton(
-                  onPressed: () {
-                    // Implement save functionality
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Data saved successfully!")),
-                    );
-                  },
-                  style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                  child:
-                      const Text('Save', style: TextStyle(color: Colors.white)),
-                ),
-            ],
-          ),
         ],
       ),
     );

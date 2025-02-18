@@ -45,7 +45,6 @@ class _DashboardState extends State<Dashboard>
 
     print('DASHBOARD SCREEN');
 
-    // Print the customerId here
     print('Customer ID: ${widget.customerId}');
     print(widget.phoneNo);
     _tabController = TabController(length: tabNames.length, vsync: this);
@@ -135,7 +134,7 @@ class _DashboardContentState extends State<DashboardContent>
   int reportsCount = 0;
   int othersCount = 0;
 
-  Timer? _timer; // Declare a Timer
+  Timer? _timer;
 
   late TabController _tabController;
 
@@ -150,10 +149,10 @@ class _DashboardContentState extends State<DashboardContent>
   @override
   void initState() {
     super.initState();
-    // Call the fetch method to retrieve customer details
+
     _fetchCustomerDetails();
-    _fetchCounts(); // Initial fetch
-    _startAutoRefresh(); // Start auto-refreshing
+    _fetchCounts();
+    _startAutoRefresh();
     _tabController = TabController(length: tabNames.length, vsync: this);
   }
 
@@ -200,7 +199,6 @@ class _DashboardContentState extends State<DashboardContent>
     }
   }
 
-// Function to fetch all counts
   Future<void> _fetchCounts() async {
     await _fetchIllnessCount();
     await _fetchBillsCount();
@@ -209,7 +207,6 @@ class _DashboardContentState extends State<DashboardContent>
     await _fetchOthersCount();
   }
 
-  // Function to periodically refresh the counts
   void _startAutoRefresh() {
     _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
       //_fetchCounts(); // Call the fetch function every 30 seconds
@@ -218,7 +215,7 @@ class _DashboardContentState extends State<DashboardContent>
 
   @override
   void dispose() {
-    _timer?.cancel(); // Cancel the timer when the screen is disposed
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -286,16 +283,11 @@ class _DashboardContentState extends State<DashboardContent>
             ),
           ],
         ),
-
-        // Adding space before the TabBar
         body: Column(
           children: [
             const SizedBox(height: 10),
-
-            // TabBar section displayed below AppBar
             Container(
-              color: const Color.fromARGB(255, 255, 255,
-                  255), // Optional, change the background color of the TabBar container
+              color: const Color.fromARGB(255, 255, 255, 255),
               child: TabBar(
                 controller: _tabController,
                 tabs: [
@@ -324,37 +316,37 @@ class _DashboardContentState extends State<DashboardContent>
                 unselectedLabelColor: const Color.fromARGB(179, 144, 141, 141),
               ),
             ),
-
-            // TabBarView section below the TabBar
-            // Expanded(
-            //   child: Container(
-            //     color: Colors
-            //         .white, // Ensure this section has a pure white background
-            //     child: const TabBarView(
-            //       children: [
-            //         TabView(tabName: 'Illness'),
-            //         TabView(tabName: 'Prescriptions'),
-            //         TabView(tabName: 'Reports'),
-            //         TabView(tabName: 'Bills'),
-            //         TabView(tabName: 'Others'),
-            //       ],
-            //     ),
-            //   ),
-            // )
-
             Expanded(
               child: Container(
                 color: Colors.white,
                 child: TabBarView(
-                  controller: _tabController, // <-- Pass the controller here
+                  controller: _tabController,
                   children: [
-                    TabView(tabName: 'Illness', tabController: _tabController),
                     TabView(
-                        tabName: 'Prescriptions',
-                        tabController: _tabController),
-                    TabView(tabName: 'Reports', tabController: _tabController),
-                    TabView(tabName: 'Bills', tabController: _tabController),
-                    TabView(tabName: 'Others', tabController: _tabController),
+                      tabName: 'Illness',
+                      tabController: _tabController,
+                      customerId: widget.customerId,
+                    ),
+                    TabView(
+                      tabName: 'Prescriptions',
+                      tabController: _tabController,
+                      customerId: widget.customerId,
+                    ),
+                    TabView(
+                      tabName: 'Reports',
+                      tabController: _tabController,
+                      customerId: widget.customerId,
+                    ),
+                    TabView(
+                      tabName: 'Bills',
+                      tabController: _tabController,
+                      customerId: widget.customerId,
+                    ),
+                    TabView(
+                      tabName: 'Others',
+                      tabController: _tabController,
+                      customerId: widget.customerId,
+                    ),
                   ],
                 ),
               ),

@@ -22,7 +22,7 @@ class InsuranceCardPage extends StatefulWidget {
 class _InsuranceCardPageState extends State<InsuranceCardPage> {
   bool _isLoading = false;
   final _formKey = GlobalKey<FormState>();
-  Set<int> revealedCards = {}; // Track revealed card IDs
+  Set<int> revealedCards = {};
 
   final TextEditingController membershipNoController = TextEditingController();
   final TextEditingController policyNoController = TextEditingController();
@@ -31,7 +31,7 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
   final TextEditingController insuranceCompanyNameController =
       TextEditingController();
 
-  int? primaryUserId; // Store the primary user ID
+  int? primaryUserId;
 
   List<Map<String, dynamic>> addedCards = [];
 
@@ -432,119 +432,12 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
     await Future.delayed(const Duration(seconds: 1));
   }
 
-  // Future<void> _fetchAddedCards() async {
-  //   setState(() {
-  //     _isLoading = true;
-  //   });
-
-  //   print("Fetching added cards for customer id ${widget.customerId}...");
-  //   final url = Uri.parse(
-  //     "http://172.16.200.79/flutter_project_hayleys/php/get_insurance_cards.php?customers_id=${widget.customerId}",
-  //   );
-
-  //   try {
-  //     final response = await http.get(url);
-
-  //     if (response.statusCode == 200) {
-  //       print('Response body: ${response.body}');
-  //       final data = jsonDecode(response.body);
-
-  //       if (data['status'] == 'success') {
-  //         print("status = success");
-  //         setState(() {
-  //           primaryUserId = data['primaryUserId'];
-  //           addedCards = List<Map<String, dynamic>>.from(data['addedCards']);
-  //         });
-  //       } else {
-  //         print('Error: ${data['message']}');
-  //       }
-  //     } else {
-  //       print('Failed to load cards: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     print('Error fetching cards: $e');
-  //   } finally {
-  //     setState(() {
-  //       _isLoading = false;
-  //     });
-  //   }
-  // }
-
-//   Future<void> _fetchAddedCards() async {
-//     setState(() {
-//       _isLoading = true;
-//     });
-
-//     print("Fetching added cards for customer id ${widget.customerId}...");
-//     final url = Uri.parse(
-//       "http://192.168.8.100/flutter_project_hayleys/php/get_insurance_cards.php?customers_id=${widget.customerId}",
-//     );
-// //172.16.200.79
-//     try {
-//       final response = await http.get(url);
-
-//       if (response.statusCode == 200) {
-//         // print response body
-//         print('Response body: ${response.body}');
-
-//         final data = jsonDecode(response.body);
-
-//         if (data['status'] == 'success') {
-//           print("status = success");
-//           print("Primary User ID: ${data['primaryUserId']}");
-//           print("----------------------");
-
-//           List<Map<String, dynamic>> rawCards =
-//               List<Map<String, dynamic>>.from(data['addedCards']);
-//           Set<int> uniqueInsuranceIds = {}; // Track unique insurance IDs
-//           List<Map<String, dynamic>> filteredCards = [];
-
-//           for (var card in rawCards) {
-//             print("Insurance ID: ${card['insurance_id']}");
-//             print("Insurance Company: ${card['insurance_company']}");
-//             print("Card Holder Name: ${card['insurance_card_holder_name']}");
-//             print("Membership No: ${card['insurance_membership_no']}");
-//             print("Policy No: ${card['insurance_policy_no']}");
-//             print("Is Revealed: ${card['is_revealed']}");
-//             print("Customer ID: ${card['customers_id']}");
-//             print("----------------------"); // Separator for readability
-
-//             int insuranceId = card['insurance_id'];
-//             if (!uniqueInsuranceIds.contains(insuranceId)) {
-//               uniqueInsuranceIds.add(insuranceId);
-//               filteredCards.add(card);
-//             }
-//           }
-
-//           setState(() {
-//             primaryUserId = data['primaryUserId'];
-//             debugPrint('ok ${filteredCards.toString()}');
-//             addedCards = filteredCards;
-//           });
-//         } else {
-//           print('Error: ${data['message']}');
-//         }
-//       } else {
-//         print('Failed to load cards: ${response.statusCode}');
-//       }
-//     } catch (e) {
-//       print('Error fetching cards: $e');
-//     } finally {
-//       setState(() {
-//         _isLoading = false;
-//       });
-//     }
-//   }
-
   Future<void> _fetchAddedCards() async {
     setState(() {
       _isLoading = true;
     });
 
     print("Fetching added cards for customer id ${widget.customerId}...");
-    // final url = Uri.parse(
-    //   "http://192.168.8.100/flutter_project_hayleys/php/get_insurance_cards.php?customers_id=${widget.customerId}",
-    // );
 
     final url = Uri.parse(
       "${Config.baseUrl}get_insurance_cards.php?customers_id=${widget.customerId}",
@@ -564,16 +457,15 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
           List<Map<String, dynamic>> rawCards =
               List<Map<String, dynamic>>.from(data['addedCards']);
 
-          // Store the added cards into the addedCards list
           setState(() {
-            addedCards =
-                rawCards; // Assuming addedCards is a List<Map<String, dynamic>>
+            addedCards = rawCards;
           });
 
           // Debug print the addedCards list
           debugPrint('Added Cards: ${addedCards.toString()}');
 
-          Set<int> uniqueInsuranceIds = {}; // Track unique insurance IDs
+          // Track unique insurance IDs
+          Set<int> uniqueInsuranceIds = {};
           List<Map<String, dynamic>> filteredCards = [];
 
           // Create a map to track insurance_id and their associated customer_ids
@@ -590,7 +482,7 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
             }
             insuranceCustomerIds[insuranceId]?.add(cardCustomerId);
 
-            // ✅ Filter: Only add cards where customers_id == widget.customerId
+            // Filter: Only add cards where customers_id == widget.customerId
             if (cardCustomerId == widget.customerId &&
                 !uniqueInsuranceIds.contains(insuranceId)) {
               uniqueInsuranceIds.add(insuranceId);
@@ -690,8 +582,6 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-
-              // Show loading animation while fetching cards
               _isLoading
                   ? Center(
                       child: LoadingAnimationWidget.halfTriangleDot(

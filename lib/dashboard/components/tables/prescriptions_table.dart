@@ -8,41 +8,7 @@ class PrescriptionsTable extends StatefulWidget {
 }
 
 class _PrescriptionsTableState extends State<PrescriptionsTable> {
-  final List<Map<String, dynamic>> _prescriptionsData = [
-    {
-      'prescription_id': 1,
-      'customers_id': 101,
-      'illness_id': 201,
-      'prescription_number': 'RX001',
-      'medication_name': 'Paracetamol',
-      'medication_dosage': '500mg, twice a day',
-      'prescription_date': '2025-02-10',
-      'prescription_expiry_date': '2025-03-10',
-      'prescription_details': 'Take after meals',
-    },
-    {
-      'prescription_id': 2,
-      'customers_id': 102,
-      'illness_id': 202,
-      'prescription_number': 'RX002',
-      'medication_name': 'Metformin',
-      'medication_dosage': '850mg, once a day',
-      'prescription_date': '2025-01-15',
-      'prescription_expiry_date': '2025-04-15',
-      'prescription_details': 'Take in the morning',
-    },
-    {
-      'prescription_id': 3,
-      'customers_id': 103,
-      'illness_id': 203,
-      'prescription_number': 'RX003',
-      'medication_name': 'Amlodipine',
-      'medication_dosage': '10mg, once a day',
-      'prescription_date': '2024-12-20',
-      'prescription_expiry_date': '2025-06-20',
-      'prescription_details': 'Take in the evening',
-    }
-  ];
+  final List<Map<String, dynamic>> _prescriptionsData = [];
 
   void _refreshData() {
     setState(() {});
