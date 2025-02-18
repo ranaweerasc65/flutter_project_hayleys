@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter_project_hayleys/dashboard/components/tables/illness_table.dart';
+import 'package:flutter_project_hayleys/dashboard/components/tables/doctor_table.dart';
 import 'package:flutter_project_hayleys/dashboard/components/tables/bills_table.dart';
 import 'package:flutter_project_hayleys/dashboard/components/tables/reports_table.dart';
 import 'package:flutter_project_hayleys/dashboard/components/tables/prescriptions_table.dart';
@@ -25,11 +26,12 @@ class TabView extends StatefulWidget {
 
 class _TabViewState extends State<TabView> {
   List<dynamic> inquiries = [];
-  List<dynamic> previousInquiries = []; // Store previous data for comparison
-  Timer? _timer; // Timer for periodic updates
+  List<dynamic> previousInquiries = [];
+  Timer? _timer;
 
   final List<String> tabNames = [
     'Illness',
+    'Doctors',
     'Prescriptions',
     'Reports',
     'Bills',
@@ -43,7 +45,6 @@ class _TabViewState extends State<TabView> {
     _startAutoRefresh();
   }
 
-  // Start periodic data refresh
   void _startAutoRefresh() {
     _timer = Timer.periodic(const Duration(seconds: 5), (Timer t) {
       fetchDataForTab(widget.tabName);
@@ -54,6 +55,9 @@ class _TabViewState extends State<TabView> {
     switch (tabName) {
       case 'Illness':
         fetchIllness();
+        break;
+      case 'Doctors':
+        fetchDoctors();
         break;
       case 'Prescriptions':
         fetchPrescriptions();
@@ -71,6 +75,7 @@ class _TabViewState extends State<TabView> {
   }
 
   Future<void> fetchIllness() async {}
+  Future<void> fetchDoctors() async {}
   Future<void> fetchBills() async {}
   Future<void> fetchPrescriptions() async {}
   Future<void> fetchReports() async {}
@@ -78,7 +83,7 @@ class _TabViewState extends State<TabView> {
 
   @override
   void dispose() {
-    _timer?.cancel(); // Cancel the timer when the widget is disposed
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -86,6 +91,10 @@ class _TabViewState extends State<TabView> {
     switch (widget.tabName) {
       case 'Illness':
         return IllnessTable(
+          customerId: widget.customerId,
+        );
+      case 'Doctors':
+        return DoctorTable(
           customerId: widget.customerId,
         );
       case 'Prescriptions':

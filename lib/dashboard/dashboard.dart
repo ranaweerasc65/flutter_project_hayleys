@@ -33,6 +33,7 @@ class _DashboardState extends State<Dashboard>
 
   final List<String> tabNames = [
     'Illness',
+    'Doctors',
     'Prescriptions',
     'Reports',
     'Bills',
@@ -72,18 +73,6 @@ class _DashboardState extends State<Dashboard>
       _currentIndex = index;
     });
     _pageController.jumpToPage(index);
-  }
-
-  void _nextTab() {
-    if (_tabController.index < tabNames.length - 1) {
-      _tabController.animateTo(_tabController.index + 1);
-    }
-  }
-
-  void _previousTab() {
-    if (_tabController.index > 0) {
-      _tabController.animateTo(_tabController.index - 1);
-    }
   }
 
   @override
@@ -129,6 +118,7 @@ class _DashboardContentState extends State<DashboardContent>
   String lastName = '';
 
   int illnessCount = 0;
+  int DoctorsCount = 0;
   int billsCount = 0;
   int prescriptionsCount = 0;
   int reportsCount = 0;
@@ -140,6 +130,7 @@ class _DashboardContentState extends State<DashboardContent>
 
   final List<String> tabNames = [
     'Illness',
+    'Doctors',
     'Prescriptions',
     'Reports',
     'Bills',
@@ -157,37 +148,21 @@ class _DashboardContentState extends State<DashboardContent>
   }
 
   Future<void> _fetchCustomerDetails() async {
-    // print("Starting _fetchCustomerDetails...");
-    //print("Customer ID: ${widget.customerId}");
-
     try {
-      // final url = Uri.parse(
-      //     'http://172.16.200.79/flutter_project_hayleys/php/get_First&LastNames.php?customer_id=${widget.customerId}');
       final url = Uri.parse(
           "${Config.baseUrl}get_First&LastNames.php?customer_id=${widget.customerId}");
-      // print("Constructed URL: $url");
 
-      // Sending the GET request
       final response = await http.get(url);
-      //  print("HTTP GET request sent.");
-
-      // Checking the status code
-      //print("Response Status Code: ${response.statusCode}");
 
       if (response.statusCode == 200) {
         print("Response Body: ${response.body}");
         final data = jsonDecode(response.body);
 
-        // Checking the JSON structure
-        //print("Parsed Response Data: $data");
-
         if (data['status'] == 'success') {
-          //print("Successfully fetched customer details.");
           setState(() {
             firstName = data['first_name'];
             lastName = data['last_name'];
           });
-          //print("Updated state: firstName=$firstName, lastName=$lastName");
         } else {
           // print("Error from server: ${data['message']}");
         }
@@ -200,7 +175,8 @@ class _DashboardContentState extends State<DashboardContent>
   }
 
   Future<void> _fetchCounts() async {
-    await _fetchIllnessCount();
+    await _fetchIllnessCount(widget.customerId);
+    await _fetchDoctorsCount(widget.customerId);
     await _fetchBillsCount();
     await _fetchPrescriptionsCount();
     await _fetchReportsCount();
@@ -219,30 +195,55 @@ class _DashboardContentState extends State<DashboardContent>
     super.dispose();
   }
 
-  Future<void> _fetchIllnessCount() async {
-    print("_fetchIllnessCount");
+  Future<void> _fetchIllnessCount(int customerId) async {
+    final url = Uri.parse(
+        "${Config.baseUrl}get_illness_count.php?customer_id=${widget.customerId}");
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        print('Response body: ${response.body}');
+
+        final data = jsonDecode(response.body);
+
+        if (data['status'] == 'success') {
+          setState(() {
+            illnessCount = data['illness_count'];
+          });
+        } else {
+          print('Error: ${data['message']}');
+        }
+      } else {
+        print('Server Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching illness count: $e');
+    }
   }
 
+  Future<void> _fetchDoctorsCount(int customerId) async {}
+
   Future<void> _fetchBillsCount() async {
-    print("_fetchBillsCount");
+    //print("_fetchBillsCount");
   }
 
   Future<void> _fetchPrescriptionsCount() async {
-    print("_fetchPrescriptionsCount");
+    //print("_fetchPrescriptionsCount");
   }
 
   Future<void> _fetchReportsCount() async {
-    print("_fetchReportsCount");
+    //print("_fetchReportsCount");
   }
 
   Future<void> _fetchOthersCount() async {
-    print("_fetchOthersCount");
+    //print("_fetchOthersCount");
   }
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 5,
+      length: 6,
       child: Scaffold(
         appBar: AppBar(
           title: Text(
@@ -296,6 +297,10 @@ class _DashboardContentState extends State<DashboardContent>
                     text: 'Illness ($illnessCount)',
                   ),
                   Tab(
+                    icon: const Icon(Icons.man),
+                    text: 'Doctors ($DoctorsCount)',
+                  ),
+                  Tab(
                     icon: const Icon(Icons.medication),
                     text: 'Prescriptions ($prescriptionsCount)',
                   ),
@@ -324,6 +329,11 @@ class _DashboardContentState extends State<DashboardContent>
                   children: [
                     TabView(
                       tabName: 'Illness',
+                      tabController: _tabController,
+                      customerId: widget.customerId,
+                    ),
+                    TabView(
+                      tabName: 'Doctors',
                       tabController: _tabController,
                       customerId: widget.customerId,
                     ),

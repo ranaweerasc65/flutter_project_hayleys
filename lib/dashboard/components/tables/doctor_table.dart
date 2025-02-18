@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project_hayleys/config.dart';
 import 'package:intl/intl.dart';
 
-class IllnessTable extends StatefulWidget {
-  const IllnessTable({super.key, required this.customerId});
+class DoctorTable extends StatefulWidget {
+  const DoctorTable({super.key, required this.customerId});
   final int customerId;
 
   @override
-  _IllnessTableState createState() => _IllnessTableState();
+  _DoctorTableState createState() => _DoctorTableState();
 }
 
-class _IllnessTableState extends State<IllnessTable> {
+class _DoctorTableState extends State<DoctorTable> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController nameController = TextEditingController();
@@ -21,9 +21,43 @@ class _IllnessTableState extends State<IllnessTable> {
   final TextEditingController nextFollowUpDateController =
       TextEditingController();
 
+  final TextEditingController doctorNameController = TextEditingController();
+
+  final TextEditingController doctorContactNoController =
+      TextEditingController();
+  final TextEditingController doctorHospitalController =
+      TextEditingController();
+
   String? status;
+  String? specialization;
+
+  List<Map<String, String>> doctorDetails = [];
 
   List<String> statusOptions = ['Active', 'Chronic', 'Managed'];
+  List<String> specializationOptions = [
+    'General Physician (Primary Care)',
+    'Cardiologist (Heart Specialist)',
+    'Dermatologist (Skin Specialist)',
+    'Endocrinologist (Hormones & Metabolism)',
+    'Gastroenterologist (Digestive System)',
+    'Neurologist (Brain & Nervous System)',
+    'Neurosurgeon (Brain & Spine Surgery)',
+    'Orthopedic Surgeon (Bones & Joints)',
+    'Pediatrician (Child Specialist)',
+    'Psychiatrist (Mental Health)',
+    'Pulmonologist (Lungs & Respiratory System)',
+    'Radiologist (Imaging & Diagnosis)',
+    'Urologist (Urinary System & Male Health)',
+    'Oncologist (Cancer Specialist)',
+    'Ophthalmologist (Eye Specialist)',
+    'ENT Specialist (Ear, Nose & Throat)',
+    'Gynecologist (Women’s Health)',
+    'Nephrologist (Kidney Specialist)',
+    'Hematologist (Blood Disorders)',
+    'Rheumatologist (Joint & Autoimmune Diseases)'
+  ];
+
+  List<Map<String, TextEditingController>> doctorDetailsList = [];
 
   final List<Map<String, dynamic>> _illnessData = [];
 
@@ -228,6 +262,185 @@ class _IllnessTableState extends State<IllnessTable> {
                                 ),
                               ],
                             ),
+                            const SizedBox(height: 16),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8, horizontal: 12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[300],
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: const Text(
+                                      "Doctor Details",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      showDoctorForm = true;
+                                    });
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color.fromARGB(
+                                        255, 104, 104, 104),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    "Add",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Column(
+                              children: [
+                                ...doctorDetails.map((doctor) {
+                                  return Card(
+                                    margin:
+                                        const EdgeInsets.symmetric(vertical: 8),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                              "Doctor Name: ${doctor['name']}"),
+                                          Text(
+                                              "Specialization: ${doctor['specialization']}"),
+                                          Text("Contact: ${doctor['contact']}"),
+                                          Text(
+                                              "Hospital: ${doctor['hospital']}"),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            if (showDoctorForm)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  buildLabel("Doctor Name"),
+                                  buildTextField(doctorNameController, ""),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 2,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            buildLabel("Doctor Specialization"),
+                                            buildDropdownField(
+                                              "Doctor Specialization",
+                                              specialization,
+                                              [
+                                                'General Physician (Primary Care)',
+                                                'Cardiologist (Heart Specialist)',
+                                                'Dermatologist (Skin Specialist)',
+                                                'Endocrinologist (Hormones & Metabolism)',
+                                                'Gastroenterologist (Digestive System)',
+                                                'Neurologist (Brain & Nervous System)',
+                                                'Neurosurgeon (Brain & Spine Surgery)',
+                                                'Orthopedic Surgeon (Bones & Joints)',
+                                                'Pediatrician (Child Specialist)',
+                                                'Psychiatrist (Mental Health)',
+                                                'Pulmonologist (Lungs & Respiratory System)',
+                                                'Radiologist (Imaging & Diagnosis)',
+                                                'Urologist (Urinary System & Male Health)',
+                                                'Oncologist (Cancer Specialist)',
+                                                'Ophthalmologist (Eye Specialist)',
+                                                'ENT Specialist (Ear, Nose & Throat)',
+                                                'Gynecologist (Women’s Health)',
+                                                'Nephrologist (Kidney Specialist)',
+                                                'Hematologist (Blood Disorders)',
+                                                'Rheumatologist (Joint & Autoimmune Diseases)'
+                                              ],
+                                              (value) => specialization = value,
+                                              isMandatory: true,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            buildLabel("Doctor Contact No."),
+                                            buildTextField(
+                                                doctorContactNoController, ""),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  buildLabel("Hospital Name"),
+                                  buildTextField(doctorHospitalController, ""),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.green[100],
+                                          borderRadius:
+                                              BorderRadius.circular(6),
+                                        ),
+                                        padding: const EdgeInsets.all(6),
+                                        child: IconButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              _addDoctorDetails();
+                                              showDoctorForm = false;
+                                            });
+                                          },
+                                          icon: const Icon(Icons.check,
+                                              color: Colors.green, size: 20),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.red[100],
+                                          borderRadius:
+                                              BorderRadius.circular(6),
+                                        ),
+                                        padding: const EdgeInsets.all(6),
+                                        child: IconButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              showDoctorForm = false;
+                                            });
+                                          },
+                                          icon: const Icon(Icons.close,
+                                              color: Colors.red, size: 20),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            const SizedBox(height: 20),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
@@ -559,7 +772,7 @@ class _IllnessTableState extends State<IllnessTable> {
 
       try {
         final response = await http.post(
-          Uri.parse("${Config.baseUrl}illness.php"),
+          Uri.parse("${Config.baseUrl}dashboard/illness.php"),
           headers: {"Content-Type": "application/x-www-form-urlencoded"},
           body: recordDetails,
         );
@@ -764,6 +977,26 @@ class _IllnessTableState extends State<IllnessTable> {
 
     setState(() {
       status = null;
+      doctorDetails.clear();
+    });
+  }
+
+  void _addDoctorDetails() {
+    setState(() {
+      doctorDetails.add({
+        'name': doctorNameController.text,
+        'specialization': specialization ?? '',
+        'contact': doctorContactNoController.text,
+        'hospital': doctorHospitalController.text,
+      });
+
+      // Clear the fields for the next doctor entry
+      doctorNameController.clear();
+
+      doctorContactNoController.clear();
+      doctorHospitalController.clear();
+
+      specialization = null;
     });
   }
 

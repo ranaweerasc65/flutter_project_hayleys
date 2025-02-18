@@ -72,7 +72,7 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
 
     if (_formKey.currentState!.validate()) {
       final cardDetails = {
-        "customers_id": widget.customerId.toString(), // Convert int to String
+        "customers_id": widget.customerId.toString(),
         "insurance_card_holder_name": cardHolderNameController.text,
         "insurance_membership_no": membershipNoController.text,
         "insurance_policy_no": policyNoController.text,
