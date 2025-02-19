@@ -12,21 +12,21 @@ class TabView extends StatefulWidget {
   final String tabName;
   final TabController tabController;
   final int customerId;
+  final Function onDataUpdated;
 
-  const TabView(
-      {Key? key,
-      required this.tabName,
-      required this.tabController,
-      required this.customerId})
-      : super(key: key);
+  const TabView({
+    Key? key,
+    required this.tabName,
+    required this.tabController,
+    required this.customerId,
+    required this.onDataUpdated,
+  }) : super(key: key);
 
   @override
   _TabViewState createState() => _TabViewState();
 }
 
 class _TabViewState extends State<TabView> {
-  List<dynamic> inquiries = [];
-  List<dynamic> previousInquiries = [];
   Timer? _timer;
 
   final List<String> tabNames = [
@@ -74,7 +74,10 @@ class _TabViewState extends State<TabView> {
     }
   }
 
-  Future<void> fetchIllness() async {}
+  Future<void> fetchIllness() async {
+    widget.onDataUpdated();
+  }
+
   Future<void> fetchDoctors() async {}
   Future<void> fetchBills() async {}
   Future<void> fetchPrescriptions() async {}
@@ -92,6 +95,7 @@ class _TabViewState extends State<TabView> {
       case 'Illness':
         return IllnessTable(
           customerId: widget.customerId,
+          onIllnessAdded: widget.onDataUpdated,
         );
       case 'Doctors':
         return DoctorTable(

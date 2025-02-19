@@ -4,23 +4,24 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Include database connection
 include('connect.php');
 
-// Retrieve parameters from GET request
-$phone_no = isset($_GET['phone_no']) ? mysqli_real_escape_string($conn_hayleys_medicalapp, $_GET['phone_no']) : null;
+$customer_id = isset($_GET['customer_id']) ? mysqli_real_escape_string($conn_hayleys_medicalapp, $_GET['customer_id']) : null;
 
-// Check if the phone number is provided
-if (!$phone_no) {
-    echo json_encode(array("status" => "error", "message" => "Phone number is missing"));
+if (!$customer_id) {
+    echo json_encode(array("status" => "error", "message" => "Customer ID is missing"));
     exit();
 }
 
-// Prepare the SQL query to fetch illness details for the customer
-$sql_fetch_illness = "SELECT i.ILLNESS_ID, i.ILLNESS_NAME, i.ILLNESS_SYMPTOMS, i.ILLNESS_STATUS, i.ILLNESS_DIAGNOSIS_DATE, i.ILLNESS_NEXT_FOLLOW_UP_DATE
-                      FROM illnesses i
-                      JOIN customers c ON i.CUSTOMERS_ID = c.CUSTOMERS_ID
-                      WHERE c.phone_no = ?";
+$sql_fetch_illness = "SELECT 
+                          ILLNESS_ID, 
+                          ILLNESS_NAME, 
+                          ILLNESS_SYMPTOMS, 
+                          ILLNESS_STATUS, 
+                          ILLNESS_DIAGNOSIS_DATE, 
+                          ILLNESS_NEXT_FOLLOW_UP_DATE
+                      FROM illnesses
+                      WHERE CUSTOMERS_ID = ?";
 $stmt_fetch_illness = $conn_hayleys_medicalapp->prepare($sql_fetch_illness);
 
 if (!$stmt_fetch_illness) {
@@ -28,11 +29,10 @@ if (!$stmt_fetch_illness) {
     exit();
 }
 
-$stmt_fetch_illness->bind_param("s", $phone_no);
+$stmt_fetch_illness->bind_param("s", $customer_id);
 $stmt_fetch_illness->execute();
 $result_fetch_illness = $stmt_fetch_illness->get_result();
 
-// Check if any illness records are found
 if ($result_fetch_illness->num_rows > 0) {
     $illnesses = [];
     while ($row = $result_fetch_illness->fetch_assoc()) {
@@ -46,7 +46,6 @@ if ($result_fetch_illness->num_rows > 0) {
         );
     }
 
-    // Return the data as JSON
     echo json_encode(array(
         "status" => "success",
         "message" => "Illness data fetched successfully",
@@ -57,7 +56,6 @@ if ($result_fetch_illness->num_rows > 0) {
     echo json_encode(array("status" => "error", "message" => "No illness records found"));
 }
 
-// Close the statement and connection
 $stmt_fetch_illness->close();
 $conn_hayleys_medicalapp->close();
 

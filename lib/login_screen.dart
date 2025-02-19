@@ -23,6 +23,70 @@ class InitState extends State<LoginScreen> {
 
   String? userName;
 
+  // Future<void> loginUser() async {
+  //   setState(() {
+  //     _isLoading = true; // Show loading indicator
+  //   });
+
+  //   final phoneNo = phoneController.text.trim();
+  //   final password = passwordController.text.trim();
+
+  //   if (phoneNo.isEmpty || password.isEmpty) {
+  //     setState(() {
+  //       _isLoading = false; // Stop loading
+  //     });
+  //     _showErrorDialog('Please enter both phone number and password.');
+  //     return;
+  //   }
+
+  //   try {
+  //     final response = await http.post(
+  //       Uri.parse("${Config.baseUrl}login.php"),
+  //       body: {
+  //         'phone_no': phoneNo,
+  //         'password': password,
+  //       },
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       final jsonResponse = jsonDecode(response.body);
+
+  //       if (jsonResponse['status'] == 'success') {
+  //         userName = jsonResponse['name'];
+
+  //         setState(() {
+  //           _isLoading = false; // Stop loading
+  //         });
+
+  //         Navigator.pushReplacement(
+  //           context,
+  //           MaterialPageRoute(
+  //             builder: (context) => HomeScreen(
+  //               userName: userName!,
+  //               phoneNo: phoneNo,
+  //             ),
+  //           ),
+  //         );
+  //       } else {
+  //         setState(() {
+  //           _isLoading = false; // Stop loading
+  //         });
+  //         _showErrorDialog(jsonResponse['message']);
+  //       }
+  //     } else {
+  //       setState(() {
+  //         _isLoading = false; // Stop loading
+  //       });
+  //       _showErrorDialog('Server error. Please try again.');
+  //     }
+  //   } catch (e) {
+  //     setState(() {
+  //       _isLoading = false; // Stop loading
+  //     });
+  //     _showErrorDialog('Network error. Please check your internet connection.');
+  //   }
+  // }
+
   Future<void> loginUser() async {
     setState(() {
       _isLoading = true; // Show loading indicator
@@ -54,10 +118,10 @@ class InitState extends State<LoginScreen> {
         if (jsonResponse['status'] == 'success') {
           userName = jsonResponse['name'];
 
-          setState(() {
-            _isLoading = false; // Stop loading
-          });
+          // Delay to ensure UI updates
+          await Future.delayed(const Duration(milliseconds: 500));
 
+          // Navigate without setting _isLoading to false immediately
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -309,48 +373,58 @@ class InitState extends State<LoginScreen> {
 
                             FadeInUp(
                               duration: const Duration(milliseconds: 1600),
-                              child: MaterialButton(
-                                onPressed: _isLoading
-                                    ? null
-                                    : loginUser, // Disable button while loading
-                                height: 50,
-                                color: Colors.blue[900],
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: Center(
-                                  child: _isLoading
-                                      ? const Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            SizedBox(
-                                              width: 20,
-                                              height: 20,
-                                              child: CircularProgressIndicator(
-                                                color: Colors.white,
-                                                strokeWidth: 2,
-                                              ),
-                                            ),
-                                            SizedBox(width: 10),
-                                            Text(
-                                              "Logging in...",
+                              child: StatefulBuilder(
+                                builder: (context, setState) {
+                                  return MaterialButton(
+                                    onPressed: _isLoading
+                                        ? null
+                                        : () {
+                                            setState(() {
+                                              _isLoading = true;
+                                            });
+                                            loginUser();
+                                          },
+                                    height: 50,
+                                    color: Colors.blue[900],
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    child: Center(
+                                      child: _isLoading
+                                          ? const Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                SizedBox(
+                                                  width: 20,
+                                                  height: 20,
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    color: Colors.white,
+                                                    strokeWidth: 2,
+                                                  ),
+                                                ),
+                                                SizedBox(width: 10),
+                                                Text(
+                                                  "Logging in...",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          : const Text(
+                                              "Login",
                                               style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                                          ],
-                                        )
-                                      : const Text(
-                                          "Login",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                ),
+                                    ),
+                                  );
+                                },
                               ),
                             ),
 

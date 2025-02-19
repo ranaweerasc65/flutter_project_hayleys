@@ -35,7 +35,6 @@ $illness_status = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['il
 $illness_diagnosis_date = !empty($_POST['illness_diagnosis_date']) ? $_POST['illness_diagnosis_date'] : null;
 $illness_next_follow_up_date = !empty($_POST['illness_next_follow_up_date']) ? $_POST['illness_next_follow_up_date'] : null;
 
-// Validate date format
 if ($illness_diagnosis_date) {
     $diagnosis_date_obj = DateTime::createFromFormat('Y-m-d', $illness_diagnosis_date);
     if (!$diagnosis_date_obj) {
@@ -55,7 +54,7 @@ if ($illness_next_follow_up_date) {
 $illness_id = isset($_POST['illness_id']) ? intval($_POST['illness_id']) : null;
 
 if ($illness_id) {
-    // **UPDATE existing illness record**
+    
     $sql = "UPDATE illnesses SET 
             customers_id = ?,  illness_name = ?, illness_symptoms = ?, 
             illness_status = ?, illness_diagnosis_date = ?, illness_next_follow_up_date = ?
@@ -86,7 +85,7 @@ if ($illness_id) {
         echo json_encode(array("status" => "error", "message" => "Failed to update illness details: " . $stmt->error));
     }
 } else {
-    // **INSERT new illness record**
+ 
     $sql = "INSERT INTO illnesses (customers_id, illness_name, illness_symptoms, illness_status, illness_diagnosis_date, illness_next_follow_up_date) 
         VALUES (?, ?, ?,  ?, ?, ?)";
 
@@ -100,7 +99,6 @@ if ($illness_id) {
     $stmt->bind_param(
         "ssssss",
         $customers_id,
-        
         $illness_name,
         $illness_symptoms,
         $illness_status,
@@ -120,7 +118,6 @@ if ($illness_id) {
     }
 }
 
-// Close the statement and connection
 $stmt->close();
 $conn_hayleys_medicalapp->close();
 ?>

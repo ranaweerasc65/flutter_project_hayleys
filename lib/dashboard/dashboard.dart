@@ -203,8 +203,6 @@ class _DashboardContentState extends State<DashboardContent>
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
-        print('Response body: ${response.body}');
-
         final data = jsonDecode(response.body);
 
         if (data['status'] == 'success') {
@@ -238,6 +236,11 @@ class _DashboardContentState extends State<DashboardContent>
 
   Future<void> _fetchOthersCount() async {
     //print("_fetchOthersCount");
+  }
+
+  void _refreshIllnessCount() {
+    _fetchIllnessCount(
+        widget.customerId); // Refresh illness count (implement this function)
   }
 
   @override
@@ -331,31 +334,37 @@ class _DashboardContentState extends State<DashboardContent>
                       tabName: 'Illness',
                       tabController: _tabController,
                       customerId: widget.customerId,
+                      onDataUpdated: _refreshIllnessCount,
                     ),
                     TabView(
                       tabName: 'Doctors',
                       tabController: _tabController,
                       customerId: widget.customerId,
+                      onDataUpdated: _refreshIllnessCount,
                     ),
                     TabView(
                       tabName: 'Prescriptions',
                       tabController: _tabController,
                       customerId: widget.customerId,
+                      onDataUpdated: _refreshIllnessCount,
                     ),
                     TabView(
                       tabName: 'Reports',
                       tabController: _tabController,
                       customerId: widget.customerId,
+                      onDataUpdated: _refreshIllnessCount,
                     ),
                     TabView(
                       tabName: 'Bills',
                       tabController: _tabController,
                       customerId: widget.customerId,
+                      onDataUpdated: _refreshIllnessCount,
                     ),
                     TabView(
                       tabName: 'Others',
                       tabController: _tabController,
                       customerId: widget.customerId,
+                      onDataUpdated: _refreshIllnessCount,
                     ),
                   ],
                 ),

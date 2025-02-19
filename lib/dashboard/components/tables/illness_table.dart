@@ -3,16 +3,24 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_project_hayleys/config.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class IllnessTable extends StatefulWidget {
-  const IllnessTable({super.key, required this.customerId});
   final int customerId;
+  final Function onIllnessAdded;
+
+  const IllnessTable({
+    Key? key,
+    required this.customerId,
+    required this.onIllnessAdded,
+  }) : super(key: key);
 
   @override
   _IllnessTableState createState() => _IllnessTableState();
 }
 
 class _IllnessTableState extends State<IllnessTable> {
+  bool _isLoading = false;
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController nameController = TextEditingController();
@@ -25,7 +33,9 @@ class _IllnessTableState extends State<IllnessTable> {
 
   List<String> statusOptions = ['Active', 'Chronic', 'Managed'];
 
-  final List<Map<String, dynamic>> _illnessData = [];
+  List<Map<String, dynamic>> _illnessData = [];
+
+  int illnessCount = 0;
 
   Future<void> _refreshData() async {
     setState(() {
@@ -46,6 +56,8 @@ class _IllnessTableState extends State<IllnessTable> {
     print('---------------------');
     print('Illness Table for Customer ID: ${widget.customerId}');
     print('---------------------');
+
+    _fetchAddedRecords();
   }
 
   void _showAddIllnessForm() {
@@ -53,9 +65,6 @@ class _IllnessTableState extends State<IllnessTable> {
     symptomsController.clear();
     diagnosisDateController.clear();
     nextFollowUpDateController.clear();
-
-    List<Map<String, String>> doctorDetails = [];
-    bool showDoctorForm = false;
 
     showDialog(
       context: context,
@@ -290,133 +299,153 @@ class _IllnessTableState extends State<IllnessTable> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return RefreshIndicator(
-            onRefresh: () async {
-              _refreshData();
-            },
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.3),
-                        spreadRadius: 3,
-                        blurRadius: 5,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
+      body: _isLoading
+          ? Center(
+              child: LoadingAnimationWidget.inkDrop(
+                color: Colors.blue.shade800,
+                size: 30,
+              ),
+            )
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    //_refreshData();
+                    _fetchAddedRecords();
+                  },
                   child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: ConstrainedBox(
-                      constraints:
-                          BoxConstraints(minWidth: constraints.maxWidth),
-                      child: DataTable(
-                        headingRowColor:
-                            MaterialStateProperty.all(Colors.blue.shade800),
-                        dataRowColor: MaterialStateProperty.all(Colors.white),
-                        columnSpacing: 20,
-                        columns: const [
-                          DataColumn(
-                              label: Text('ID',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold))),
-                          DataColumn(
-                              label: Text('Name',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold))),
-                          DataColumn(
-                              label: Text('Symptoms',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold))),
-                          DataColumn(
-                              label: Text('Status',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold))),
-                          DataColumn(
-                              label: Text('Diagnosis Date',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold))),
-                          DataColumn(
-                              label: Text('Next Follow-up',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold))),
-                          DataColumn(
-                              label: Text('Actions',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold))),
-                        ],
-                        rows: _illnessData.map((illness) {
-                          return DataRow(cells: [
-                            DataCell(Text(illness['illness_id'].toString())),
-                            DataCell(Text(illness['illness_name'])),
-                            DataCell(Text(illness['illness_symptoms'])),
-                            DataCell(
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 4, horizontal: 8),
-                                decoration: BoxDecoration(
-                                  color: illness['illness_status'] == 'Active'
-                                      ? Colors.green
-                                      : (illness['illness_status'] == 'Chronic'
-                                          ? Colors.red
-                                          : Colors.orange),
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: Text(
-                                  illness['illness_status'],
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              ),
+                    scrollDirection: Axis.vertical,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.3),
+                              spreadRadius: 3,
+                              blurRadius: 5,
+                              offset: const Offset(0, 3),
                             ),
-                            DataCell(Text(illness['diagnosis_date'])),
-                            DataCell(Text(illness['next_follow_up'] ?? 'N/A')),
-                            DataCell(
-                              IconButton(
-                                icon: const Icon(Icons.more_vert),
-                                onPressed: () {
-                                  _showOptionsDialog(illness);
-                                },
-                              ),
+                          ],
+                        ),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: ConstrainedBox(
+                            constraints:
+                                BoxConstraints(minWidth: constraints.maxWidth),
+                            child: DataTable(
+                              headingRowColor: MaterialStateProperty.all(
+                                  Colors.blue.shade800),
+                              dataRowColor:
+                                  MaterialStateProperty.all(Colors.white),
+                              columnSpacing: 20,
+                              columns: const [
+                                DataColumn(
+                                    label: Text('ID',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold))),
+                                DataColumn(
+                                    label: Text('Name',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold))),
+                                DataColumn(
+                                    label: Text('Symptoms',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold))),
+                                DataColumn(
+                                    label: Text('Status',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold))),
+                                DataColumn(
+                                    label: Text('Diagnosis Date',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold))),
+                                DataColumn(
+                                    label: Text('Next Follow-up',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold))),
+                                DataColumn(
+                                    label: Text('Actions',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold))),
+                              ],
+                              rows: _illnessData.map((illness) {
+                                return DataRow(cells: [
+                                  DataCell(Text(
+                                      illness['ILLNESS_ID']?.toString() ??
+                                          'N/A')),
+                                  DataCell(
+                                      Text(illness['ILLNESS_NAME'] ?? 'N/A')),
+                                  DataCell(Text(
+                                      illness['ILLNESS_SYMPTOMS'] ?? 'N/A')),
+                                  DataCell(
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 4, horizontal: 8),
+                                      decoration: BoxDecoration(
+                                        color: (illness['ILLNESS_STATUS'] ==
+                                                'Active')
+                                            ? Colors.green
+                                            : (illness['ILLNESS_STATUS'] ==
+                                                    'Chronic'
+                                                ? Colors.red
+                                                : Colors.orange),
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      child: Text(
+                                        illness['ILLNESS_STATUS'] ?? 'N/A',
+                                        style: const TextStyle(
+                                            color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(Text(
+                                      illness['ILLNESS_DIAGNOSIS_DATE'] ??
+                                          'N/A')),
+                                  DataCell(Text(
+                                      illness['ILLNESS_NEXT_FOLLOW_UP_DATE'] ??
+                                          'N/A')),
+                                  DataCell(
+                                    IconButton(
+                                      icon: const Icon(Icons.more_vert),
+                                      onPressed: () {
+                                        _showOptionsDialog(illness);
+                                      },
+                                    ),
+                                  ),
+                                ]);
+                              }).toList(),
                             ),
-                          ]);
-                        }).toList(),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
-          );
-        },
-      ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 16.0),
         child: Align(
           alignment: Alignment.bottomCenter,
           child: FloatingActionButton(
             onPressed: () {
-              _showAddIllnessForm(); // Call the method here
+              _showAddIllnessForm();
             },
             backgroundColor: Colors.blue.shade800,
             child: const Icon(
               Icons.add,
-              color: Colors.white, // Set icon color to white
+              color: Colors.white,
             ),
           ),
         ),
@@ -545,9 +574,6 @@ class _IllnessTableState extends State<IllnessTable> {
     if (_formKey.currentState!.validate()) {
       final recordDetails = {
         "customers_id": widget.customerId.toString(),
-        // "doctor_id": widget.doctorId.toString(),
-        "doctor_id": '5',
-
         "illness_name": nameController.text,
         "illness_symptoms": symptomsController.text,
         "illness_status": status,
@@ -564,8 +590,6 @@ class _IllnessTableState extends State<IllnessTable> {
           body: recordDetails,
         );
 
-        print('Response: ${response.body}');
-
         if (response.statusCode == 200) {
           final jsonResponse = jsonDecode(response.body);
           if (jsonResponse['status'] == 'success') {
@@ -576,8 +600,9 @@ class _IllnessTableState extends State<IllnessTable> {
                 'Illness record added successfully\nIllness ID: $illnessId',
                 illnessId);
 
-            // Refresh the list of illness records
-            //_fetchAddedRecords();
+            widget.onIllnessAdded();
+
+            _fetchAddedRecords();
           } else {
             _showErrorDialog(
                 jsonResponse['message'] ?? "An unknown error occurred.");
@@ -592,8 +617,38 @@ class _IllnessTableState extends State<IllnessTable> {
     }
   }
 
-  Future<void> fetchIllnessData() async {
-    print("fetchIllnessData");
+  Future<void> _fetchAddedRecords() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final url =
+          "${Config.baseUrl}fetch_illness_data.php?customer_id=${widget.customerId}";
+
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+
+        if (jsonResponse['status'] == 'success') {
+          setState(() {
+            _illnessData =
+                List<Map<String, dynamic>>.from(jsonResponse['illnesses']);
+          });
+        } else {
+          _showErrorDialog(
+              jsonResponse['message'] ?? "Failed to fetch records.");
+        }
+      } else {
+        _showErrorDialog("Server returned an error: ${response.statusCode}");
+      }
+    } catch (e) {
+      _showErrorDialog("An error occurred: $e");
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   void _showSuccessDialog(String message, int customerId) {
@@ -613,7 +668,7 @@ class _IllnessTableState extends State<IllnessTable> {
               children: [
                 Container(
                   decoration: const BoxDecoration(
-                    color: Color(0xFF00C853), // Green color
+                    color: Color(0xFF00C853),
                     shape: BoxShape.circle,
                   ),
                   padding: const EdgeInsets.all(16),
@@ -629,7 +684,7 @@ class _IllnessTableState extends State<IllnessTable> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF00C853), // Green color
+                    color: Color(0xFF00C853),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -647,9 +702,8 @@ class _IllnessTableState extends State<IllnessTable> {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.of(context).pop(); // Close the success dialog
-                    Navigator.of(context)
-                        .pop(); // Close the card view dialog (_showAddCardForm)
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
                   },
                   child: const Text(
                     "Ok",
@@ -855,7 +909,6 @@ class _IllnessTableState extends State<IllnessTable> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Date picker field
           GestureDetector(
             onTap: () async {
               DateTime? selectedDate = await showDatePicker(
@@ -867,14 +920,13 @@ class _IllnessTableState extends State<IllnessTable> {
                   return Theme(
                     data: Theme.of(context).copyWith(
                       colorScheme: ColorScheme.light(
-                        primary:
-                            selectedColor, // Header background color (blue)
-                        onPrimary: Colors.white, // Header text color
-                        onSurface: Colors.black, // Body text color
+                        primary: selectedColor,
+                        onPrimary: Colors.white,
+                        onSurface: Colors.black,
                       ),
                       textButtonTheme: TextButtonThemeData(
                         style: TextButton.styleFrom(
-                          foregroundColor: selectedColor, // Button text color
+                          foregroundColor: selectedColor,
                         ),
                       ),
                     ),
