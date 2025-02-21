@@ -8,6 +8,35 @@ if ($conn_hayleys_medicalapp->connect_error) {
     exit();
 }
 
+
+
+// Check for 'action' parameter to identify the operation (add/update/delete)
+if (isset($_POST['action']) && $_POST['action'] === 'delete' && isset($_POST['illness_id'])) {
+    $illness_id = intval($_POST['illness_id']);
+
+    // Prepare DELETE SQL statement
+    $sql = "DELETE FROM illnesses WHERE illness_id = ?";
+    $stmt = $conn_hayleys_medicalapp->prepare($sql);
+
+    if ($stmt === false) {
+        echo json_encode(array("status" => "error", "message" => "Error preparing SQL statement: " . $conn_hayleys_medicalapp->error));
+        exit();
+    }
+
+    // Bind illness_id to the prepared statement
+    $stmt->bind_param("i", $illness_id);
+
+    if ($stmt->execute()) {
+        echo json_encode(array("status" => "success", "message" => "Illness record deleted successfully"));
+    } else {
+        echo json_encode(array("status" => "error", "message" => "Failed to delete illness record: " . $stmt->error));
+    }
+
+    $stmt->close();
+    $conn_hayleys_medicalapp->close();
+    exit();
+}
+
 $missingFields = [];
 
 $requiredFields = [
@@ -80,7 +109,7 @@ if ($illness_id) {
     );
 
     if ($stmt->execute()) {
-        echo json_encode(array("status" => "success", "message" => "Illness details updated successfully"));
+        echo json_encode(array("status" => "success", "message" => "Illness details updated successfully","illness_id"=>$illness_id));
     } else {
         echo json_encode(array("status" => "error", "message" => "Failed to update illness details: " . $stmt->error));
     }

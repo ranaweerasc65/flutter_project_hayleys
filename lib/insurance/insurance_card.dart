@@ -1227,7 +1227,7 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
                       shape: BoxShape.circle,
                     ),
                     padding: const EdgeInsets.all(16),
-                    child: Icon(
+                    child: const Icon(
                       Icons.security,
                       size: 60,
                       color: Colors.white,

@@ -4,16 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project_hayleys/config.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'dart:math';
+import 'dart:ui';
 
 class IllnessTable extends StatefulWidget {
   final int customerId;
   final Function onIllnessAdded;
 
   const IllnessTable({
-    Key? key,
+    super.key,
     required this.customerId,
     required this.onIllnessAdded,
-  }) : super(key: key);
+  });
 
   @override
   _IllnessTableState createState() => _IllnessTableState();
@@ -297,157 +299,219 @@ class _IllnessTableState extends State<IllnessTable> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: _isLoading
-          ? Center(
-              child: LoadingAnimationWidget.inkDrop(
-                color: Colors.blue.shade800,
-                size: 30,
-              ),
-            )
-          : LayoutBuilder(
-              builder: (context, constraints) {
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    //_refreshData();
-                    _fetchAddedRecords();
-                  },
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.3),
-                              spreadRadius: 3,
-                              blurRadius: 5,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: ConstrainedBox(
-                            constraints:
-                                BoxConstraints(minWidth: constraints.maxWidth),
-                            child: DataTable(
-                              headingRowColor: MaterialStateProperty.all(
-                                  Colors.blue.shade800),
-                              dataRowColor:
-                                  MaterialStateProperty.all(Colors.white),
-                              columnSpacing: 20,
-                              columns: const [
-                                DataColumn(
-                                    label: Text('ID',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold))),
-                                DataColumn(
-                                    label: Text('Name',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold))),
-                                DataColumn(
-                                    label: Text('Symptoms',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold))),
-                                DataColumn(
-                                    label: Text('Status',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold))),
-                                DataColumn(
-                                    label: Text('Diagnosis Date',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold))),
-                                DataColumn(
-                                    label: Text('Next Follow-up',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold))),
-                                DataColumn(
-                                    label: Text('Actions',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold))),
-                              ],
-                              rows: _illnessData.map((illness) {
-                                return DataRow(cells: [
-                                  DataCell(Text(
-                                      illness['ILLNESS_ID']?.toString() ??
-                                          'N/A')),
-                                  DataCell(
-                                      Text(illness['ILLNESS_NAME'] ?? 'N/A')),
-                                  DataCell(Text(
-                                      illness['ILLNESS_SYMPTOMS'] ?? 'N/A')),
-                                  DataCell(
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 4, horizontal: 8),
-                                      decoration: BoxDecoration(
-                                        color: (illness['ILLNESS_STATUS'] ==
-                                                'Active')
-                                            ? Colors.green
-                                            : (illness['ILLNESS_STATUS'] ==
-                                                    'Chronic'
-                                                ? Colors.red
-                                                : Colors.orange),
-                                        borderRadius: BorderRadius.circular(5),
-                                      ),
-                                      child: Text(
-                                        illness['ILLNESS_STATUS'] ?? 'N/A',
-                                        style: const TextStyle(
-                                            color: Colors.white),
-                                      ),
-                                    ),
-                                  ),
-                                  DataCell(Text(
-                                      illness['ILLNESS_DIAGNOSIS_DATE'] ??
-                                          'N/A')),
-                                  DataCell(Text(
-                                      illness['ILLNESS_NEXT_FOLLOW_UP_DATE'] ??
-                                          'N/A')),
-                                  DataCell(
-                                    IconButton(
-                                      icon: const Icon(Icons.more_vert),
-                                      onPressed: () {
-                                        _showOptionsDialog(illness);
-                                      },
-                                    ),
-                                  ),
-                                ]);
-                              }).toList(),
-                            ),
-                          ),
-                        ),
-                      ),
+    return AnimatedWavesBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          children: [
+            _isLoading
+                ? Center(
+                    child: LoadingAnimationWidget.inkDrop(
+                      color: Colors.blue.shade800,
+                      size: 30,
                     ),
+                  )
+                : LayoutBuilder(
+                    builder: (context, constraints) {
+                      return RefreshIndicator(
+                        onRefresh: () async {
+                          _fetchAddedRecords();
+                        },
+                        child: _illnessData.isEmpty
+                            ? const Padding(
+                                padding: EdgeInsets.all(20.0),
+                                child: Center(
+                                  child: Text(
+                                    "No records found",
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.black54),
+                                  ),
+                                ),
+                              )
+                            : SingleChildScrollView(
+                                scrollDirection: Axis.vertical,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 60),
+                                      Container(
+                                        padding: const EdgeInsets.all(16),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.grey.withOpacity(0.3),
+                                              spreadRadius: 3,
+                                              blurRadius: 5,
+                                              offset: const Offset(0, 3),
+                                            ),
+                                          ],
+                                        ),
+                                        child: SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          child: ConstrainedBox(
+                                            constraints: BoxConstraints(
+                                                minWidth: constraints.maxWidth),
+                                            child: DataTable(
+                                              headingRowColor:
+                                                  MaterialStateProperty.all(
+                                                      Colors.blue.shade800),
+                                              dataRowColor:
+                                                  MaterialStateProperty.all(
+                                                      Colors.white),
+                                              columnSpacing: 20,
+                                              columns: const [
+                                                DataColumn(
+                                                    label: Text('ID',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold))),
+                                                DataColumn(
+                                                    label: Text('Name',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold))),
+                                                DataColumn(
+                                                    label: Text('Symptoms',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold))),
+                                                DataColumn(
+                                                    label: Text('Status',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold))),
+                                                DataColumn(
+                                                    label: Text(
+                                                        'Diagnosis Date',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold))),
+                                                DataColumn(
+                                                    label: Text(
+                                                        'Next Follow-up',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold))),
+                                                DataColumn(
+                                                    label: Text('Actions',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold))),
+                                              ],
+                                              rows: _illnessData.map((illness) {
+                                                return DataRow(cells: [
+                                                  DataCell(Text(
+                                                      illness['ILLNESS_ID']
+                                                              ?.toString() ??
+                                                          'N/A')),
+                                                  DataCell(Text(
+                                                      illness['ILLNESS_NAME'] ??
+                                                          'N/A')),
+                                                  DataCell(Text(illness[
+                                                          'ILLNESS_SYMPTOMS'] ??
+                                                      'N/A')),
+                                                  DataCell(
+                                                    Container(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          vertical: 4,
+                                                          horizontal: 8),
+                                                      decoration: BoxDecoration(
+                                                        color: (illness[
+                                                                    'ILLNESS_STATUS'] ==
+                                                                'Active')
+                                                            ? Colors.green
+                                                            : (illness['ILLNESS_STATUS'] ==
+                                                                    'Chronic'
+                                                                ? Colors.red
+                                                                : Colors
+                                                                    .orange),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5),
+                                                      ),
+                                                      child: Text(
+                                                        illness['ILLNESS_STATUS'] ??
+                                                            'N/A',
+                                                        style: const TextStyle(
+                                                            color:
+                                                                Colors.white),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  DataCell(Text(illness[
+                                                          'ILLNESS_DIAGNOSIS_DATE'] ??
+                                                      'N/A')),
+                                                  DataCell(Text(illness[
+                                                          'ILLNESS_NEXT_FOLLOW_UP_DATE'] ??
+                                                      'N/A')),
+                                                  DataCell(
+                                                    IconButton(
+                                                      icon: const Icon(
+                                                          Icons.more_vert),
+                                                      onPressed: () {
+                                                        _showOptionsDialog(
+                                                            illness);
+                                                      },
+                                                    ),
+                                                  ),
+                                                ]);
+                                              }).toList(),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                      );
+                    },
                   ),
-                );
-              },
+            Positioned(
+              top: 10,
+              right: 10,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  _showAddIllnessForm();
+                },
+                icon: const Icon(Icons.add, color: Colors.white),
+                label: const Text(
+                  "Add Illness",
+                  style: TextStyle(color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue.shade800,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
             ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 16.0),
-        child: Align(
-          alignment: Alignment.bottomCenter,
-          child: FloatingActionButton(
-            onPressed: () {
-              _showAddIllnessForm();
-            },
-            backgroundColor: Colors.blue.shade800,
-            child: const Icon(
-              Icons.add,
-              color: Colors.white,
-            ),
-          ),
+          ],
         ),
       ),
     );
@@ -464,7 +528,7 @@ class _IllnessTableState extends State<IllnessTable> {
               title: const Text('Edit'),
               onTap: () {
                 Navigator.pop(context);
-                _editIllnessDialog(illness);
+                _editIllness(illness);
               },
             ),
             ListTile(
@@ -472,7 +536,7 @@ class _IllnessTableState extends State<IllnessTable> {
               title: const Text('Delete', style: TextStyle(color: Colors.red)),
               onTap: () {
                 Navigator.pop(context);
-                _deleteIllnessDialog(illness);
+                _showDeleteConfirmationDialog(illness['ILLNESS_ID']);
               },
             ),
           ],
@@ -481,71 +545,342 @@ class _IllnessTableState extends State<IllnessTable> {
     );
   }
 
-  void _editIllnessDialog(Map<String, dynamic> illness) {
-    TextEditingController symptomsController =
-        TextEditingController(text: illness['illness_symptoms']);
+  void _editIllness(Map<String, dynamic> illness) {
+    //print("Illness details: $illness");
+    print(
+        "Edit button pressed for illness Id: ${illness['ILLNESS_ID']} customers_id=${widget.customerId} ");
+
+    nameController.text = illness['ILLNESS_NAME'] ?? '';
+    symptomsController.text = illness['ILLNESS_SYMPTOMS'] ?? '';
+    diagnosisDateController.text = illness['ILLNESS_DIAGNOSIS_DATE'] ?? '';
+    nextFollowUpDateController.text =
+        illness['ILLNESS_NEXT_FOLLOW_UP_DATE'] ?? '';
+
+    status = illness['ILLNESS_STATUS'];
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Edit Illness ${illness['illness_name']}'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: TextEditingController(text: illness['illness_name']),
-              decoration: const InputDecoration(labelText: 'Illness Name'),
-              readOnly: true,
-            ),
-            TextField(
-              controller: symptomsController,
-              decoration: const InputDecoration(labelText: 'Symptoms'),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              setState(() {
-                illness['illness_symptoms'] = symptomsController.text;
-              });
-              Navigator.pop(context);
-            },
-            child: const Text('Save'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-        ],
-      ),
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Dialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Header Section
+                      Container(
+                        decoration: const BoxDecoration(
+                          color: Color.fromARGB(255, 5, 94, 166),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(15),
+                            topRight: Radius.circular(15),
+                          ),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 16, horizontal: 20),
+                        child: Stack(
+                          children: [
+                            const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                "Edit Illness Record",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const CircleAvatar(
+                                  backgroundColor: Color.fromARGB(0, 227, 4, 4),
+                                  radius: 16,
+                                  child: Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      buildLabel("Illness/ Condition Name"),
+                                      buildTextField(
+                                        nameController,
+                                        "",
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        "Status",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      buildDropdownField(
+                                        "Status",
+                                        status,
+                                        ['Active', 'Chronic', 'Managed'],
+                                        (value) => status = value,
+                                        isMandatory: true,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            buildLabel("Symptoms"),
+                            buildTextField(symptomsController, ""),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      buildLabel("Diagnosis Date"),
+                                      buildDatePickerField(
+                                        "Diagnosis Date",
+                                        isMandatory: true,
+                                        diagnosisDateController,
+                                        "",
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      buildLabel("Next Follow Up Date"),
+                                      buildDatePickerField(
+                                        "Next Follow Up Date",
+                                        isMandatory: true,
+                                        nextFollowUpDateController,
+                                        "",
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: MaterialButton(
+                                    onPressed: () {
+                                      _showConfirmationDialog(
+                                          illness['ILLNESS_ID']);
+                                    },
+                                    height: 50,
+                                    minWidth:
+                                        MediaQuery.of(context).size.width * 0.4,
+                                    color: Colors.blue[800],
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    child: const Center(
+                                      child: Text(
+                                        "Save Changes",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
-  void _deleteIllnessDialog(Map<String, dynamic> illness) {
+  void _showDeleteConfirmationDialog(int illnessId) {
+    print("Delete Button pressed for $illnessId");
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Illness'),
-        content:
-            Text('Are you sure you want to delete ${illness['illness_name']}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
           ),
-          TextButton(
-            onPressed: () {
-              setState(() {
-                _illnessData.remove(illness);
-              });
-              Navigator.pop(context);
-            },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: SizedBox(
+              width: 300,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: const Icon(
+                      Icons.delete,
+                      size: 60,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Confirm Deletion",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red, // Match icon color
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Are you sure you want to delete this Illness Record?",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text(
+                          "No",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () async {
+                          Navigator.of(context).pop();
+                          print("Illness Id at delete: $illnessId");
+
+                          try {
+                            final response =
+                                await deleteIllnessRecord(illnessId);
+
+                            print(
+                                "Response from API: $response"); // Debugging line to print response
+
+                            if (response['status'] == 'success') {
+                              _fetchAddedRecords();
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      "Failed to delete illness record: ${response['message']}"),
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            print("Error deleting illness record: $e");
+                          }
+                        },
+                        child: const Text(
+                          "Yes, Delete",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
-        ],
-      ),
+        );
+      },
     );
+  }
+
+  Future<Map<String, dynamic>> deleteIllnessRecord(int illnessId) async {
+    final url = Uri.parse(
+      "${Config.baseUrl}illness.php",
+    );
+
+    final response = await http.post(
+      url,
+      body: {
+        'action': 'delete',
+        'illness_id': illnessId.toString(),
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to delete illness record');
+    }
   }
 
   Future<void> _addRecord() async {
@@ -621,23 +956,28 @@ class _IllnessTableState extends State<IllnessTable> {
     setState(() {
       _isLoading = true;
     });
+
     try {
       final url =
           "${Config.baseUrl}fetch_illness_data.php?customer_id=${widget.customerId}";
-
       final response = await http.get(Uri.parse(url));
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
 
         if (jsonResponse['status'] == 'success') {
+          final List<dynamic> illnesses = jsonResponse['illnesses'];
+
           setState(() {
-            _illnessData =
-                List<Map<String, dynamic>>.from(jsonResponse['illnesses']);
+            _illnessData = illnesses.isNotEmpty
+                ? List<Map<String, dynamic>>.from(illnesses)
+                : []; // Ensure empty list is handled
           });
         } else {
-          _showErrorDialog(
-              jsonResponse['message'] ?? "Failed to fetch records.");
+          setState(() {
+            _illnessData = [];
+          });
+          // Do NOT show an error dialog if there are no records
         }
       } else {
         _showErrorDialog("Server returned an error: ${response.statusCode}");
@@ -652,7 +992,6 @@ class _IllnessTableState extends State<IllnessTable> {
   }
 
   void _showSuccessDialog(String message, int customerId) {
-    print('Insurance ID at successdialog: $customerId');
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -913,9 +1252,9 @@ class _IllnessTableState extends State<IllnessTable> {
             onTap: () async {
               DateTime? selectedDate = await showDatePicker(
                 context: context,
-                initialDate: DateTime.now(),
-                firstDate: DateTime(1900),
-                lastDate: DateTime.now(),
+                initialDate: DateTime.now(), // Default to today
+                firstDate: DateTime.now(), // Disallow past dates
+                lastDate: DateTime(2101), // Allow dates far in the future
                 builder: (BuildContext context, Widget? child) {
                   return Theme(
                     data: Theme.of(context).copyWith(
@@ -974,20 +1313,6 @@ class _IllnessTableState extends State<IllnessTable> {
             ),
           ),
           const SizedBox(height: 8),
-          // // Label with optional red * for mandatory fields
-          // Row(
-          //   children: [
-          //     Text(
-          //       label,
-          //       style: TextStyle(fontSize: 12, color: labelColor),
-          //     ),
-          //     if (isMandatory)
-          //       const Text(
-          //         " *",
-          //         style: TextStyle(fontSize: 12, color: Colors.red),
-          //       ),
-          //   ],
-          // ),
         ],
       ),
     );
@@ -1068,5 +1393,240 @@ class _IllnessTableState extends State<IllnessTable> {
         const SizedBox(width: 4),
       ],
     );
+  }
+
+  Future<void> _showConfirmationDialog(int illnessId) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: SizedBox(
+              width: 300,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.orange, // Use orange for a neutral tone
+                      shape: BoxShape.circle,
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: const Icon(
+                      Icons.info,
+                      size: 60,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Confirmation",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange, // Match icon color
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Are you sure you want to save the details?",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: const Text(
+                          "No",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color(0xFF00C853), // Green color
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                          _saveDetails(
+                              illnessId); // Now call the save details function
+                        },
+                        child: const Text(
+                          "Yes",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _saveDetails(int? illnessId) async {
+    if (_formKey.currentState!.validate()) {
+      final recordDetails = {
+        "customers_id": widget.customerId.toString(),
+        "illness_name": nameController.text,
+        "illness_symptoms": symptomsController.text,
+        "illness_status": status,
+        "illness_diagnosis_date": diagnosisDateController.text,
+        "illness_next_follow_up_date": nextFollowUpDateController.text,
+      };
+
+      if (illnessId != null) {
+        recordDetails["illness_id"] =
+            illnessId.toString(); // Ensure illness_id is sent for updates
+      }
+
+      print('Illness Record Details: $recordDetails');
+
+      try {
+        final response = await http.post(
+          Uri.parse("${Config.baseUrl}illness.php"),
+          headers: {"Content-Type": "application/x-www-form-urlencoded"},
+          body: recordDetails,
+        );
+
+        print('Response when updating: ${response.body}');
+
+        if (response.statusCode == 200) {
+          final jsonResponse = jsonDecode(response.body);
+          if (jsonResponse['status'] == 'success') {
+            final updatedIllnessId = jsonResponse['illness_id'];
+            print('Updated Illness ID: $updatedIllnessId');
+            _showSuccessDialog(
+                'Illness details updated successfully\nIllness ID: $updatedIllnessId',
+                updatedIllnessId);
+            _fetchAddedRecords();
+          } else {
+            _showErrorDialog(
+                jsonResponse['message'] ?? "An unknown error occurred.");
+          }
+        } else {
+          _showErrorDialog("Server returned an error: ${response.statusCode}");
+        }
+      } catch (e) {
+        _showErrorDialog("An error occurred: $e");
+        print("Error: $e");
+      }
+    }
+  }
+}
+
+class AnimatedWavesBackground extends StatefulWidget {
+  final Widget child;
+  const AnimatedWavesBackground({Key? key, required this.child})
+      : super(key: key);
+
+  @override
+  _AnimatedWavesBackgroundState createState() =>
+      _AnimatedWavesBackgroundState();
+}
+
+class _AnimatedWavesBackgroundState extends State<AnimatedWavesBackground>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 10), // Slow wave movement
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return CustomPaint(
+                painter: WavePainter(_controller.value),
+              );
+            },
+          ),
+        ),
+        widget.child,
+      ],
+    );
+  }
+}
+
+class WavePainter extends CustomPainter {
+  final double animationValue;
+  WavePainter(this.animationValue);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint wavePaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.blue.withOpacity(0.2);
+    _drawWave(canvas, size, wavePaint, 1.0, 20, 0);
+    _drawWave(canvas, size, wavePaint..color = Colors.blue.withOpacity(0.15),
+        0.8, 15, pi / 2);
+    _drawWave(canvas, size, wavePaint..color = Colors.blue.withOpacity(0.1),
+        0.6, 10, pi);
+  }
+
+  void _drawWave(Canvas canvas, Size size, Paint paint, double amplitude,
+      double waveHeight, double phaseShift) {
+    Path path = Path();
+    double waveFrequency = 2.0 * pi / size.width; // Controls wave length
+    double yOffset = size.height * 0.8; // Adjust wave height position
+
+    path.moveTo(0, yOffset);
+
+    for (double x = 0; x <= size.width; x++) {
+      double y = yOffset +
+          sin((x * waveFrequency) + (animationValue * 2 * pi) + phaseShift) *
+              waveHeight *
+              amplitude;
+      path.lineTo(x, y);
+    }
+
+    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height);
+    path.close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(WavePainter oldDelegate) {
+    return oldDelegate.animationValue != animationValue;
   }
 }

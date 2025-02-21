@@ -49,8 +49,8 @@ class _PrescriptionsTableState extends State<PrescriptionsTable> {
                           BoxConstraints(minWidth: constraints.maxWidth),
                       child: DataTable(
                         headingRowColor:
-                            MaterialStateProperty.all(Colors.blue.shade800),
-                        dataRowColor: MaterialStateProperty.all(Colors.white),
+                            WidgetStateProperty.all(Colors.blue.shade800),
+                        dataRowColor: WidgetStateProperty.all(Colors.white),
                         columnSpacing: 20,
                         columns: const [
                           DataColumn(

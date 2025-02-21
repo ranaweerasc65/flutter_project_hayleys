@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_project_hayleys/dashboard/components/bottom_navbar.dart';
 import 'package:flutter_project_hayleys/dashboard/components/tab_view.dart';
@@ -289,7 +288,6 @@ class _DashboardContentState extends State<DashboardContent>
         ),
         body: Column(
           children: [
-            const SizedBox(height: 10),
             Container(
               color: const Color.fromARGB(255, 255, 255, 255),
               child: TabBar(

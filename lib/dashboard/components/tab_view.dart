@@ -15,12 +15,12 @@ class TabView extends StatefulWidget {
   final Function onDataUpdated;
 
   const TabView({
-    Key? key,
+    super.key,
     required this.tabName,
     required this.tabController,
     required this.customerId,
     required this.onDataUpdated,
-  }) : super(key: key);
+  });
 
   @override
   _TabViewState createState() => _TabViewState();
@@ -116,15 +116,12 @@ class _TabViewState extends State<TabView> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 20),
-          Expanded(child: getTableWidget()),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 20),
+        Expanded(child: getTableWidget()),
+      ],
     );
   }
 }

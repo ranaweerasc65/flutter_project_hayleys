@@ -692,39 +692,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  // Future<void> fetchConnections() async {
-  //   print("fetchConnections");
-  //   final url = Uri.parse(
-  //       'http://172.16.200.79/flutter_project_hayleys/php/get_connections.php?phone_no=${widget.phoneNo}');
-
-  //   //192.168.62.145
-  //   //172.16.200.79
-  //   try {
-  //     final response = await http.get(url);
-
-  //     if (response.statusCode == 200) {
-  //       print("status = 200");
-
-  //       print('Response body: ${response.body}');
-
-  //       final data = jsonDecode(response.body);
-
-  //       if (data['status'] == 'success') {
-  //         print("status = success");
-  //         setState(() {
-  //           connections = List<Map<String, dynamic>>.from(data['connections']);
-  //         });
-  //       } else {
-  //         print('Error: ${data['message']}');
-  //       }
-  //     } else {
-  //       print('Server Error: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     print('Error fetching connections: $e');
-  //   }
-  // }
-
   Future<void> fetchConnections() async {
     setState(() {
       _isLoading = true;
