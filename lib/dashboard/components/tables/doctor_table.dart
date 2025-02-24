@@ -3,72 +3,65 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_project_hayleys/config.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'dart:math';
+import 'dart:ui';
 
 class DoctorTable extends StatefulWidget {
-  const DoctorTable({super.key, required this.customerId});
   final int customerId;
+  final Function onDoctorAdded;
+
+  const DoctorTable({
+    super.key,
+    required this.customerId,
+    required this.onDoctorAdded,
+  });
 
   @override
   _DoctorTableState createState() => _DoctorTableState();
 }
 
 class _DoctorTableState extends State<DoctorTable> {
+  bool _isLoading = false;
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController symptomsController = TextEditingController();
-  final TextEditingController diagnosisDateController = TextEditingController();
-  final TextEditingController nextFollowUpDateController =
-      TextEditingController();
-
   final TextEditingController doctorNameController = TextEditingController();
-
-  final TextEditingController doctorContactNoController =
+  final TextEditingController doctorContactNumberController =
       TextEditingController();
-  final TextEditingController doctorHospitalController =
+  final TextEditingController doctorHospitalNameController =
       TextEditingController();
 
-  String? status;
-  String? specialization;
+  String? doctorSpecialization;
 
-  List<Map<String, String>> doctorDetails = [];
-
-  List<String> statusOptions = ['Active', 'Chronic', 'Managed'];
-  List<String> specializationOptions = [
-    'General Physician (Primary Care)',
+  List<String> doctorSpecializationOptions = [
     'Cardiologist (Heart Specialist)',
     'Dermatologist (Skin Specialist)',
-    'Endocrinologist (Hormones & Metabolism)',
-    'Gastroenterologist (Digestive System)',
-    'Neurologist (Brain & Nervous System)',
-    'Neurosurgeon (Brain & Spine Surgery)',
-    'Orthopedic Surgeon (Bones & Joints)',
-    'Pediatrician (Child Specialist)',
-    'Psychiatrist (Mental Health)',
-    'Pulmonologist (Lungs & Respiratory System)',
-    'Radiologist (Imaging & Diagnosis)',
-    'Urologist (Urinary System & Male Health)',
+    'Endocrinologist (Hormone Specialist)',
+    'Gastroenterologist (Stomach & Digestive Specialist)',
+    'Hematologist (Blood Specialist)',
+    'Neurologist (Brain & Nerve Specialist)',
     'Oncologist (Cancer Specialist)',
     'Ophthalmologist (Eye Specialist)',
-    'ENT Specialist (Ear, Nose & Throat)',
-    'Gynecologist (Women’s Health)',
-    'Nephrologist (Kidney Specialist)',
-    'Hematologist (Blood Disorders)',
-    'Rheumatologist (Joint & Autoimmune Diseases)'
+    'Orthopedic Surgeon (Bone & Joint Specialist)',
+    'Pediatrician (Children’s Specialist)',
+    'Psychiatrist (Mental Health Specialist)',
+    'Pulmonologist (Lung Specialist)',
+    'Radiologist (Medical Imaging Specialist)',
+    'Rheumatologist (Arthritis & Joint Pain Specialist)',
+    'Urologist (Urinary & Kidney Specialist)'
   ];
 
-  List<Map<String, TextEditingController>> doctorDetailsList = [];
+  List<Map<String, dynamic>> _doctorsData = [];
 
-  final List<Map<String, dynamic>> _illnessData = [];
+  int doctorsCount = 0;
 
   Future<void> _refreshData() async {
     setState(() {
-      nameController.clear();
-      symptomsController.clear();
-      diagnosisDateController.clear();
-      nextFollowUpDateController.clear();
+      doctorNameController.clear();
+      doctorContactNumberController.clear();
+      doctorHospitalNameController.clear();
 
-      status = null;
+      doctorSpecialization = null;
     });
     await Future.delayed(const Duration(seconds: 1));
   }
@@ -78,18 +71,15 @@ class _DoctorTableState extends State<DoctorTable> {
     super.initState();
 
     print('---------------------');
-    print('Illness Table for Customer ID: ${widget.customerId}');
-    print('---------------------');
+    print('Doctor Table for Customer ID: ${widget.customerId}');
+
+    _fetchAddedRecords();
   }
 
-  void _showAddIllnessForm() {
-    nameController.clear();
-    symptomsController.clear();
-    diagnosisDateController.clear();
-    nextFollowUpDateController.clear();
-
-    List<Map<String, String>> doctorDetails = [];
-    bool showDoctorForm = false;
+  void _showAddDoctorsForm() {
+    doctorNameController.clear();
+    doctorContactNumberController.clear();
+    doctorHospitalNameController.clear();
 
     showDialog(
       context: context,
@@ -108,7 +98,6 @@ class _DoctorTableState extends State<DoctorTable> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Header Section
                       Container(
                         decoration: const BoxDecoration(
                           color: Color.fromARGB(255, 5, 94, 166),
@@ -152,36 +141,12 @@ class _DoctorTableState extends State<DoctorTable> {
                           ],
                         ),
                       ),
-
                       const SizedBox(height: 16),
                       Form(
                         key: _formKey,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 12),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[300],
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: const Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Illness Details",
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -190,9 +155,9 @@ class _DoctorTableState extends State<DoctorTable> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      buildLabel("Illness/ Condition Name"),
+                                      buildLabel("Doctor Name"),
                                       buildTextField(
-                                        nameController,
+                                        doctorNameController,
                                         "",
                                       ),
                                     ],
@@ -205,242 +170,47 @@ class _DoctorTableState extends State<DoctorTable> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       const Text(
-                                        "Status",
+                                        "Doctor Specialization",
                                         style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold),
                                       ),
                                       buildDropdownField(
-                                        "Status",
-                                        status,
-                                        ['Active', 'Chronic', 'Managed'],
-                                        (value) => status = value,
-                                        isMandatory: true,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            buildLabel("Symptoms"),
-                            buildTextField(symptomsController, ""),
-                            const SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      buildLabel("Diagnosis Date"),
-                                      buildDatePickerField(
-                                        "Diagnosis Date",
-                                        isMandatory: true,
-                                        diagnosisDateController,
-                                        "",
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      buildLabel("Next Follow Up Date"),
-                                      buildDatePickerField(
-                                        "Next Follow Up Date",
-                                        isMandatory: true,
-                                        nextFollowUpDateController,
-                                        "",
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8, horizontal: 12),
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[300],
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: const Text(
-                                      "Doctor Details",
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      showDoctorForm = true;
-                                    });
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color.fromARGB(
-                                        255, 104, 104, 104),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    "Add",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Column(
-                              children: [
-                                ...doctorDetails.map((doctor) {
-                                  return Card(
-                                    margin:
-                                        const EdgeInsets.symmetric(vertical: 8),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                              "Doctor Name: ${doctor['name']}"),
-                                          Text(
-                                              "Specialization: ${doctor['specialization']}"),
-                                          Text("Contact: ${doctor['contact']}"),
-                                          Text(
-                                              "Hospital: ${doctor['hospital']}"),
+                                        "Doctor Specialization",
+                                        doctorSpecialization,
+                                        [
+                                          'Cardiologist (Heart Specialist)',
+                                          'Dermatologist (Skin Specialist)',
+                                          'Endocrinologist (Hormone Specialist)',
+                                          'Gastroenterologist (Stomach & Digestive Specialist)',
+                                          'Hematologist (Blood Specialist)',
+                                          'Neurologist (Brain & Nerve Specialist)',
+                                          'Oncologist (Cancer Specialist)',
+                                          'Ophthalmologist (Eye Specialist)',
+                                          'Orthopedic Surgeon (Bone & Joint Specialist)',
+                                          'Pediatrician (Children’s Specialist)',
+                                          'Psychiatrist (Mental Health Specialist)',
+                                          'Pulmonologist (Lung Specialist)',
+                                          'Radiologist (Medical Imaging Specialist)',
+                                          'Rheumatologist (Arthritis & Joint Pain Specialist)',
+                                          'Urologist (Urinary & Kidney Specialist)'
                                         ],
+                                        (value) => doctorSpecialization = value,
+                                        isMandatory: true,
                                       ),
-                                    ),
-                                  );
-                                }),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
                             const SizedBox(height: 8),
-                            if (showDoctorForm)
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  buildLabel("Doctor Name"),
-                                  buildTextField(doctorNameController, ""),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        flex: 2,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            buildLabel("Doctor Specialization"),
-                                            buildDropdownField(
-                                              "Doctor Specialization",
-                                              specialization,
-                                              [
-                                                'General Physician (Primary Care)',
-                                                'Cardiologist (Heart Specialist)',
-                                                'Dermatologist (Skin Specialist)',
-                                                'Endocrinologist (Hormones & Metabolism)',
-                                                'Gastroenterologist (Digestive System)',
-                                                'Neurologist (Brain & Nervous System)',
-                                                'Neurosurgeon (Brain & Spine Surgery)',
-                                                'Orthopedic Surgeon (Bones & Joints)',
-                                                'Pediatrician (Child Specialist)',
-                                                'Psychiatrist (Mental Health)',
-                                                'Pulmonologist (Lungs & Respiratory System)',
-                                                'Radiologist (Imaging & Diagnosis)',
-                                                'Urologist (Urinary System & Male Health)',
-                                                'Oncologist (Cancer Specialist)',
-                                                'Ophthalmologist (Eye Specialist)',
-                                                'ENT Specialist (Ear, Nose & Throat)',
-                                                'Gynecologist (Women’s Health)',
-                                                'Nephrologist (Kidney Specialist)',
-                                                'Hematologist (Blood Disorders)',
-                                                'Rheumatologist (Joint & Autoimmune Diseases)'
-                                              ],
-                                              (value) => specialization = value,
-                                              isMandatory: true,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(width: 16),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            buildLabel("Doctor Contact No."),
-                                            buildTextField(
-                                                doctorContactNoController, ""),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  buildLabel("Hospital Name"),
-                                  buildTextField(doctorHospitalController, ""),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.green[100],
-                                          borderRadius:
-                                              BorderRadius.circular(6),
-                                        ),
-                                        padding: const EdgeInsets.all(6),
-                                        child: IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              _addDoctorDetails();
-                                              showDoctorForm = false;
-                                            });
-                                          },
-                                          icon: const Icon(Icons.check,
-                                              color: Colors.green, size: 20),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.red[100],
-                                          borderRadius:
-                                              BorderRadius.circular(6),
-                                        ),
-                                        padding: const EdgeInsets.all(6),
-                                        child: IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              showDoctorForm = false;
-                                            });
-                                          },
-                                          icon: const Icon(Icons.close,
-                                              color: Colors.red, size: 20),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            const SizedBox(height: 20),
+                            buildLabel("Doctor Contact Number "),
+                            buildTextField(doctorContactNumberController, ""),
+                            const SizedBox(height: 8),
+                            const SizedBox(height: 8),
+                            buildLabel("Doctor Hospital Name "),
+                            buildTextField(doctorHospitalNameController, ""),
+                            const SizedBox(height: 8),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
@@ -501,137 +271,190 @@ class _DoctorTableState extends State<DoctorTable> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return RefreshIndicator(
-            onRefresh: () async {
-              _refreshData();
-            },
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.3),
-                        spreadRadius: 3,
-                        blurRadius: 5,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: ConstrainedBox(
-                      constraints:
-                          BoxConstraints(minWidth: constraints.maxWidth),
-                      child: DataTable(
-                        headingRowColor:
-                            WidgetStateProperty.all(Colors.blue.shade800),
-                        dataRowColor: WidgetStateProperty.all(Colors.white),
-                        columnSpacing: 20,
-                        columns: const [
-                          DataColumn(
-                              label: Text('ID',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold))),
-                          DataColumn(
-                              label: Text('Name',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold))),
-                          DataColumn(
-                              label: Text('Symptoms',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold))),
-                          DataColumn(
-                              label: Text('Status',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold))),
-                          DataColumn(
-                              label: Text('Diagnosis Date',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold))),
-                          DataColumn(
-                              label: Text('Next Follow-up',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold))),
-                          DataColumn(
-                              label: Text('Actions',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold))),
-                        ],
-                        rows: _illnessData.map((illness) {
-                          return DataRow(cells: [
-                            DataCell(Text(illness['illness_id'].toString())),
-                            DataCell(Text(illness['illness_name'])),
-                            DataCell(Text(illness['illness_symptoms'])),
-                            DataCell(
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 4, horizontal: 8),
-                                decoration: BoxDecoration(
-                                  color: illness['illness_status'] == 'Active'
-                                      ? Colors.green
-                                      : (illness['illness_status'] == 'Chronic'
-                                          ? Colors.red
-                                          : Colors.orange),
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: Text(
-                                  illness['illness_status'],
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              ),
-                            ),
-                            DataCell(Text(illness['diagnosis_date'])),
-                            DataCell(Text(illness['next_follow_up'] ?? 'N/A')),
-                            DataCell(
-                              IconButton(
-                                icon: const Icon(Icons.more_vert),
-                                onPressed: () {
-                                  _showOptionsDialog(illness);
-                                },
-                              ),
-                            ),
-                          ]);
-                        }).toList(),
-                      ),
+    return AnimatedWavesBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          children: [
+            _isLoading
+                ? Center(
+                    child: LoadingAnimationWidget.inkDrop(
+                      color: Colors.purple.shade800,
+                      size: 30,
                     ),
+                  )
+                : LayoutBuilder(
+                    builder: (context, constraints) {
+                      return RefreshIndicator(
+                        onRefresh: () async {
+                          _fetchAddedRecords();
+                        },
+                        child: _doctorsData.isEmpty
+                            ? const Padding(
+                                padding: EdgeInsets.all(20.0),
+                                child: Center(
+                                  child: Text(
+                                    "No records found",
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.black54),
+                                  ),
+                                ),
+                              )
+                            : SingleChildScrollView(
+                                scrollDirection: Axis.vertical,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 60),
+                                      Container(
+                                        padding: const EdgeInsets.all(16),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.grey.withOpacity(0.3),
+                                              spreadRadius: 3,
+                                              blurRadius: 5,
+                                              offset: const Offset(0, 3),
+                                            ),
+                                          ],
+                                        ),
+                                        child: SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          child: ConstrainedBox(
+                                            constraints: BoxConstraints(
+                                                minWidth: constraints.maxWidth),
+                                            child: DataTable(
+                                              headingRowColor:
+                                                  MaterialStateProperty.all(
+                                                      Colors.blue.shade800),
+                                              dataRowColor:
+                                                  MaterialStateProperty.all(
+                                                      Colors.white),
+                                              columnSpacing: 20,
+                                              columns: const [
+                                                DataColumn(
+                                                    label: Text('Doctor ID',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold))),
+                                                DataColumn(
+                                                    label: Text('Illness ID',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold))),
+                                                DataColumn(
+                                                    label: Text('Doctor Name',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold))),
+                                                DataColumn(
+                                                    label: Text(
+                                                        'Specialization',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold))),
+                                                DataColumn(
+                                                    label: Text(
+                                                        'Contact Number',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold))),
+                                                DataColumn(
+                                                    label: Text('Hospital Name',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold))),
+                                              ],
+                                              rows: _doctorsData.map((doctor) {
+                                                return DataRow(cells: [
+                                                  DataCell(Text(
+                                                      doctor['ILLNESS_ID']
+                                                              ?.toString() ??
+                                                          'N/A')),
+                                                  DataCell(Text(
+                                                      doctor['DOCTOR_ID'] ??
+                                                          'N/A')),
+                                                  DataCell(Text(
+                                                      doctor['DOCTOR_NAME'] ??
+                                                          'N/A')),
+                                                  DataCell(
+                                                    Text(
+                                                      doctor['DOCTOR_SPECIALIZATION'] ??
+                                                          'N/A',
+                                                      style: const TextStyle(
+                                                          color: Colors.white),
+                                                    ),
+                                                  ),
+                                                  DataCell(Text(doctor[
+                                                          'DOCTOR_CONTACT_NUMBER'] ??
+                                                      'N/A')),
+                                                  DataCell(Text(doctor[
+                                                          'DOCTOR_HOSPITAL_NAME'] ??
+                                                      'N/A')),
+                                                  DataCell(
+                                                    IconButton(
+                                                      icon: const Icon(
+                                                          Icons.more_vert),
+                                                      onPressed: () {
+                                                        _showOptionsDialog(
+                                                            doctor);
+                                                      },
+                                                    ),
+                                                  ),
+                                                ]);
+                                              }).toList(),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                      );
+                    },
+                  ),
+            Positioned(
+              right: 10,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  _showAddDoctorsForm();
+                },
+                icon: const Icon(Icons.add, color: Colors.white),
+                label: const Text(
+                  "Add Doctor",
+                  style: TextStyle(color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.purple.shade800,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
               ),
             ),
-          );
-        },
-      ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 16.0),
-        child: Align(
-          alignment: Alignment.bottomCenter,
-          child: FloatingActionButton(
-            onPressed: () {
-              _showAddIllnessForm(); // Call the method here
-            },
-            backgroundColor: Colors.blue.shade800,
-            child: const Icon(
-              Icons.add,
-              color: Colors.white, // Set icon color to white
-            ),
-          ),
+          ],
         ),
       ),
     );
@@ -648,7 +471,7 @@ class _DoctorTableState extends State<DoctorTable> {
               title: const Text('Edit'),
               onTap: () {
                 Navigator.pop(context);
-                _editIllnessDialog(illness);
+                _editIllness(illness);
               },
             ),
             ListTile(
@@ -656,7 +479,7 @@ class _DoctorTableState extends State<DoctorTable> {
               title: const Text('Delete', style: TextStyle(color: Colors.red)),
               onTap: () {
                 Navigator.pop(context);
-                _deleteIllnessDialog(illness);
+                _showDeleteConfirmationDialog(illness['ILLNESS_ID']);
               },
             ),
           ],
@@ -665,119 +488,347 @@ class _DoctorTableState extends State<DoctorTable> {
     );
   }
 
-  void _editIllnessDialog(Map<String, dynamic> illness) {
-    TextEditingController symptomsController =
-        TextEditingController(text: illness['illness_symptoms']);
+  void _editIllness(Map<String, dynamic> illness) {
+    //print("Illness details: $illness");
+    print(
+        "Edit button pressed for doctor Id: ${illness['ILLNESS_ID']} customers_id=${widget.customerId} ");
+
+    doctorNameController.text = illness['DOCTOR_NAME'] ?? '';
+    doctorContactNumberController.text = illness['DOCTOR_CONTACT_NUMBER'] ?? '';
+    doctorHospitalNameController.text = illness['DOCTOR_HOSPITAL_NAME'] ?? '';
+
+    doctorSpecialization = illness['DOCTOR_SPECIALIZATION'];
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Edit Illness ${illness['illness_name']}'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: TextEditingController(text: illness['illness_name']),
-              decoration: const InputDecoration(labelText: 'Illness Name'),
-              readOnly: true,
-            ),
-            TextField(
-              controller: symptomsController,
-              decoration: const InputDecoration(labelText: 'Symptoms'),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              setState(() {
-                illness['illness_symptoms'] = symptomsController.text;
-              });
-              Navigator.pop(context);
-            },
-            child: const Text('Save'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-        ],
-      ),
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Dialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Header Section
+                      Container(
+                        decoration: const BoxDecoration(
+                          color: Color.fromARGB(255, 5, 94, 166),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(15),
+                            topRight: Radius.circular(15),
+                          ),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 16, horizontal: 20),
+                        child: Stack(
+                          children: [
+                            const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                "Edit Illness Record",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const CircleAvatar(
+                                  backgroundColor: Color.fromARGB(0, 227, 4, 4),
+                                  radius: 16,
+                                  child: Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      buildLabel("Doctor"),
+                                      buildTextField(
+                                        doctorNameController,
+                                        "",
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        "Doctor Specialization",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      buildDropdownField(
+                                        "Doctor Specialization",
+                                        doctorSpecialization,
+                                        [
+                                          'Cardiologist (Heart Specialist)',
+                                          'Dermatologist (Skin Specialist)',
+                                          'Endocrinologist (Hormone Specialist)',
+                                          'Gastroenterologist (Stomach & Digestive Specialist)',
+                                          'Hematologist (Blood Specialist)',
+                                          'Neurologist (Brain & Nerve Specialist)',
+                                          'Oncologist (Cancer Specialist)',
+                                          'Ophthalmologist (Eye Specialist)',
+                                          'Orthopedic Surgeon (Bone & Joint Specialist)',
+                                          'Pediatrician (Children’s Specialist)',
+                                          'Psychiatrist (Mental Health Specialist)',
+                                          'Pulmonologist (Lung Specialist)',
+                                          'Radiologist (Medical Imaging Specialist)',
+                                          'Rheumatologist (Arthritis & Joint Pain Specialist)',
+                                          'Urologist (Urinary & Kidney Specialist)'
+                                        ],
+                                        (value) => doctorSpecialization = value,
+                                        isMandatory: true,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            buildLabel("Doctor Contact Number "),
+                            buildTextField(doctorContactNumberController, ""),
+                            const SizedBox(height: 8),
+                            const SizedBox(height: 8),
+                            buildLabel("Doctor Hospital Name "),
+                            buildTextField(doctorHospitalNameController, ""),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: MaterialButton(
+                                    onPressed: () {
+                                      _showConfirmationDialog(
+                                          illness['DOCTOR_ID']);
+                                    },
+                                    height: 50,
+                                    minWidth:
+                                        MediaQuery.of(context).size.width * 0.4,
+                                    color: Colors.blue[800],
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(50),
+                                    ),
+                                    child: const Center(
+                                      child: Text(
+                                        "Save Changes",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
-  void _deleteIllnessDialog(Map<String, dynamic> illness) {
+  void _showDeleteConfirmationDialog(int illnessId) {
+    print("Delete Button pressed for $illnessId");
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Illness'),
-        content:
-            Text('Are you sure you want to delete ${illness['illness_name']}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
           ),
-          TextButton(
-            onPressed: () {
-              setState(() {
-                _illnessData.remove(illness);
-              });
-              Navigator.pop(context);
-            },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: SizedBox(
+              width: 300,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: const Icon(
+                      Icons.delete,
+                      size: 60,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Confirm Deletion",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red, // Match icon color
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Are you sure you want to delete this Illness Record?",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text(
+                          "No",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () async {
+                          Navigator.of(context).pop();
+                          print("Illness Id at delete: $illnessId");
+
+                          try {
+                            final response =
+                                await deleteIllnessRecord(illnessId);
+
+                            print(
+                                "Response from API: $response"); // Debugging line to print response
+
+                            if (response['status'] == 'success') {
+                              _fetchAddedRecords();
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      "Failed to delete illness record: ${response['message']}"),
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            print("Error deleting illness record: $e");
+                          }
+                        },
+                        child: const Text(
+                          "Yes, Delete",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
-        ],
-      ),
+        );
+      },
     );
+  }
+
+  Future<Map<String, dynamic>> deleteIllnessRecord(int illnessId) async {
+    final url = Uri.parse(
+      "${Config.baseUrl}illness.php",
+    );
+
+    final response = await http.post(
+      url,
+      body: {
+        'action': 'delete',
+        'illness_id': illnessId.toString(),
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to delete illness record');
+    }
   }
 
   Future<void> _addRecord() async {
     print('-----------------');
     print('ADD RECORD');
 
-    final mandatoryFields = {
-      "Illness Name": nameController.text,
-      "Illness Symptoms": symptomsController.text,
-      "Illness Status": status,
-      "Diagnosis Date": diagnosisDateController.text,
-      "Next Follow-up Date": nextFollowUpDateController.text,
-    };
-
-    final missingFields = mandatoryFields.entries
-        .where((entry) => entry.value.toString().trim().isEmpty)
-        .map((entry) => entry.key)
-        .toList();
-
-    if (missingFields.isNotEmpty) {
-      _showErrorDialog(
-          "Please fill all the mandatory fields before submitting.");
-      return;
-    }
-
     if (_formKey.currentState!.validate()) {
       final recordDetails = {
         "customers_id": widget.customerId.toString(),
-        // "doctor_id": widget.doctorId.toString(),
-        "doctor_id": '5',
-
-        "illness_name": nameController.text,
-        "illness_symptoms": symptomsController.text,
-        "illness_status": status,
-        "illness_diagnosis_date": diagnosisDateController.text,
-        "illness_next_follow_up_date": nextFollowUpDateController.text,
+        "illness_name": doctorNameController.text,
+        "illness_symptoms": doctorContactNumberController.text,
+        "illness_status": doctorSpecialization,
+        "illness_diagnosis_date": doctorHospitalNameController.text,
       };
 
       print('Record Details: $recordDetails');
 
       try {
         final response = await http.post(
-          Uri.parse("${Config.baseUrl}dashboard/illness.php"),
+          Uri.parse("${Config.baseUrl}doctors.php"),
           headers: {"Content-Type": "application/x-www-form-urlencoded"},
           body: recordDetails,
         );
-
-        print('Response: ${response.body}');
 
         if (response.statusCode == 200) {
           final jsonResponse = jsonDecode(response.body);
@@ -789,8 +840,9 @@ class _DoctorTableState extends State<DoctorTable> {
                 'Illness record added successfully\nIllness ID: $illnessId',
                 illnessId);
 
-            // Refresh the list of illness records
-            //_fetchAddedRecords();
+            widget.onDoctorAdded();
+
+            _fetchAddedRecords();
           } else {
             _showErrorDialog(
                 jsonResponse['message'] ?? "An unknown error occurred.");
@@ -805,12 +857,45 @@ class _DoctorTableState extends State<DoctorTable> {
     }
   }
 
-  Future<void> fetchIllnessData() async {
-    print("fetchIllnessData");
+  Future<void> _fetchAddedRecords() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final url =
+          "${Config.baseUrl}fetch_doctor_data.php?customer_id=${widget.customerId}";
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+
+        if (jsonResponse['status'] == 'success') {
+          final List<dynamic> doctors = jsonResponse['doctors'];
+
+          setState(() {
+            _doctorsData = doctors.isNotEmpty
+                ? List<Map<String, dynamic>>.from(doctors)
+                : []; // Ensure empty list is handled
+          });
+        } else {
+          setState(() {
+            _doctorsData = [];
+          });
+        }
+      } else {
+        _showErrorDialog("Server returned an error: ${response.statusCode}");
+      }
+    } catch (e) {
+      _showErrorDialog("An error occurred: $e");
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   void _showSuccessDialog(String message, int customerId) {
-    print('Insurance ID at successdialog: $customerId');
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -826,7 +911,7 @@ class _DoctorTableState extends State<DoctorTable> {
               children: [
                 Container(
                   decoration: const BoxDecoration(
-                    color: Color(0xFF00C853), // Green color
+                    color: Color(0xFF00C853),
                     shape: BoxShape.circle,
                   ),
                   padding: const EdgeInsets.all(16),
@@ -842,7 +927,7 @@ class _DoctorTableState extends State<DoctorTable> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF00C853), // Green color
+                    color: Color(0xFF00C853),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -860,9 +945,8 @@ class _DoctorTableState extends State<DoctorTable> {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.of(context).pop(); // Close the success dialog
-                    Navigator.of(context)
-                        .pop(); // Close the card view dialog (_showAddCardForm)
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
                   },
                   child: const Text(
                     "Ok",
@@ -970,33 +1054,12 @@ class _DoctorTableState extends State<DoctorTable> {
   }
 
   void _clearForm() {
-    nameController.clear();
-    symptomsController.clear();
-    diagnosisDateController.clear();
-    nextFollowUpDateController.clear();
+    doctorNameController.clear();
+    doctorContactNumberController.clear();
+    doctorHospitalNameController.clear();
 
     setState(() {
-      status = null;
-      doctorDetails.clear();
-    });
-  }
-
-  void _addDoctorDetails() {
-    setState(() {
-      doctorDetails.add({
-        'name': doctorNameController.text,
-        'specialization': specialization ?? '',
-        'contact': doctorContactNoController.text,
-        'hospital': doctorHospitalController.text,
-      });
-
-      // Clear the fields for the next doctor entry
-      doctorNameController.clear();
-
-      doctorContactNoController.clear();
-      doctorHospitalController.clear();
-
-      specialization = null;
+      doctorSpecialization = null;
     });
   }
 
@@ -1088,26 +1151,24 @@ class _DoctorTableState extends State<DoctorTable> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Date picker field
           GestureDetector(
             onTap: () async {
               DateTime? selectedDate = await showDatePicker(
                 context: context,
-                initialDate: DateTime.now(),
-                firstDate: DateTime(1900),
-                lastDate: DateTime.now(),
+                initialDate: DateTime.now(), // Default to today
+                firstDate: DateTime.now(), // Disallow past dates
+                lastDate: DateTime(2101), // Allow dates far in the future
                 builder: (BuildContext context, Widget? child) {
                   return Theme(
                     data: Theme.of(context).copyWith(
                       colorScheme: ColorScheme.light(
-                        primary:
-                            selectedColor, // Header background color (blue)
-                        onPrimary: Colors.white, // Header text color
-                        onSurface: Colors.black, // Body text color
+                        primary: selectedColor,
+                        onPrimary: Colors.white,
+                        onSurface: Colors.black,
                       ),
                       textButtonTheme: TextButtonThemeData(
                         style: TextButton.styleFrom(
-                          foregroundColor: selectedColor, // Button text color
+                          foregroundColor: selectedColor,
                         ),
                       ),
                     ),
@@ -1155,20 +1216,6 @@ class _DoctorTableState extends State<DoctorTable> {
             ),
           ),
           const SizedBox(height: 8),
-          // // Label with optional red * for mandatory fields
-          // Row(
-          //   children: [
-          //     Text(
-          //       label,
-          //       style: TextStyle(fontSize: 12, color: labelColor),
-          //     ),
-          //     if (isMandatory)
-          //       const Text(
-          //         " *",
-          //         style: TextStyle(fontSize: 12, color: Colors.red),
-          //       ),
-          //   ],
-          // ),
         ],
       ),
     );
@@ -1249,5 +1296,239 @@ class _DoctorTableState extends State<DoctorTable> {
         const SizedBox(width: 4),
       ],
     );
+  }
+
+  Future<void> _showConfirmationDialog(int illnessId) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: SizedBox(
+              width: 300,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.orange, // Use orange for a neutral tone
+                      shape: BoxShape.circle,
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: const Icon(
+                      Icons.info,
+                      size: 60,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Confirmation",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange, // Match icon color
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Are you sure you want to save the details?",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: const Text(
+                          "No",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color(0xFF00C853), // Green color
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                          _saveDetails(
+                              illnessId); // Now call the save details function
+                        },
+                        child: const Text(
+                          "Yes",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _saveDetails(int? illnessId) async {
+    if (_formKey.currentState!.validate()) {
+      final recordDetails = {
+        "customers_id": widget.customerId.toString(),
+        "illness_symptoms": doctorNameController.text,
+        "illness_status": doctorSpecialization,
+        "illness_diagnosis_date": doctorContactNumberController.text,
+        "illness_next_follow_up_date": doctorHospitalNameController.text,
+      };
+
+      if (illnessId != null) {
+        recordDetails["illness_id"] =
+            illnessId.toString(); // Ensure illness_id is sent for updates
+      }
+
+      print('Illness Record Details: $recordDetails');
+
+      try {
+        final response = await http.post(
+          Uri.parse("${Config.baseUrl}illness.php"),
+          headers: {"Content-Type": "application/x-www-form-urlencoded"},
+          body: recordDetails,
+        );
+
+        print('Response when updating: ${response.body}');
+
+        if (response.statusCode == 200) {
+          final jsonResponse = jsonDecode(response.body);
+          if (jsonResponse['status'] == 'success') {
+            final updatedIllnessId = jsonResponse['illness_id'];
+            print('Updated Illness ID: $updatedIllnessId');
+            _showSuccessDialog(
+                'Illness details updated successfully\nIllness ID: $updatedIllnessId',
+                updatedIllnessId);
+            _fetchAddedRecords();
+          } else {
+            _showErrorDialog(
+                jsonResponse['message'] ?? "An unknown error occurred.");
+          }
+        } else {
+          _showErrorDialog("Server returned an error: ${response.statusCode}");
+        }
+      } catch (e) {
+        _showErrorDialog("An error occurred: $e");
+        print("Error: $e");
+      }
+    }
+  }
+}
+
+class AnimatedWavesBackground extends StatefulWidget {
+  final Widget child;
+  const AnimatedWavesBackground({Key? key, required this.child})
+      : super(key: key);
+
+  @override
+  _AnimatedWavesBackgroundState createState() =>
+      _AnimatedWavesBackgroundState();
+}
+
+class _AnimatedWavesBackgroundState extends State<AnimatedWavesBackground>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 8), // Slow and smooth animation
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return CustomPaint(
+                painter: WavePainter(_controller.value),
+              );
+            },
+          ),
+        ),
+        widget.child,
+      ],
+    );
+  }
+}
+
+class WavePainter extends CustomPainter {
+  final double animationValue;
+  WavePainter(this.animationValue);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint wavePaint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = Colors.purple.withOpacity(0.2);
+    _drawWave(canvas, size, wavePaint, 1.0, 20, 0);
+    _drawWave(canvas, size, wavePaint..color = Colors.blue.withOpacity(0.15),
+        0.8, 15, pi / 2);
+    _drawWave(canvas, size, wavePaint..color = Colors.blue.withOpacity(0.1),
+        0.6, 10, pi);
+  }
+
+  void _drawWave(Canvas canvas, Size size, Paint paint, double amplitude,
+      double waveHeight, double phaseShift) {
+    Path path = Path();
+    double waveFrequency = 2.0 * pi / size.width; // Controls wave length
+    double yOffset = size.height * 0.8; // Adjust wave height position
+
+    path.moveTo(0, yOffset);
+
+    for (double x = 0; x <= size.width; x++) {
+      double y = yOffset +
+          sin((x * waveFrequency) + (animationValue * 2 * pi) + phaseShift) *
+              waveHeight *
+              amplitude;
+      path.lineTo(x, y);
+    }
+
+    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height);
+    path.close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(WavePainter oldDelegate) {
+    return oldDelegate.animationValue != animationValue;
   }
 }

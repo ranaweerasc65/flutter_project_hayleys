@@ -100,6 +100,7 @@ class _TabViewState extends State<TabView> {
       case 'Doctors':
         return DoctorTable(
           customerId: widget.customerId,
+          onDoctorAdded: widget.onDataUpdated,
         );
       case 'Prescriptions':
         return const PrescriptionsTable();

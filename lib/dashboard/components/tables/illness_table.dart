@@ -307,7 +307,7 @@ class _IllnessTableState extends State<IllnessTable> {
             _isLoading
                 ? Center(
                     child: LoadingAnimationWidget.inkDrop(
-                      color: Colors.blue.shade800,
+                      color: Colors.green.shade800,
                       size: 30,
                     ),
                   )
@@ -490,7 +490,6 @@ class _IllnessTableState extends State<IllnessTable> {
                     },
                   ),
             Positioned(
-              top: 10,
               right: 10,
               child: ElevatedButton.icon(
                 onPressed: () {
@@ -502,7 +501,7 @@ class _IllnessTableState extends State<IllnessTable> {
                   style: TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue.shade800,
+                  backgroundColor: Colors.green.shade800,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   shape: RoundedRectangleBorder(
@@ -1594,7 +1593,7 @@ class WavePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     Paint wavePaint = Paint()
       ..style = PaintingStyle.fill
-      ..color = Colors.blue.withOpacity(0.2);
+      ..color = Colors.green.withOpacity(0.2);
     _drawWave(canvas, size, wavePaint, 1.0, 20, 0);
     _drawWave(canvas, size, wavePaint..color = Colors.blue.withOpacity(0.15),
         0.8, 15, pi / 2);

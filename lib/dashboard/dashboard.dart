@@ -219,7 +219,30 @@ class _DashboardContentState extends State<DashboardContent>
     }
   }
 
-  Future<void> _fetchDoctorsCount(int customerId) async {}
+  Future<void> _fetchDoctorsCount(int customerId) async {
+    final url = Uri.parse(
+        "${Config.baseUrl}get_doctor_count.php?customer_id=${widget.customerId}");
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        if (data['status'] == 'success') {
+          setState(() {
+            illnessCount = data['doctor_count'];
+          });
+        } else {
+          print('Error: ${data['message']}');
+        }
+      } else {
+        print('Server Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching doctor count: $e');
+    }
+  }
 
   Future<void> _fetchBillsCount() async {
     //print("_fetchBillsCount");

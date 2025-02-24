@@ -118,10 +118,8 @@ class InitState extends State<LoginScreen> {
         if (jsonResponse['status'] == 'success') {
           userName = jsonResponse['name'];
 
-          // Delay to ensure UI updates
           await Future.delayed(const Duration(milliseconds: 500));
 
-          // Navigate without setting _isLoading to false immediately
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -133,19 +131,19 @@ class InitState extends State<LoginScreen> {
           );
         } else {
           setState(() {
-            _isLoading = false; // Stop loading
+            _isLoading = false;
           });
           _showErrorDialog(jsonResponse['message']);
         }
       } else {
         setState(() {
-          _isLoading = false; // Stop loading
+          _isLoading = false;
         });
         _showErrorDialog('Server error. Please try again.');
       }
     } catch (e) {
       setState(() {
-        _isLoading = false; // Stop loading
+        _isLoading = false;
       });
       _showErrorDialog('Network error. Please check your internet connection.');
     }
