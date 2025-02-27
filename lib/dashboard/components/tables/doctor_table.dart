@@ -55,6 +55,9 @@ class _DoctorTableState extends State<DoctorTable> {
 
   int doctorsCount = 0;
 
+  List<String> illnessIds = [];
+  String? selectedIllnessId;
+
   Future<void> _refreshData() async {
     setState(() {
       doctorNameController.clear();
@@ -74,6 +77,7 @@ class _DoctorTableState extends State<DoctorTable> {
     print('Doctor Table for Customer ID: ${widget.customerId}');
 
     _fetchAddedRecords();
+    _fetchIllnessIDs();
   }
 
   void _showAddDoctorsForm() {
@@ -147,6 +151,22 @@ class _DoctorTableState extends State<DoctorTable> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                buildLabel("Illness ID"),
+                                buildDropdownField(
+                                  "Illness ID",
+                                  selectedIllnessId,
+                                  illnessIds,
+                                  (value) =>
+                                      setState(() => selectedIllnessId = value),
+                                  isMandatory: true,
+                                ),
+                                const SizedBox(height: 8),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -383,25 +403,48 @@ class _DoctorTableState extends State<DoctorTable> {
                                                             fontWeight:
                                                                 FontWeight
                                                                     .bold))),
+                                                DataColumn(
+                                                    label: Text('Actions',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold))),
                                               ],
                                               rows: _doctorsData.map((doctor) {
                                                 return DataRow(cells: [
                                                   DataCell(Text(
+                                                      doctor['DOCTOR_ID']
+                                                              ?.toString() ??
+                                                          'Not Specified')),
+                                                  DataCell(Text(
                                                       doctor['ILLNESS_ID']
                                                               ?.toString() ??
-                                                          'N/A')),
-                                                  DataCell(Text(
-                                                      doctor['DOCTOR_ID'] ??
-                                                          'N/A')),
+                                                          'Not Specified')),
                                                   DataCell(Text(
                                                       doctor['DOCTOR_NAME'] ??
                                                           'N/A')),
                                                   DataCell(
-                                                    Text(
-                                                      doctor['DOCTOR_SPECIALIZATION'] ??
-                                                          'N/A',
-                                                      style: const TextStyle(
-                                                          color: Colors.white),
+                                                    Container(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          vertical: 4,
+                                                          horizontal: 8),
+                                                      decoration: BoxDecoration(
+                                                        color: _getSpecializationColor(
+                                                            doctor[
+                                                                'DOCTOR_SPECIALIZATION']),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(5),
+                                                      ),
+                                                      child: Text(
+                                                        doctor['DOCTOR_SPECIALIZATION'] ??
+                                                            'N/A',
+                                                        style: const TextStyle(
+                                                            color:
+                                                                Colors.white),
+                                                      ),
                                                     ),
                                                   ),
                                                   DataCell(Text(doctor[
@@ -460,7 +503,7 @@ class _DoctorTableState extends State<DoctorTable> {
     );
   }
 
-  void _showOptionsDialog(Map<String, dynamic> illness) {
+  void _showOptionsDialog(Map<String, dynamic> doctor) {
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -471,7 +514,7 @@ class _DoctorTableState extends State<DoctorTable> {
               title: const Text('Edit'),
               onTap: () {
                 Navigator.pop(context);
-                _editIllness(illness);
+                _editDoctor(doctor);
               },
             ),
             ListTile(
@@ -479,7 +522,7 @@ class _DoctorTableState extends State<DoctorTable> {
               title: const Text('Delete', style: TextStyle(color: Colors.red)),
               onTap: () {
                 Navigator.pop(context);
-                _showDeleteConfirmationDialog(illness['ILLNESS_ID']);
+                _showDeleteConfirmationDialog(doctor['DOCTOR_ID']);
               },
             ),
           ],
@@ -488,16 +531,20 @@ class _DoctorTableState extends State<DoctorTable> {
     );
   }
 
-  void _editIllness(Map<String, dynamic> illness) {
-    //print("Illness details: $illness");
+  void _editDoctor(Map<String, dynamic> doctor) {
     print(
-        "Edit button pressed for doctor Id: ${illness['ILLNESS_ID']} customers_id=${widget.customerId} ");
+        "Edit button pressed for doctor Id: ${doctor['DOCTOR_ID']} customers_id=${widget.customerId} ");
 
-    doctorNameController.text = illness['DOCTOR_NAME'] ?? '';
-    doctorContactNumberController.text = illness['DOCTOR_CONTACT_NUMBER'] ?? '';
-    doctorHospitalNameController.text = illness['DOCTOR_HOSPITAL_NAME'] ?? '';
+    print("Updating doctor details: $doctor");
 
-    doctorSpecialization = illness['DOCTOR_SPECIALIZATION'];
+    doctorNameController.text = doctor['DOCTOR_NAME'] ?? '';
+    doctorContactNumberController.text = doctor['DOCTOR_CONTACT_NUMBER'] ?? '';
+    doctorHospitalNameController.text = doctor['DOCTOR_HOSPITAL_NAME'] ?? '';
+    doctorSpecialization = doctor['DOCTOR_SPECIALIZATION'];
+    selectedIllnessId =
+        doctor['ILLNESS_ID'] == null || doctor['ILLNESS_ID'] == 'Not Specified'
+            ? 'Not Specified'
+            : doctor['ILLNESS_ID'].toString();
 
     showDialog(
       context: context,
@@ -532,7 +579,7 @@ class _DoctorTableState extends State<DoctorTable> {
                             const Align(
                               alignment: Alignment.centerLeft,
                               child: Text(
-                                "Edit Illness Record",
+                                "Edit Doctor Record",
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -567,6 +614,22 @@ class _DoctorTableState extends State<DoctorTable> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                buildLabel("Illness ID"),
+                                buildDropdownField(
+                                  "Illness ID",
+                                  selectedIllnessId,
+                                  illnessIds,
+                                  (value) =>
+                                      setState(() => selectedIllnessId = value),
+                                  isMandatory: true,
+                                ),
+                                const SizedBox(height: 8),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -575,7 +638,7 @@ class _DoctorTableState extends State<DoctorTable> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      buildLabel("Doctor"),
+                                      buildLabel("Doctor Name"),
                                       buildTextField(
                                         doctorNameController,
                                         "",
@@ -640,7 +703,7 @@ class _DoctorTableState extends State<DoctorTable> {
                                   child: MaterialButton(
                                     onPressed: () {
                                       _showConfirmationDialog(
-                                          illness['DOCTOR_ID']);
+                                          doctor['DOCTOR_ID']);
                                     },
                                     height: 50,
                                     minWidth:
@@ -677,8 +740,8 @@ class _DoctorTableState extends State<DoctorTable> {
     );
   }
 
-  void _showDeleteConfirmationDialog(int illnessId) {
-    print("Delete Button pressed for $illnessId");
+  void _showDeleteConfirmationDialog(int doctorId) {
+    print("Delete Button pressed for $doctorId");
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -712,12 +775,12 @@ class _DoctorTableState extends State<DoctorTable> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.red, // Match icon color
+                      color: Colors.red,
                     ),
                   ),
                   const SizedBox(height: 10),
                   const Text(
-                    "Are you sure you want to delete this Illness Record?",
+                    "Are you sure you want to delete this Doctor Record?",
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 16, color: Colors.black),
                   ),
@@ -749,14 +812,12 @@ class _DoctorTableState extends State<DoctorTable> {
                         ),
                         onPressed: () async {
                           Navigator.of(context).pop();
-                          print("Illness Id at delete: $illnessId");
+                          print("Doctor Id at delete: $doctorId");
 
                           try {
-                            final response =
-                                await deleteIllnessRecord(illnessId);
+                            final response = await deleteDoctorRecord(doctorId);
 
-                            print(
-                                "Response from API: $response"); // Debugging line to print response
+                            print("Response from API: $response");
 
                             if (response['status'] == 'success') {
                               _fetchAddedRecords();
@@ -764,12 +825,12 @@ class _DoctorTableState extends State<DoctorTable> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
-                                      "Failed to delete illness record: ${response['message']}"),
+                                      "Failed to delete doctor record: ${response['message']}"),
                                 ),
                               );
                             }
                           } catch (e) {
-                            print("Error deleting illness record: $e");
+                            print("Error deleting doctor record: $e");
                           }
                         },
                         child: const Text(
@@ -788,76 +849,96 @@ class _DoctorTableState extends State<DoctorTable> {
     );
   }
 
-  Future<Map<String, dynamic>> deleteIllnessRecord(int illnessId) async {
+  Future<Map<String, dynamic>> deleteDoctorRecord(int doctorId) async {
     final url = Uri.parse(
-      "${Config.baseUrl}illness.php",
+      "${Config.baseUrl}doctor.php",
     );
 
     final response = await http.post(
       url,
       body: {
         'action': 'delete',
-        'illness_id': illnessId.toString(),
+        'doctor_id': doctorId.toString(),
       },
     );
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      throw Exception('Failed to delete illness record');
+      throw Exception('Failed to delete doctor record');
     }
   }
 
   Future<void> _addRecord() async {
     print('-----------------');
-    print('ADD RECORD');
+    print('ADD DOCTOR FUNCTION STARTED');
 
     if (_formKey.currentState!.validate()) {
+      print('Form validation passed');
+
+      String illnessId =
+          selectedIllnessId == "Not Specified" ? "NULL" : selectedIllnessId!;
+
       final recordDetails = {
         "customers_id": widget.customerId.toString(),
-        "illness_name": doctorNameController.text,
-        "illness_symptoms": doctorContactNumberController.text,
-        "illness_status": doctorSpecialization,
-        "illness_diagnosis_date": doctorHospitalNameController.text,
+        "doctor_name": doctorNameController.text,
+        "doctor_specialization": doctorSpecialization,
+        "doctor_contact_number": doctorContactNumberController.text,
+        "doctor_hospital_name": doctorHospitalNameController.text,
+        "illness_id": illnessId, // Send illness_id here
       };
 
       print('Record Details: $recordDetails');
 
       try {
+        print('Sending HTTP request to: ${Config.baseUrl}doctor.php');
         final response = await http.post(
-          Uri.parse("${Config.baseUrl}doctors.php"),
+          Uri.parse("${Config.baseUrl}doctor.php"),
           headers: {"Content-Type": "application/x-www-form-urlencoded"},
           body: recordDetails,
         );
 
+        print('Response received. Status Code: ${response.statusCode}');
+        print('Response Body: ${response.body}');
+
         if (response.statusCode == 200) {
           final jsonResponse = jsonDecode(response.body);
+          print('Parsed JSON Response: $jsonResponse');
+
           if (jsonResponse['status'] == 'success') {
-            final illnessId = jsonResponse['illness_id'];
-            print('Illness ID: $illnessId');
+            final doctorId = jsonResponse['doctor_id'];
+            print('Doctor ID: $doctorId');
 
             _showSuccessDialog(
-                'Illness record added successfully\nIllness ID: $illnessId',
-                illnessId);
+                'Doctor record added successfully\nDoctor ID: $doctorId',
+                doctorId);
 
             widget.onDoctorAdded();
+            print('Doctor added successfully, refreshing records...');
 
             _fetchAddedRecords();
           } else {
+            print('Server Response Error: ${jsonResponse['message']}');
             _showErrorDialog(
                 jsonResponse['message'] ?? "An unknown error occurred.");
           }
         } else {
+          print('Server returned an error: ${response.statusCode}');
           _showErrorDialog("Server returned an error: ${response.statusCode}");
         }
       } catch (e) {
+        print("Exception caught: $e");
         _showErrorDialog("An error occurred: $e");
-        print("Error: $e");
       }
+    } else {
+      print('Form validation failed');
     }
+    print('ADD DOCTOR FUNCTION ENDED');
   }
 
   Future<void> _fetchAddedRecords() async {
+    print("Fetching Doctor Records for ${widget.customerId}");
+
     setState(() {
       _isLoading = true;
     });
@@ -865,29 +946,78 @@ class _DoctorTableState extends State<DoctorTable> {
     try {
       final url =
           "${Config.baseUrl}fetch_doctor_data.php?customer_id=${widget.customerId}";
+      print("Request URL: $url");
+
+      final response = await http.get(Uri.parse(url));
+      print("Response received with status code: ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        print("Response Body: ${response.body}"); // Print raw response body
+
+        if (jsonResponse['status'] == 'success') {
+          final List<dynamic>? doctor = jsonResponse['doctor'];
+          print("Fetched doctor data: $doctor"); // Print fetched doctor data
+
+          setState(() {
+            _doctorsData = (doctor != null && doctor.isNotEmpty)
+                ? List<Map<String, dynamic>>.from(doctor)
+                : [];
+            print(
+                "Doctors data fetched. Current count: ${_doctorsData.length}");
+          });
+        } else {
+          setState(() {
+            _doctorsData = [];
+          });
+          print("No doctor records found or error in response data.");
+        }
+        _fetchIllnessIDs();
+      } else {
+        print(
+            "Error: Server returned an error with status code: ${response.statusCode}");
+        _showErrorDialog("Server returned an error: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Exception occurred: $e"); // Print exception details for debugging
+      _showErrorDialog("An error occurred: $e");
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _fetchIllnessIDs() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final url =
+          "${Config.baseUrl}get_illness_count.php?customer_id=${widget.customerId}";
       final response = await http.get(Uri.parse(url));
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
 
         if (jsonResponse['status'] == 'success') {
-          final List<dynamic> doctors = jsonResponse['doctors'];
+          final List<dynamic> illnesses = jsonResponse['illness_ids'];
 
           setState(() {
-            _doctorsData = doctors.isNotEmpty
-                ? List<Map<String, dynamic>>.from(doctors)
-                : []; // Ensure empty list is handled
+            illnessIds = ["Not Specified"];
+            illnessIds.addAll(illnesses.map((id) => id.toString()));
           });
+
+          print("Illness IDs fetched: $illnessIds");
         } else {
-          setState(() {
-            _doctorsData = [];
-          });
+          print("Failed to fetch illness IDs: ${jsonResponse['message']}");
         }
       } else {
-        _showErrorDialog("Server returned an error: ${response.statusCode}");
+        print("Server error: ${response.statusCode}");
       }
     } catch (e) {
-      _showErrorDialog("An error occurred: $e");
+      print("Exception occurred: $e");
     } finally {
       setState(() {
         _isLoading = false;
@@ -1068,8 +1198,7 @@ class _DoctorTableState extends State<DoctorTable> {
     String? currentValue,
     List<String> options,
     Function(String?) onChanged, {
-    bool isMandatory =
-        false, // New parameter to indicate if the field is mandatory
+    bool isMandatory = false,
     Color focusedBorderColor = const Color(0xFF607D8B),
     Color borderColor = const Color(0xFFCFD8DC),
     Color labelColor = const Color(0xFF78909C),
@@ -1298,7 +1427,7 @@ class _DoctorTableState extends State<DoctorTable> {
     );
   }
 
-  Future<void> _showConfirmationDialog(int illnessId) async {
+  Future<void> _showConfirmationDialog(int doctorId) async {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -1316,7 +1445,7 @@ class _DoctorTableState extends State<DoctorTable> {
                 children: [
                   Container(
                     decoration: const BoxDecoration(
-                      color: Colors.orange, // Use orange for a neutral tone
+                      color: Colors.orange,
                       shape: BoxShape.circle,
                     ),
                     padding: const EdgeInsets.all(16),
@@ -1332,7 +1461,7 @@ class _DoctorTableState extends State<DoctorTable> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.orange, // Match icon color
+                      color: Colors.orange,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -1353,7 +1482,7 @@ class _DoctorTableState extends State<DoctorTable> {
                           ),
                         ),
                         onPressed: () {
-                          Navigator.of(context).pop(); // Close the dialog
+                          Navigator.of(context).pop();
                         },
                         child: const Text(
                           "No",
@@ -1362,16 +1491,14 @@ class _DoctorTableState extends State<DoctorTable> {
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color(0xFF00C853), // Green color
+                          backgroundColor: const Color(0xFF00C853),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                         onPressed: () {
-                          Navigator.of(context).pop(); // Close the dialog
-                          _saveDetails(
-                              illnessId); // Now call the save details function
+                          Navigator.of(context).pop();
+                          _saveDetails(doctorId);
                         },
                         child: const Text(
                           "Yes",
@@ -1389,53 +1516,116 @@ class _DoctorTableState extends State<DoctorTable> {
     );
   }
 
-  Future<void> _saveDetails(int? illnessId) async {
+  Future<void> _saveDetails(int? doctorId) async {
     if (_formKey.currentState!.validate()) {
+      // Debug print for form validation
+      print('Form is valid. Proceeding with saving doctor details.');
+
+      // Assign illnessId, checking if the selected illness is 'Not Specified'
+      final illnessId =
+          selectedIllnessId == "Not Specified" ? "0" : selectedIllnessId;
+
+      // Debug print for illnessId
+      print('Illness ID: $illnessId');
+
+      // Prepare the record details to be sent in the request
       final recordDetails = {
         "customers_id": widget.customerId.toString(),
-        "illness_symptoms": doctorNameController.text,
-        "illness_status": doctorSpecialization,
-        "illness_diagnosis_date": doctorContactNumberController.text,
-        "illness_next_follow_up_date": doctorHospitalNameController.text,
+        "doctor_name": doctorNameController.text,
+        "doctor_specialization": doctorSpecialization,
+        "doctor_contact_number": doctorContactNumberController.text,
+        "doctor_hospital_name": doctorHospitalNameController.text,
+        "illness_id": illnessId,
       };
 
-      if (illnessId != null) {
-        recordDetails["illness_id"] =
-            illnessId.toString(); // Ensure illness_id is sent for updates
+      if (doctorId != null) {
+        recordDetails["doctor_id"] = doctorId.toString();
       }
 
-      print('Illness Record Details: $recordDetails');
+      // Debug print for the record details
+      print('Doctor Record Details: $recordDetails');
 
       try {
+        // Sending HTTP POST request
         final response = await http.post(
-          Uri.parse("${Config.baseUrl}illness.php"),
+          Uri.parse("${Config.baseUrl}doctor.php"),
           headers: {"Content-Type": "application/x-www-form-urlencoded"},
           body: recordDetails,
         );
 
+        // Debug print for response body
         print('Response when updating: ${response.body}');
 
         if (response.statusCode == 200) {
+          // Parse the response
           final jsonResponse = jsonDecode(response.body);
+
+          // Debug print for parsed JSON response
+          print('Parsed JSON Response: $jsonResponse');
+
           if (jsonResponse['status'] == 'success') {
-            final updatedIllnessId = jsonResponse['illness_id'];
-            print('Updated Illness ID: $updatedIllnessId');
+            final updatedDoctorId = jsonResponse['doctor_id'];
+            // Debug print for successful update
+            print('Updated Doctor ID: $updatedDoctorId');
             _showSuccessDialog(
-                'Illness details updated successfully\nIllness ID: $updatedIllnessId',
-                updatedIllnessId);
+                'Doctor details updated successfully\nDoctor ID: $updatedDoctorId',
+                updatedDoctorId);
             _fetchAddedRecords();
           } else {
+            // Error message from the server
             _showErrorDialog(
                 jsonResponse['message'] ?? "An unknown error occurred.");
           }
         } else {
+          // Server returned an error
           _showErrorDialog("Server returned an error: ${response.statusCode}");
         }
       } catch (e) {
+        // Exception occurred
         _showErrorDialog("An error occurred: $e");
         print("Error: $e");
       }
+    } else {
+      // Form is invalid
+      print('Form is invalid. Please check the input fields.');
     }
+  }
+}
+
+Color _getSpecializationColor(String specialization) {
+  switch (specialization) {
+    case 'Cardiologist (Heart Specialist)':
+      return Colors.red;
+    case 'Dermatologist (Skin Specialist)':
+      return Colors.pink;
+    case 'Endocrinologist (Hormone Specialist)':
+      return Colors.purple;
+    case 'Gastroenterologist (Stomach & Digestive Specialist)':
+      return Colors.brown;
+    case 'Hematologist (Blood Specialist)':
+      return Colors.deepOrange;
+    case 'Neurologist (Brain & Nerve Specialist)':
+      return Colors.blue;
+    case 'Oncologist (Cancer Specialist)':
+      return Colors.green;
+    case 'Ophthalmologist (Eye Specialist)':
+      return Colors.teal;
+    case 'Orthopedic Surgeon (Bone & Joint Specialist)':
+      return Colors.indigo;
+    case 'Pediatrician (Children’s Specialist)':
+      return Colors.cyan;
+    case 'Psychiatrist (Mental Health Specialist)':
+      return Colors.deepPurple;
+    case 'Pulmonologist (Lung Specialist)':
+      return Colors.lightBlue;
+    case 'Radiologist (Medical Imaging Specialist)':
+      return Colors.grey;
+    case 'Rheumatologist (Arthritis & Joint Pain Specialist)':
+      return Colors.amber;
+    case 'Urologist (Urinary & Kidney Specialist)':
+      return Colors.blueGrey;
+    default:
+      return Colors.orange;
   }
 }
 

@@ -11,26 +11,34 @@ if ($customer_id == 0) {
     exit();
 }
 
-$sql_count = "SELECT COUNT(*) AS illness_count FROM illnesses WHERE CUSTOMERS_ID = ?";
-$stmt_count = $conn_hayleys_medicalapp->prepare($sql_count);
+// Query to fetch illness count and illness IDs
+$sql_illness = "SELECT illness_id FROM illnesses WHERE CUSTOMERS_ID = ?";
+$stmt_illness = $conn_hayleys_medicalapp->prepare($sql_illness);
 
-if (!$stmt_count) {
+if (!$stmt_illness) {
     echo json_encode(array("status" => "error", "message" => "Failed to prepare SQL statement"));
     exit();
 }
 
-$stmt_count->bind_param("i", $customer_id);
-$stmt_count->execute();
-$result_count = $stmt_count->get_result();
+$stmt_illness->bind_param("i", $customer_id);
+$stmt_illness->execute();
+$result_illness = $stmt_illness->get_result();
 
+$illness_ids = [];
+$illness_count = 0;
 
-if ($row = $result_count->fetch_assoc()) {
-    echo json_encode(array("status" => "success", "illness_count" => $row['illness_count']));
-} else {
-    echo json_encode(array("status" => "error", "message" => "Failed to fetch illness count"));
+while ($row = $result_illness->fetch_assoc()) {
+    $illness_ids[] = $row['illness_id'];  // Collect illness IDs
+    $illness_count++;  // Count illnesses
 }
 
-$stmt_count->close();
+echo json_encode(array(
+    "status" => "success",
+    "illness_count" => $illness_count,
+    "illness_ids" => $illness_ids
+));
+
+$stmt_illness->close();
 $conn_hayleys_medicalapp->close();
 
 ?>

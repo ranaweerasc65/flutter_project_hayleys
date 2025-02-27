@@ -117,7 +117,7 @@ class _DashboardContentState extends State<DashboardContent>
   String lastName = '';
 
   int illnessCount = 0;
-  int DoctorsCount = 0;
+  int doctorsCount = 0;
   int billsCount = 0;
   int prescriptionsCount = 0;
   int reportsCount = 0;
@@ -221,7 +221,7 @@ class _DashboardContentState extends State<DashboardContent>
 
   Future<void> _fetchDoctorsCount(int customerId) async {
     final url = Uri.parse(
-        "${Config.baseUrl}get_doctor_count.php?customer_id=${widget.customerId}");
+        "${Config.baseUrl}get_doctor_count.php?customer_id=$customerId");
 
     try {
       final response = await http.get(url);
@@ -231,17 +231,11 @@ class _DashboardContentState extends State<DashboardContent>
 
         if (data['status'] == 'success') {
           setState(() {
-            illnessCount = data['doctor_count'];
+            doctorsCount = data['doctor_count'];
           });
-        } else {
-          print('Error: ${data['message']}');
-        }
-      } else {
-        print('Server Error: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error fetching doctor count: $e');
-    }
+        } else {}
+      } else {}
+    } catch (e) {}
   }
 
   Future<void> _fetchBillsCount() async {
@@ -262,6 +256,11 @@ class _DashboardContentState extends State<DashboardContent>
 
   void _refreshIllnessCount() {
     _fetchIllnessCount(
+        widget.customerId); // Refresh illness count (implement this function)
+  }
+
+  void _refreshDoctorsCount() {
+    _fetchDoctorsCount(
         widget.customerId); // Refresh illness count (implement this function)
   }
 
@@ -322,7 +321,7 @@ class _DashboardContentState extends State<DashboardContent>
                   ),
                   Tab(
                     icon: const Icon(Icons.man),
-                    text: 'Doctors ($DoctorsCount)',
+                    text: 'Doctors ($doctorsCount)',
                   ),
                   Tab(
                     icon: const Icon(Icons.medication),
@@ -361,7 +360,7 @@ class _DashboardContentState extends State<DashboardContent>
                       tabName: 'Doctors',
                       tabController: _tabController,
                       customerId: widget.customerId,
-                      onDataUpdated: _refreshIllnessCount,
+                      onDataUpdated: _refreshDoctorsCount,
                     ),
                     TabView(
                       tabName: 'Prescriptions',

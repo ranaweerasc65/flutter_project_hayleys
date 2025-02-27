@@ -57,7 +57,6 @@ class _IllnessTableState extends State<IllnessTable> {
 
     print('---------------------');
     print('Illness Table for Customer ID: ${widget.customerId}');
-    print('---------------------');
 
     _fetchAddedRecords();
   }
@@ -545,7 +544,6 @@ class _IllnessTableState extends State<IllnessTable> {
   }
 
   void _editIllness(Map<String, dynamic> illness) {
-    //print("Illness details: $illness");
     print(
         "Edit button pressed for illness Id: ${illness['ILLNESS_ID']} customers_id=${widget.customerId} ");
 

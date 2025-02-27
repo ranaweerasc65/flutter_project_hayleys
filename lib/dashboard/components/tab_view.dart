@@ -78,7 +78,10 @@ class _TabViewState extends State<TabView> {
     widget.onDataUpdated();
   }
 
-  Future<void> fetchDoctors() async {}
+  Future<void> fetchDoctors() async {
+    widget.onDataUpdated();
+  }
+
   Future<void> fetchBills() async {}
   Future<void> fetchPrescriptions() async {}
   Future<void> fetchReports() async {}

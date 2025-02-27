@@ -8,9 +8,6 @@ if ($conn_hayleys_medicalapp->connect_error) {
     exit();
 }
 
-
-
-// Check for 'action' parameter to identify the operation (add/update/delete)
 if (isset($_POST['action']) && $_POST['action'] === 'delete' && isset($_POST['illness_id'])) {
     $illness_id = intval($_POST['illness_id']);
 
@@ -99,7 +96,6 @@ if ($illness_id) {
     $stmt->bind_param(
         "ssssssi",
         $customers_id,
-      
         $illness_name,
         $illness_symptoms,
         $illness_status,
@@ -137,11 +133,28 @@ if ($illness_id) {
 
     if ($stmt->execute()) {
         $illness_id = $conn_hayleys_medicalapp->insert_id;
-        echo json_encode(array(
-            "status" => "success", 
-            "message" => "Illness details added successfully", 
-            "illness_id" => $illness_id
-        ));
+
+        // Insert into dashboard_ids table
+        $sql_dashboard = "INSERT INTO dashboard_ids (customers_id, illness_id) VALUES (?, ?)";
+        $stmt_dashboard = $conn_hayleys_medicalapp->prepare($sql_dashboard);
+
+        if ($stmt_dashboard === false) {
+            echo json_encode(array("status" => "error", "message" => "Error preparing dashboard_ids statement: " . $conn_hayleys_medicalapp->error));
+            exit();
+        }
+
+        $stmt_dashboard->bind_param("ii", $customers_id, $illness_id);
+        if ($stmt_dashboard->execute()) {
+            echo json_encode(array(
+                "status" => "success",
+                "message" => "Illness details and dashboard entry added successfully",
+                "illness_id" => $illness_id
+            ));
+        } else {
+            echo json_encode(array("status" => "error", "message" => "Failed to insert into dashboard_ids: " . $stmt_dashboard->error));
+        }
+
+        $stmt_dashboard->close();
     } else {
         echo json_encode(array("status" => "error", "message" => "Failed to insert illness details: " . $stmt->error));
     }

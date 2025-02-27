@@ -8,11 +8,10 @@ if ($conn_hayleys_medicalapp->connect_error) {
     exit();
 }
 
+if (isset($_POST['action']) && $_POST['action'] === 'delete' && isset($_POST['doctor_id'])) {
+    $doctor_id = intval($_POST['doctor_id']);
 
-if (isset($_POST['action']) && $_POST['action'] === 'delete' && isset($_POST['illness_id'])) {
-    $illness_id = intval($_POST['illness_id']);
-
-    $sql = "DELETE FROM illnesses WHERE illness_id = ?";
+    $sql = "DELETE FROM doctor WHERE doctor_id = ?";
     $stmt = $conn_hayleys_medicalapp->prepare($sql);
 
     if ($stmt === false) {
@@ -20,12 +19,12 @@ if (isset($_POST['action']) && $_POST['action'] === 'delete' && isset($_POST['il
         exit();
     }
 
-    $stmt->bind_param("i", $illness_id);
+    $stmt->bind_param("i", $doctor_id);
 
     if ($stmt->execute()) {
-        echo json_encode(array("status" => "success", "message" => "Illness record deleted successfully"));
+        echo json_encode(array("status" => "success", "message" => "Doctor record deleted successfully"));
     } else {
-        echo json_encode(array("status" => "error", "message" => "Failed to delete illness record: " . $stmt->error));
+        echo json_encode(array("status" => "error", "message" => "Failed to delete doctor record: " . $stmt->error));
     }
 
     $stmt->close();
@@ -36,8 +35,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'delete' && isset($_POST['il
 $missingFields = [];
 
 $requiredFields = [
-    'customers_id', 'illness_name', 'illness_symptoms', 
-    'illness_status', 'illness_diagnosis_date', 'illness_next_follow_up_date'
+    'illness_id', 'doctor_name', 'doctor_specialization', 
+    'doctor_contact_number', 'doctor_hospital_name', 'customers_id'
 ];
 
 foreach ($requiredFields as $field) {
@@ -51,39 +50,23 @@ if (!empty($missingFields)) {
     exit();
 }
 
-$customers_id = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_id']);
 
-$illness_name = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['illness_name']);
-$illness_symptoms = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['illness_symptoms']);
-$illness_status = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['illness_status']);
+$illness_id = isset($_POST['illness_id']) && $_POST['illness_id'] !== "NULL" ? $_POST['illness_id'] : NULL;
 
-$illness_diagnosis_date = !empty($_POST['illness_diagnosis_date']) ? $_POST['illness_diagnosis_date'] : null;
-$illness_next_follow_up_date = !empty($_POST['illness_next_follow_up_date']) ? $_POST['illness_next_follow_up_date'] : null;
+$doctor_name = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['doctor_name']);
+$doctor_specialization = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['doctor_specialization']);
+$doctor_contact_number = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['doctor_contact_number']);
+$doctor_hospital_name = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['doctor_hospital_name']);
+$customers_id = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_id']); // Get customers_id
 
-if ($illness_diagnosis_date) {
-    $diagnosis_date_obj = DateTime::createFromFormat('Y-m-d', $illness_diagnosis_date);
-    if (!$diagnosis_date_obj) {
-        echo json_encode(array("status" => "error", "message" => "Incorrect date format for illness_diagnosis_date"));
-        exit();
-    }
-}
+$doctor_id = isset($_POST['doctor_id']) ? intval($_POST['doctor_id']) : null;
 
-if ($illness_next_follow_up_date) {
-    $follow_up_date_obj = DateTime::createFromFormat('Y-m-d', $illness_next_follow_up_date);
-    if (!$follow_up_date_obj) {
-        echo json_encode(array("status" => "error", "message" => "Incorrect date format for illness_next_follow_up_date"));
-        exit();
-    }
-}
-
-$illness_id = isset($_POST['illness_id']) ? intval($_POST['illness_id']) : null;
-
-if ($illness_id) {
-    
-    $sql = "UPDATE illnesses SET 
-            customers_id = ?,  illness_name = ?, illness_symptoms = ?, 
-            illness_status = ?, illness_diagnosis_date = ?, illness_next_follow_up_date = ?
-            WHERE illness_id = ?";
+if ($doctor_id) {
+    // Update the doctor record
+    $sql = "UPDATE doctor SET 
+            illness_id = ?, doctor_name = ?, doctor_specialization = ?, 
+            doctor_contact_number = ?, doctor_hospital_name = ?, customers_id = ?
+            WHERE doctor_id = ?";
 
     $stmt = $conn_hayleys_medicalapp->prepare($sql);
 
@@ -94,25 +77,24 @@ if ($illness_id) {
 
     $stmt->bind_param(
         "ssssssi",
-        $customers_id,
-      
-        $illness_name,
-        $illness_symptoms,
-        $illness_status,
-        $illness_diagnosis_date,
-        $illness_next_follow_up_date,
-        $illness_id
+        $illness_id,
+        $doctor_name,
+        $doctor_specialization,
+        $doctor_contact_number,
+        $doctor_hospital_name,
+        $customers_id, 
+        $doctor_id
     );
 
     if ($stmt->execute()) {
-        echo json_encode(array("status" => "success", "message" => "Illness details updated successfully","illness_id"=>$illness_id));
+        echo json_encode(array("status" => "success", "message" => "Doctor details updated successfully", "doctor_id" => $doctor_id));
     } else {
-        echo json_encode(array("status" => "error", "message" => "Failed to update illness details: " . $stmt->error));
+        echo json_encode(array("status" => "error", "message" => "Failed to update doctor details: " . $stmt->error));
     }
 } else {
- 
-    $sql = "INSERT INTO illnesses (customers_id, illness_name, illness_symptoms, illness_status, illness_diagnosis_date, illness_next_follow_up_date) 
-        VALUES (?, ?, ?,  ?, ?, ?)";
+    // Insert new doctor record
+    $sql = "INSERT INTO doctor (illness_id, doctor_name, doctor_specialization, doctor_contact_number, doctor_hospital_name, customers_id) 
+        VALUES (?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn_hayleys_medicalapp->prepare($sql);
 
@@ -122,24 +104,24 @@ if ($illness_id) {
     }
 
     $stmt->bind_param(
-        "ssssss",
-        $customers_id,
-        $illness_name,
-        $illness_symptoms,
-        $illness_status,
-        $illness_diagnosis_date,
-        $illness_next_follow_up_date
+        "sssssi", // Adjusted to include the customers_id binding
+        $illness_id,
+        $doctor_name,
+        $doctor_specialization,
+        $doctor_contact_number,
+        $doctor_hospital_name,
+        $customers_id // Bind customers_id
     );
 
     if ($stmt->execute()) {
-        $illness_id = $conn_hayleys_medicalapp->insert_id;
+        $doctor_id = $conn_hayleys_medicalapp->insert_id;
         echo json_encode(array(
             "status" => "success", 
-            "message" => "Illness details added successfully", 
-            "illness_id" => $illness_id
+            "message" => "Doctor details added successfully", 
+            "doctor_id" => $doctor_id
         ));
     } else {
-        echo json_encode(array("status" => "error", "message" => "Failed to insert illness details: " . $stmt->error));
+        echo json_encode(array("status" => "error", "message" => "Failed to insert doctor details: " . $stmt->error));
     }
 }
 
