@@ -106,7 +106,10 @@ class _TabViewState extends State<TabView> {
           onDoctorAdded: widget.onDataUpdated,
         );
       case 'Prescriptions':
-        return const PrescriptionsTable();
+        return PrescriptionsTable(
+          customerId: widget.customerId,
+          onPrescriptionAdded: widget.onDataUpdated,
+        );
       case 'Reports':
         return const ReportsTable();
       case 'Bills':
@@ -123,7 +126,6 @@ class _TabViewState extends State<TabView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 20),
         Expanded(child: getTableWidget()),
       ],
     );

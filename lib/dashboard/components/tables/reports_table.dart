@@ -8,44 +8,7 @@ class ReportsTable extends StatefulWidget {
 }
 
 class _ReportsTableState extends State<ReportsTable> {
-  final List<Map<String, dynamic>> _reportsData = [
-    {
-      'report_id': 1,
-      'customer_id': 101,
-      'illness_id': 201,
-      'report_number': 'R001',
-      'report_type': 'Medical Report',
-      'report_date': '2025-02-10',
-      'report_details': 'Detailed health checkup report',
-      'document_path': 'path/to/document1.pdf',
-      'created_at': '2025-02-10 12:00:00',
-      'updated_at': '2025-02-12 15:30:00',
-    },
-    {
-      'report_id': 2,
-      'customer_id': 102,
-      'illness_id': 202,
-      'report_number': 'R002',
-      'report_type': 'Lab Report',
-      'report_date': '2025-03-05',
-      'report_details': 'Blood test results',
-      'document_path': 'path/to/document2.pdf',
-      'created_at': '2025-03-05 14:00:00',
-      'updated_at': '2025-03-06 10:15:00',
-    },
-    {
-      'report_id': 3,
-      'customer_id': 103,
-      'illness_id': 203,
-      'report_number': 'R003',
-      'report_type': 'X-Ray Report',
-      'report_date': '2025-04-01',
-      'report_details': 'Chest X-ray analysis',
-      'document_path': 'path/to/document3.pdf',
-      'created_at': '2025-04-01 09:30:00',
-      'updated_at': '2025-04-02 11:45:00',
-    }
-  ];
+  final List<Map<String, dynamic>> _reportsData = [];
 
   void _refreshData() {
     setState(() {});
@@ -98,31 +61,19 @@ class _ReportsTableState extends State<ReportsTable> {
                                             fontWeight: FontWeight.bold)))),
                             DataColumn(
                                 label: Expanded(
-                                    child: Text('Report Number',
+                                    child: Text('Illness ID',
                                         style: TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold)))),
                             DataColumn(
                                 label: Expanded(
-                                    child: Text('Report Type',
+                                    child: Text('Doctor ID',
                                         style: TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold)))),
                             DataColumn(
                                 label: Expanded(
-                                    child: Text('Report Date',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold)))),
-                            DataColumn(
-                                label: Expanded(
-                                    child: Text('Details',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold)))),
-                            DataColumn(
-                                label: Expanded(
-                                    child: Text('Document',
+                                    child: Text('Document Path',
                                         style: TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold)))),

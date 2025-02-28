@@ -8,35 +8,7 @@ class OthersTable extends StatefulWidget {
 }
 
 class _OthersTableState extends State<OthersTable> {
-  final List<Map<String, dynamic>> _othersData = [
-    {
-      'document_id': 1,
-      'document_type': 'Prescription',
-      'document_name': 'Prescription_April.pdf',
-      'document_path': 'path/to/document1.pdf',
-      'description': 'Monthly prescription for the patient',
-      'created_at': '2025-02-10 12:00:00',
-      'updated_at': '2025-02-12 15:30:00',
-    },
-    {
-      'document_id': 2,
-      'document_type': 'Medical Certificate',
-      'document_name': 'Medical_Certificate.pdf',
-      'document_path': 'path/to/document2.pdf',
-      'description': 'Medical leave certificate',
-      'created_at': '2025-03-05 14:00:00',
-      'updated_at': '2025-03-06 10:15:00',
-    },
-    {
-      'document_id': 3,
-      'document_type': 'Lab Report',
-      'document_name': 'Lab_Results.pdf',
-      'document_path': 'path/to/document3.pdf',
-      'description': 'Blood test and cholesterol report',
-      'created_at': '2025-04-01 09:30:00',
-      'updated_at': '2025-04-02 11:45:00',
-    }
-  ];
+  final List<Map<String, dynamic>> _othersData = [];
 
   void _refreshData() {
     setState(() {});
@@ -83,31 +55,25 @@ class _OthersTableState extends State<OthersTable> {
                         columns: const [
                           DataColumn(
                               label: Expanded(
-                                  child: Text('Document ID',
+                                  child: Text('Report ID',
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold)))),
                           DataColumn(
                               label: Expanded(
-                                  child: Text('Document Type',
+                                  child: Text('Illness ID',
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold)))),
                           DataColumn(
                               label: Expanded(
-                                  child: Text('Document Name',
+                                  child: Text('Doctor ID',
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold)))),
                           DataColumn(
                               label: Expanded(
                                   child: Text('Document Path',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold)))),
-                          DataColumn(
-                              label: Expanded(
-                                  child: Text('Description',
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold)))),
@@ -134,8 +100,6 @@ class _OthersTableState extends State<OthersTable> {
                                 ),
                               ),
                             ),
-                            DataCell(
-                                Text(other['description'] ?? 'No Description')),
                             DataCell(
                               IconButton(
                                 icon: const Icon(Icons.more_vert),

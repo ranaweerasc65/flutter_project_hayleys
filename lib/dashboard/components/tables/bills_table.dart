@@ -8,38 +8,7 @@ class BillsTable extends StatefulWidget {
 }
 
 class _BillsTableState extends State<BillsTable> {
-  final List<Map<String, dynamic>> _billsData = [
-    {
-      'bill_id': 1, // This is the auto-incremented BILL_ID
-      'customer_id': 101, // Corresponds to CUSTOMERS_ID
-      'illness_id': 201, // Corresponds to ILLNESS_ID
-      'bill_number': 'B001',
-      'bill_amount': 250.0, // BILL_AMOUNT
-      'bill_issue_date': '2025-02-15', // BILL_ISSUE_DATE
-      'bill_status': 'Unpaid', // BILL_STATUS
-      'bill_description': 'Treatment for fever', // BILL_DESCRIPTION (nullable)
-    },
-    {
-      'bill_id': 2,
-      'customer_id': 102,
-      'illness_id': 202,
-      'bill_number': 'B002',
-      'bill_amount': 150.5,
-      'bill_issue_date': '2025-03-10',
-      'bill_status': 'Paid',
-      'bill_description': 'Consultation fee',
-    },
-    {
-      'bill_id': 3,
-      'customer_id': 103,
-      'illness_id': 203,
-      'bill_number': 'B003',
-      'bill_amount': 500.0,
-      'bill_issue_date': '2025-02-20',
-      'bill_status': 'Unpaid',
-      'bill_description': 'Surgery fee',
-    }
-  ];
+  final List<Map<String, dynamic>> _billsData = [];
 
   void _refreshData() {
     setState(() {});
@@ -92,31 +61,19 @@ class _BillsTableState extends State<BillsTable> {
                                             fontWeight: FontWeight.bold)))),
                             DataColumn(
                                 label: Expanded(
-                                    child: Text('Bill Number',
+                                    child: Text('Illness ID',
                                         style: TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold)))),
                             DataColumn(
                                 label: Expanded(
-                                    child: Text('Amount',
+                                    child: Text('Doctor ID',
                                         style: TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold)))),
                             DataColumn(
                                 label: Expanded(
-                                    child: Text('Issue Date',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold)))),
-                            DataColumn(
-                                label: Expanded(
-                                    child: Text('Status',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold)))),
-                            DataColumn(
-                                label: Expanded(
-                                    child: Text('Description',
+                                    child: Text('Document Path',
                                         style: TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold)))),
@@ -135,24 +92,7 @@ class _BillsTableState extends State<BillsTable> {
                               DataCell(Text(
                                   '\$${bill['bill_amount'].toStringAsFixed(2)}')),
                               DataCell(Text(bill['bill_issue_date'])),
-                              DataCell(
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 4, horizontal: 8),
-                                  decoration: BoxDecoration(
-                                    color: bill['bill_status'] == 'Paid'
-                                        ? Colors.green
-                                        : (bill['bill_status'] == 'Unpaid'
-                                            ? Colors.red
-                                            : Colors.orange),
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  child: Text(
-                                    bill['bill_status'],
-                                    style: const TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                              ),
+
                               DataCell(Text(bill['bill_description'] ??
                                   'No Description')),
                               DataCell(

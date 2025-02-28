@@ -76,6 +76,10 @@ class _DoctorTableState extends State<DoctorTable> {
     print('---------------------');
     print('Doctor Table for Customer ID: ${widget.customerId}');
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showAddDoctorsForm(); // Show form immediately when page opens
+    });
+
     _fetchAddedRecords();
     _fetchIllnessIDs();
   }
