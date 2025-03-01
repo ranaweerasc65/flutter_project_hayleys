@@ -82,6 +82,7 @@ flutter:
     - assets/app_logo.png
     - assets/background_img.jpg
     - assets/background_img.png
+    - assets/claim_img.jpg
     - assets/app_icon.png
     - assets/new_app_logo.png
     - assets/shape.png

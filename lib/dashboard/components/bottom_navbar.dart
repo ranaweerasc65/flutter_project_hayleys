@@ -17,10 +17,10 @@ class BottomNavBar extends StatelessWidget {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1), // Subtle shadow
+            color: Colors.black.withOpacity(0.1),
             spreadRadius: 2,
             blurRadius: 10,
-            offset: const Offset(0, -4), // Soft shadow effect
+            offset: const Offset(0, -4),
           ),
         ],
       ),
@@ -33,8 +33,8 @@ class BottomNavBar extends StatelessWidget {
           type: BottomNavigationBarType.fixed,
           currentIndex: currentIndex,
           onTap: onTap,
-          elevation: 0, // Remove default elevation
-          backgroundColor: Colors.white, // Clean background
+          elevation: 0,
+          backgroundColor: Colors.white,
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home, size: 28),
@@ -48,10 +48,13 @@ class BottomNavBar extends StatelessWidget {
               icon: Icon(Icons.health_and_safety, size: 28),
               label: 'Insurance',
             ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.approval, size: 28),
+              label: 'Claims',
+            ),
           ],
-          selectedItemColor: Colors.blue.shade900, // Elegant blue shade
-          unselectedItemColor:
-              Colors.grey.shade500, // Softer grey for better contrast
+          selectedItemColor: Colors.blue.shade900,
+          unselectedItemColor: Colors.grey.shade500,
           selectedFontSize: 15.0,
           unselectedFontSize: 13.0,
           iconSize: 30.0,
