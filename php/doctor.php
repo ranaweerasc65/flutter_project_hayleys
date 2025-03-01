@@ -50,19 +50,17 @@ if (!empty($missingFields)) {
     exit();
 }
 
-
-$illness_id = isset($_POST['illness_id']) && $_POST['illness_id'] !== "NULL" ? $_POST['illness_id'] : NULL;
-
 $doctor_name = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['doctor_name']);
 $doctor_specialization = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['doctor_specialization']);
 $doctor_contact_number = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['doctor_contact_number']);
 $doctor_hospital_name = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['doctor_hospital_name']);
-$customers_id = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_id']); // Get customers_id
+$customers_id = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['customers_id']); 
+$illness_id = mysqli_real_escape_string($conn_hayleys_medicalapp, $_POST['illness_id']); 
 
 $doctor_id = isset($_POST['doctor_id']) ? intval($_POST['doctor_id']) : null;
 
 if ($doctor_id) {
-    // Update the doctor record
+    
     $sql = "UPDATE doctor SET 
             illness_id = ?, doctor_name = ?, doctor_specialization = ?, 
             doctor_contact_number = ?, doctor_hospital_name = ?, customers_id = ?
@@ -104,13 +102,13 @@ if ($doctor_id) {
     }
 
     $stmt->bind_param(
-        "sssssi", // Adjusted to include the customers_id binding
+        "sssssi",
         $illness_id,
         $doctor_name,
         $doctor_specialization,
         $doctor_contact_number,
         $doctor_hospital_name,
-        $customers_id // Bind customers_id
+        $customers_id 
     );
 
     if ($stmt->execute()) {

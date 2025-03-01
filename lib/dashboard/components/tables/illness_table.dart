@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_project_hayleys/dashboard/components/tab_view.dart';
 import 'package:flutter_project_hayleys/dashboard/components/tables/doctor_table.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -8,18 +9,22 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'dart:math';
 import 'dart:ui';
 
+import '../options.dart';
+
 class IllnessTable extends StatefulWidget {
   final int customerId;
   final Function onIllnessAdded;
+  final TabController tabController;
 
   const IllnessTable({
     super.key,
     required this.customerId,
     required this.onIllnessAdded,
+    required this.tabController,
   });
 
   @override
-  _IllnessTableState createState() => _IllnessTableState();
+  State<IllnessTable> createState() => _IllnessTableState();
 }
 
 class _IllnessTableState extends State<IllnessTable> {
@@ -519,77 +524,11 @@ class _IllnessTableState extends State<IllnessTable> {
   }
 
   void _showOptionsDialog(Map<String, dynamic> illness) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Wrap(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.person_add, color: Colors.green),
-              title: const Text('Add Doctors'),
-              onTap: () {
-                Navigator.pop(context);
-                int? customerId = illness['CUSTOMERS_ID'] ?? widget.customerId;
-
-                print("CUSTOMERS_ID: $customerId");
-
-                if (customerId != null) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DoctorTable(
-                        customerId: customerId,
-                        onDoctorAdded: () {},
-                      ),
-                    ),
-                  );
-                } else {
-                  // Handle null case (e.g., show error message)
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text("Error: Customer ID is missing!"),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.receipt_long, color: Colors.orange),
-              title: const Text('Add Prescriptions'),
-              onTap: () {
-                Navigator.pop(context);
-                // _addPrescriptions(illness['ILLNESS_ID']);
-              },
-            ),
-            ListTile(
-              leading:
-                  const Icon(Icons.insert_drive_file, color: Colors.purple),
-              title: const Text('Add Reports'),
-              onTap: () {
-                Navigator.pop(context);
-                // _addReports(illness['ILLNESS_ID']);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.attach_money, color: Colors.teal),
-              title: const Text('Add Bills'),
-              onTap: () {
-                Navigator.pop(context);
-                // _addBills(illness['ILLNESS_ID']);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.folder, color: Colors.brown),
-              title: const Text('Add Other Documents'),
-              onTap: () {
-                Navigator.pop(context);
-                // _addOtherDocuments(illness['ILLNESS_ID']);
-              },
-            ),
-          ],
-        );
-      },
+    OptionsDialog.show(
+      context,
+      illness: illness,
+      tabController: widget.tabController,
+      customerId: widget.customerId,
     );
   }
 

@@ -10,11 +10,13 @@ import 'dart:ui';
 class DoctorTable extends StatefulWidget {
   final int customerId;
   final Function onDoctorAdded;
+  final int? illnessId;
 
   const DoctorTable({
     super.key,
     required this.customerId,
     required this.onDoctorAdded,
+    this.illnessId,
   });
 
   @override
@@ -55,9 +57,6 @@ class _DoctorTableState extends State<DoctorTable> {
 
   int doctorsCount = 0;
 
-  List<String> illnessIds = [];
-  String? selectedIllnessId;
-
   Future<void> _refreshData() async {
     setState(() {
       doctorNameController.clear();
@@ -74,14 +73,10 @@ class _DoctorTableState extends State<DoctorTable> {
     super.initState();
 
     print('---------------------');
-    print('Doctor Table for Customer ID: ${widget.customerId}');
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showAddDoctorsForm(); // Show form immediately when page opens
-    });
+    print(
+        'Doctor Table for Customer ID: ${widget.customerId} Illness ID: ${widget.illnessId} ');
 
     _fetchAddedRecords();
-    _fetchIllnessIDs();
   }
 
   void _showAddDoctorsForm() {
@@ -155,22 +150,6 @@ class _DoctorTableState extends State<DoctorTable> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                buildLabel("Illness ID"),
-                                buildDropdownField(
-                                  "Illness ID",
-                                  selectedIllnessId,
-                                  illnessIds,
-                                  (value) =>
-                                      setState(() => selectedIllnessId = value),
-                                  isMandatory: true,
-                                ),
-                                const SizedBox(height: 8),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -480,27 +459,6 @@ class _DoctorTableState extends State<DoctorTable> {
                       );
                     },
                   ),
-            Positioned(
-              right: 10,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  _showAddDoctorsForm();
-                },
-                icon: const Icon(Icons.add, color: Colors.white),
-                label: const Text(
-                  "Add Doctor",
-                  style: TextStyle(color: Colors.white),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple.shade800,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -545,10 +503,6 @@ class _DoctorTableState extends State<DoctorTable> {
     doctorContactNumberController.text = doctor['DOCTOR_CONTACT_NUMBER'] ?? '';
     doctorHospitalNameController.text = doctor['DOCTOR_HOSPITAL_NAME'] ?? '';
     doctorSpecialization = doctor['DOCTOR_SPECIALIZATION'];
-    selectedIllnessId =
-        doctor['ILLNESS_ID'] == null || doctor['ILLNESS_ID'] == 'Not Specified'
-            ? 'Not Specified'
-            : doctor['ILLNESS_ID'].toString();
 
     showDialog(
       context: context,
@@ -618,22 +572,6 @@ class _DoctorTableState extends State<DoctorTable> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                buildLabel("Illness ID"),
-                                buildDropdownField(
-                                  "Illness ID",
-                                  selectedIllnessId,
-                                  illnessIds,
-                                  (value) =>
-                                      setState(() => selectedIllnessId = value),
-                                  isMandatory: true,
-                                ),
-                                const SizedBox(height: 8),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -877,11 +815,10 @@ class _DoctorTableState extends State<DoctorTable> {
     print('-----------------');
     print('ADD DOCTOR FUNCTION STARTED');
 
+    print("Checking illnessId in DoctorTable: ${widget.illnessId}");
+
     if (_formKey.currentState!.validate()) {
       print('Form validation passed');
-
-      String illnessId =
-          selectedIllnessId == "Not Specified" ? "NULL" : selectedIllnessId!;
 
       final recordDetails = {
         "customers_id": widget.customerId.toString(),
@@ -889,7 +826,7 @@ class _DoctorTableState extends State<DoctorTable> {
         "doctor_specialization": doctorSpecialization,
         "doctor_contact_number": doctorContactNumberController.text,
         "doctor_hospital_name": doctorHospitalNameController.text,
-        "illness_id": illnessId, // Send illness_id here
+        "illness_id": widget.illnessId.toString(),
       };
 
       print('Record Details: $recordDetails');
@@ -957,11 +894,11 @@ class _DoctorTableState extends State<DoctorTable> {
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
-        print("Response Body: ${response.body}"); // Print raw response body
+        print("Response Body: ${response.body}");
 
         if (jsonResponse['status'] == 'success') {
           final List<dynamic>? doctor = jsonResponse['doctor'];
-          print("Fetched doctor data: $doctor"); // Print fetched doctor data
+          print("Fetched doctor data: $doctor");
 
           setState(() {
             _doctorsData = (doctor != null && doctor.isNotEmpty)
@@ -976,7 +913,6 @@ class _DoctorTableState extends State<DoctorTable> {
           });
           print("No doctor records found or error in response data.");
         }
-        _fetchIllnessIDs();
       } else {
         print(
             "Error: Server returned an error with status code: ${response.statusCode}");
@@ -985,43 +921,6 @@ class _DoctorTableState extends State<DoctorTable> {
     } catch (e) {
       print("Exception occurred: $e"); // Print exception details for debugging
       _showErrorDialog("An error occurred: $e");
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _fetchIllnessIDs() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final url =
-          "${Config.baseUrl}get_illness_count.php?customer_id=${widget.customerId}";
-      final response = await http.get(Uri.parse(url));
-
-      if (response.statusCode == 200) {
-        final jsonResponse = jsonDecode(response.body);
-
-        if (jsonResponse['status'] == 'success') {
-          final List<dynamic> illnesses = jsonResponse['illness_ids'];
-
-          setState(() {
-            illnessIds = ["Not Specified"];
-            illnessIds.addAll(illnesses.map((id) => id.toString()));
-          });
-
-          print("Illness IDs fetched: $illnessIds");
-        } else {
-          print("Failed to fetch illness IDs: ${jsonResponse['message']}");
-        }
-      } else {
-        print("Server error: ${response.statusCode}");
-      }
-    } catch (e) {
-      print("Exception occurred: $e");
     } finally {
       setState(() {
         _isLoading = false;
@@ -1525,21 +1424,13 @@ class _DoctorTableState extends State<DoctorTable> {
       // Debug print for form validation
       print('Form is valid. Proceeding with saving doctor details.');
 
-      // Assign illnessId, checking if the selected illness is 'Not Specified'
-      final illnessId =
-          selectedIllnessId == "Not Specified" ? "0" : selectedIllnessId;
-
-      // Debug print for illnessId
-      print('Illness ID: $illnessId');
-
-      // Prepare the record details to be sent in the request
       final recordDetails = {
         "customers_id": widget.customerId.toString(),
         "doctor_name": doctorNameController.text,
         "doctor_specialization": doctorSpecialization,
         "doctor_contact_number": doctorContactNumberController.text,
         "doctor_hospital_name": doctorHospitalNameController.text,
-        "illness_id": illnessId,
+        "illness_id": widget.illnessId.toString(),
       };
 
       if (doctorId != null) {

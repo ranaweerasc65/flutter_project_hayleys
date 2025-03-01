@@ -28,6 +28,7 @@ class TabView extends StatefulWidget {
 
 class _TabViewState extends State<TabView> {
   Timer? _timer;
+  int? selectedIllnessId;
 
   final List<String> tabNames = [
     'Illness',
@@ -93,29 +94,53 @@ class _TabViewState extends State<TabView> {
     super.dispose();
   }
 
+  void setSelectedIllnessId(int? illnessId) {
+    setState(() {
+      selectedIllnessId = illnessId;
+    });
+  }
+
   Widget getTableWidget() {
     switch (widget.tabName) {
       case 'Illness':
         return IllnessTable(
           customerId: widget.customerId,
-          onIllnessAdded: widget.onDataUpdated,
+          onIllnessAdded: (int? illnessId) {
+            setSelectedIllnessId(illnessId);
+            widget.onDataUpdated();
+          },
+          tabController: widget.tabController,
         );
       case 'Doctors':
         return DoctorTable(
           customerId: widget.customerId,
+          illnessId: selectedIllnessId,
           onDoctorAdded: widget.onDataUpdated,
         );
       case 'Prescriptions':
         return PrescriptionsTable(
           customerId: widget.customerId,
+          illnessId: selectedIllnessId,
           onPrescriptionAdded: widget.onDataUpdated,
         );
       case 'Reports':
-        return const ReportsTable();
+        return ReportsTable(
+            // customerId: widget.customerId,
+            // illnessId: selectedIllnessId,
+            // onReportAdded: widget.onDataUpdated,
+            );
       case 'Bills':
-        return const BillsTable();
+        return BillsTable(
+          customerId: widget.customerId,
+          illnessId: selectedIllnessId,
+          onBillAdded: widget.onDataUpdated,
+        );
       case 'Others':
-        return const OthersTable();
+        return OthersTable(
+            // customerId: widget.customerId,
+            // illnessId: selectedIllnessId,
+            // onOtherAdded: widget.onDataUpdated,
+            );
       default:
         return Container();
     }

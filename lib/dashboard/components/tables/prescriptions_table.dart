@@ -10,11 +10,13 @@ import 'dart:ui';
 class PrescriptionsTable extends StatefulWidget {
   final int customerId;
   final Function onPrescriptionAdded;
+  final int? illnessId;
 
   const PrescriptionsTable({
     super.key,
     required this.customerId,
     required this.onPrescriptionAdded,
+    this.illnessId,
   });
 
   @override
@@ -52,10 +54,17 @@ class _PrescriptionsTableState extends State<PrescriptionsTable> {
     super.initState();
 
     print('---------------------');
-    print('Prescription Table for Customer ID: ${widget.customerId}');
+    print(
+        'Prescription Table for Customer ID: ${widget.customerId} Illness ID: ${widget.illnessId}');
+
+    // Print the illnessId if it is not null
+    if (widget.illnessId != null) {
+      print('Prescription Table for Illness ID: ${widget.illnessId}');
+    } else {
+      print('No Illness ID provided');
+    }
 
     _fetchAddedRecords();
-    _fetchIllnessIDs();
   }
 
   void _showAddPrescriptionsForm() {
@@ -205,173 +214,141 @@ class _PrescriptionsTableState extends State<PrescriptionsTable> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedWavesBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Stack(
-          children: [
-            _isLoading
-                ? Center(
-                    child: LoadingAnimationWidget.inkDrop(
-                      color: Colors.orange.shade800,
-                      size: 30,
-                    ),
-                  )
-                : LayoutBuilder(
-                    builder: (context, constraints) {
-                      return RefreshIndicator(
-                        onRefresh: () async {
-                          _fetchAddedRecords();
-                        },
-                        child: _doctorsData.isEmpty
-                            ? const Padding(
-                                padding: EdgeInsets.all(20.0),
-                                child: Center(
-                                  child: Text(
-                                    "No records found",
-                                    style: TextStyle(
-                                        fontSize: 18, color: Colors.black54),
-                                  ),
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          _isLoading
+              ? Center(
+                  child: LoadingAnimationWidget.inkDrop(
+                    color: Colors.orange.shade800,
+                    size: 30,
+                  ),
+                )
+              : LayoutBuilder(
+                  builder: (context, constraints) {
+                    return RefreshIndicator(
+                      onRefresh: () async {
+                        _fetchAddedRecords();
+                      },
+                      child: _doctorsData.isEmpty
+                          ? const Padding(
+                              padding: EdgeInsets.all(20.0),
+                              child: Center(
+                                child: Text(
+                                  "No records found",
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.black54),
                                 ),
-                              )
-                            : SingleChildScrollView(
-                                scrollDirection: Axis.vertical,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 60),
-                                      Container(
-                                        padding: const EdgeInsets.all(16),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color:
-                                                  Colors.grey.withOpacity(0.3),
-                                              spreadRadius: 3,
-                                              blurRadius: 5,
-                                              offset: const Offset(0, 3),
-                                            ),
-                                          ],
-                                        ),
-                                        child: SingleChildScrollView(
-                                          scrollDirection: Axis.horizontal,
-                                          child: ConstrainedBox(
-                                            constraints: BoxConstraints(
-                                                minWidth: constraints.maxWidth),
-                                            child: DataTable(
-                                              headingRowColor:
-                                                  MaterialStateProperty.all(
-                                                      Colors.blue.shade800),
-                                              dataRowColor:
-                                                  MaterialStateProperty.all(
-                                                      Colors.white),
-                                              columnSpacing: 20,
-                                              columns: const [
-                                                DataColumn(
-                                                    label: Text(
-                                                        'Prescription ID',
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold))),
-                                                DataColumn(
-                                                    label: Text('Illness ID',
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold))),
-                                                DataColumn(
-                                                    label: Text('Doctor ID',
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold))),
-                                                DataColumn(
-                                                    label: Text('Documents',
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold))),
-                                                DataColumn(
-                                                    label: Text('Actions',
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold))),
-                                              ],
-                                              rows: _doctorsData.map((doctor) {
-                                                return DataRow(cells: [
-                                                  DataCell(Text(
-                                                      doctor['DOCTOR_ID']
-                                                              ?.toString() ??
-                                                          'Not Specified')),
-                                                  DataCell(Text(
-                                                      doctor['ILLNESS_ID']
-                                                              ?.toString() ??
-                                                          'Not Specified')),
-                                                  DataCell(Text(
-                                                      doctor['DOCTOR_NAME'] ??
-                                                          'N/A')),
-                                                  DataCell(Text(
-                                                      doctor['DOCTOR_NAME'] ??
-                                                          'N/A')),
-                                                  DataCell(
-                                                    IconButton(
-                                                      icon: const Icon(
-                                                          Icons.more_vert),
-                                                      onPressed: () {
-                                                        _showOptionsDialog(
-                                                            doctor);
-                                                      },
-                                                    ),
+                              ),
+                            )
+                          : SingleChildScrollView(
+                              scrollDirection: Axis.vertical,
+                              child: Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 60),
+                                    Container(
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(12),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(0.3),
+                                            spreadRadius: 3,
+                                            blurRadius: 5,
+                                            offset: const Offset(0, 3),
+                                          ),
+                                        ],
+                                      ),
+                                      child: SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: ConstrainedBox(
+                                          constraints: BoxConstraints(
+                                              minWidth: constraints.maxWidth),
+                                          child: DataTable(
+                                            headingRowColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.blue.shade800),
+                                            dataRowColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.white),
+                                            columnSpacing: 20,
+                                            columns: const [
+                                              DataColumn(
+                                                  label: Text('Prescription ID',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight
+                                                              .bold))),
+                                              DataColumn(
+                                                  label: Text('Illness ID',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight
+                                                              .bold))),
+                                              DataColumn(
+                                                  label: Text('Doctor ID',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight
+                                                              .bold))),
+                                              DataColumn(
+                                                  label: Text('Documents',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight
+                                                              .bold))),
+                                              DataColumn(
+                                                  label: Text('Actions',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight
+                                                              .bold))),
+                                            ],
+                                            rows: _doctorsData.map((doctor) {
+                                              return DataRow(cells: [
+                                                DataCell(Text(
+                                                    doctor['DOCTOR_ID']
+                                                            ?.toString() ??
+                                                        'Not Specified')),
+                                                DataCell(Text(
+                                                    doctor['ILLNESS_ID']
+                                                            ?.toString() ??
+                                                        'Not Specified')),
+                                                DataCell(Text(
+                                                    doctor['DOCTOR_NAME'] ??
+                                                        'N/A')),
+                                                DataCell(Text(
+                                                    doctor['DOCTOR_NAME'] ??
+                                                        'N/A')),
+                                                DataCell(
+                                                  IconButton(
+                                                    icon: const Icon(
+                                                        Icons.more_vert),
+                                                    onPressed: () {
+                                                      _showOptionsDialog(
+                                                          doctor);
+                                                    },
                                                   ),
-                                                ]);
-                                              }).toList(),
-                                            ),
+                                                ),
+                                              ]);
+                                            }).toList(),
                                           ),
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                      );
-                    },
-                  ),
-            Positioned(
-              right: 10,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  _showAddPrescriptionsForm();
-                },
-                icon: const Icon(Icons.add, color: Colors.white),
-                label: const Text(
-                  "Add Prescription",
-                  style: TextStyle(color: Colors.white),
+                            ),
+                    );
+                  },
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange.shade800,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -1435,99 +1412,5 @@ Color _getSpecializationColor(String specialization) {
       return Colors.blueGrey;
     default:
       return Colors.orange;
-  }
-}
-
-class AnimatedWavesBackground extends StatefulWidget {
-  final Widget child;
-  const AnimatedWavesBackground({Key? key, required this.child})
-      : super(key: key);
-
-  @override
-  _AnimatedWavesBackgroundState createState() =>
-      _AnimatedWavesBackgroundState();
-}
-
-class _AnimatedWavesBackgroundState extends State<AnimatedWavesBackground>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 8), // Slow and smooth animation
-    )..repeat(reverse: true);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) {
-              return CustomPaint(
-                painter: WavePainter(_controller.value),
-              );
-            },
-          ),
-        ),
-        widget.child,
-      ],
-    );
-  }
-}
-
-class WavePainter extends CustomPainter {
-  final double animationValue;
-  WavePainter(this.animationValue);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    Paint wavePaint = Paint()
-      ..style = PaintingStyle.fill
-      ..color = Colors.orange.withOpacity(0.2);
-    _drawWave(canvas, size, wavePaint, 1.0, 20, 0);
-    _drawWave(canvas, size, wavePaint..color = Colors.blue.withOpacity(0.15),
-        0.8, 15, pi / 2);
-    _drawWave(canvas, size, wavePaint..color = Colors.blue.withOpacity(0.1),
-        0.6, 10, pi);
-  }
-
-  void _drawWave(Canvas canvas, Size size, Paint paint, double amplitude,
-      double waveHeight, double phaseShift) {
-    Path path = Path();
-    double waveFrequency = 2.0 * pi / size.width; // Controls wave length
-    double yOffset = size.height * 0.8; // Adjust wave height position
-
-    path.moveTo(0, yOffset);
-
-    for (double x = 0; x <= size.width; x++) {
-      double y = yOffset +
-          sin((x * waveFrequency) + (animationValue * 2 * pi) + phaseShift) *
-              waveHeight *
-              amplitude;
-      path.lineTo(x, y);
-    }
-
-    path.lineTo(size.width, size.height);
-    path.lineTo(0, size.height);
-    path.close();
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(WavePainter oldDelegate) {
-    return oldDelegate.animationValue != animationValue;
   }
 }
