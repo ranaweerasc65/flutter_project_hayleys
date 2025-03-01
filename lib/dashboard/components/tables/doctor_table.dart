@@ -1,12 +1,9 @@
 import 'dart:convert';
-import 'package:flutter_project_hayleys/dashboard/components/tables/illness_table.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_project_hayleys/config.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'dart:math';
-import 'dart:ui';
 
 class DoctorTable extends StatefulWidget {
   final int customerId;
@@ -63,410 +60,209 @@ class _DoctorTableState extends State<DoctorTable> {
     super.initState();
 
     print('---------------------');
-    print(
-        'Doctor Table for Customer ID: ${widget.customerId} Illness ID: ${widget.illnessId} ');
+    print('Doctor Table for Customer ID: ${widget.customerId}');
 
     _fetchAddedRecords();
   }
 
-  void _showAddDoctorsForm() {
-    doctorNameController.clear();
-    doctorContactNumberController.clear();
-    doctorHospitalNameController.clear();
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Dialog(
-              backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        decoration: const BoxDecoration(
-                          color: Color.fromARGB(255, 5, 94, 166),
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(15),
-                            topRight: Radius.circular(15),
-                          ),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 16, horizontal: 20),
-                        child: Stack(
-                          children: [
-                            const Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                "Add New Record",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const CircleAvatar(
-                                  backgroundColor: Color.fromARGB(0, 227, 4, 4),
-                                  radius: 16,
-                                  child: Icon(
-                                    Icons.close,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      buildLabel("Doctor Name"),
-                                      buildTextField(
-                                        doctorNameController,
-                                        "",
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        "Doctor Specialization",
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      buildDropdownField(
-                                        "Doctor Specialization",
-                                        doctorSpecialization,
-                                        [
-                                          'Cardiologist (Heart Specialist)',
-                                          'Dermatologist (Skin Specialist)',
-                                          'Endocrinologist (Hormone Specialist)',
-                                          'Gastroenterologist (Stomach & Digestive Specialist)',
-                                          'Hematologist (Blood Specialist)',
-                                          'Neurologist (Brain & Nerve Specialist)',
-                                          'Oncologist (Cancer Specialist)',
-                                          'Ophthalmologist (Eye Specialist)',
-                                          'Orthopedic Surgeon (Bone & Joint Specialist)',
-                                          'Pediatrician (Children’s Specialist)',
-                                          'Psychiatrist (Mental Health Specialist)',
-                                          'Pulmonologist (Lung Specialist)',
-                                          'Radiologist (Medical Imaging Specialist)',
-                                          'Rheumatologist (Arthritis & Joint Pain Specialist)',
-                                          'Urologist (Urinary & Kidney Specialist)'
-                                        ],
-                                        (value) => doctorSpecialization = value,
-                                        isMandatory: true,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            buildLabel("Doctor Contact Number "),
-                            buildTextField(doctorContactNumberController, ""),
-                            const SizedBox(height: 8),
-                            const SizedBox(height: 8),
-                            buildLabel("Doctor Hospital Name "),
-                            buildTextField(doctorHospitalNameController, ""),
-                            const SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                ElevatedButton(
-                                  onPressed: _addRecord,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blue[800],
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(50),
-                                    ),
-                                    minimumSize: const Size(200, 50),
-                                  ),
-                                  child: const Text(
-                                    "Add",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                                MaterialButton(
-                                  onPressed: () =>
-                                      _showClearFormDialog(context),
-                                  height: 50,
-                                  minWidth: 200,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(50),
-                                    side: BorderSide(
-                                      color: Colors.blue[800]!,
-                                      width: 2.0,
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    "Clear Form",
-                                    style: TextStyle(
-                                      color: Color.fromARGB(255, 2, 99, 178),
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return AnimatedWavesBackground(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Stack(
-          children: [
-            _isLoading
-                ? Center(
-                    child: LoadingAnimationWidget.inkDrop(
-                      color: Colors.purple.shade800,
-                      size: 30,
-                    ),
-                  )
-                : LayoutBuilder(
-                    builder: (context, constraints) {
-                      return RefreshIndicator(
-                        onRefresh: () async {
-                          _fetchAddedRecords();
-                        },
-                        child: _doctorsData.isEmpty
-                            ? const Padding(
-                                padding: EdgeInsets.all(20.0),
-                                child: Center(
-                                  child: Text(
-                                    "No records found",
-                                    style: TextStyle(
-                                        fontSize: 18, color: Colors.black54),
-                                  ),
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          Opacity(
+            opacity: 0.2,
+            child: Image.asset(
+              'assets/background_img.jpg',
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+            ),
+          ),
+          _isLoading
+              ? Center(
+                  child: LoadingAnimationWidget.inkDrop(
+                    color: Colors.blue.shade800,
+                    size: 30,
+                  ),
+                )
+              : LayoutBuilder(
+                  builder: (context, constraints) {
+                    return RefreshIndicator(
+                      onRefresh: () async {
+                        _fetchAddedRecords();
+                      },
+                      child: _doctorsData.isEmpty
+                          ? const Padding(
+                              padding: EdgeInsets.all(20.0),
+                              child: Center(
+                                child: Text(
+                                  "No records found",
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.black54),
                                 ),
-                              )
-                            : SingleChildScrollView(
-                                scrollDirection: Axis.vertical,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 60),
-                                      Container(
-                                        padding: const EdgeInsets.all(16),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color:
-                                                  Colors.grey.withOpacity(0.3),
-                                              spreadRadius: 3,
-                                              blurRadius: 5,
-                                              offset: const Offset(0, 3),
-                                            ),
-                                          ],
-                                        ),
-                                        child: SingleChildScrollView(
-                                          scrollDirection: Axis.horizontal,
-                                          child: ConstrainedBox(
-                                            constraints: BoxConstraints(
-                                                minWidth: constraints.maxWidth),
-                                            child: DataTable(
-                                              headingRowColor:
-                                                  MaterialStateProperty.all(
-                                                      Colors.blue.shade800),
-                                              dataRowColor:
-                                                  MaterialStateProperty.all(
-                                                      Colors.white),
-                                              columnSpacing: 20,
-                                              columns: const [
-                                                DataColumn(
-                                                    label: Text('Doctor ID',
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold))),
-                                                DataColumn(
-                                                    label: Text('Illness ID',
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold))),
-                                                DataColumn(
-                                                    label: Text('Doctor Name',
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold))),
-                                                DataColumn(
-                                                    label: Text(
-                                                        'Specialization',
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold))),
-                                                DataColumn(
-                                                    label: Text(
-                                                        'Contact Number',
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold))),
-                                                DataColumn(
-                                                    label: Text('Hospital Name',
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold))),
-                                                DataColumn(
-                                                    label: Text('Actions',
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold))),
-                                              ],
-                                              rows: _doctorsData.map((doctor) {
-                                                return DataRow(cells: [
-                                                  DataCell(Text(
-                                                      doctor['DOCTOR_ID']
-                                                              ?.toString() ??
-                                                          'Not Specified')),
-                                                  DataCell(Text(
-                                                      doctor['ILLNESS_ID']
-                                                              ?.toString() ??
-                                                          'Not Specified')),
-                                                  DataCell(Text(
-                                                      doctor['DOCTOR_NAME'] ??
-                                                          'N/A')),
-                                                  DataCell(
-                                                    Container(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          vertical: 4,
-                                                          horizontal: 8),
-                                                      decoration: BoxDecoration(
-                                                        color: _getSpecializationColor(
-                                                            doctor[
-                                                                'DOCTOR_SPECIALIZATION']),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(5),
-                                                      ),
-                                                      child: Text(
-                                                        doctor['DOCTOR_SPECIALIZATION'] ??
-                                                            'N/A',
-                                                        style: const TextStyle(
+                              ),
+                            )
+                          : SingleChildScrollView(
+                              scrollDirection: Axis.vertical,
+                              child: Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 10),
+                                    Container(
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(12),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.blue.withOpacity(0.3),
+                                            spreadRadius: 3,
+                                            blurRadius: 5,
+                                            offset: const Offset(0, 3),
+                                          ),
+                                        ],
+                                      ),
+                                      child: SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: ConstrainedBox(
+                                          constraints: BoxConstraints(
+                                              minWidth: constraints.maxWidth),
+                                          child: DataTable(
+                                            headingRowColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.blue.shade800),
+                                            dataRowColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.white),
+                                            columnSpacing: 20,
+                                            columns: const [
+                                              DataColumn(
+                                                  label: Text('Doctor ID',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight
+                                                              .bold))),
+                                              DataColumn(
+                                                  label: Text('Illness ID',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight
+                                                              .bold))),
+                                              DataColumn(
+                                                  label: Text('Doctor Name',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight
+                                                              .bold))),
+                                              DataColumn(
+                                                  label: Text('Specialization',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight
+                                                              .bold))),
+                                              DataColumn(
+                                                  label: Text('Contact Number',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight
+                                                              .bold))),
+                                              DataColumn(
+                                                  label: Text('Hospital Name',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight
+                                                              .bold))),
+                                              DataColumn(
+                                                  label: Text('Actions',
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight: FontWeight
+                                                              .bold))),
+                                            ],
+                                            rows: _doctorsData.map((doctor) {
+                                              return DataRow(cells: [
+                                                DataCell(Text(
+                                                    doctor['DOCTOR_ID']
+                                                            ?.toString() ??
+                                                        'Not Specified')),
+                                                DataCell(Text(
+                                                    doctor['ILLNESS_ID']
+                                                            ?.toString() ??
+                                                        'Not Specified')),
+                                                DataCell(Text(
+                                                    doctor['DOCTOR_NAME'] ??
+                                                        'N/A')),
+                                                DataCell(
+                                                  Container(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        vertical: 4,
+                                                        horizontal: 8),
+                                                    decoration: BoxDecoration(
+                                                      color: _getSpecializationColor(
+                                                          doctor[
+                                                              'DOCTOR_SPECIALIZATION']),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5),
+                                                    ),
+                                                    child: Text(
+                                                      doctor['DOCTOR_SPECIALIZATION'] ??
+                                                          'N/A',
+                                                      style: const TextStyle(
+                                                          color: Colors.white),
+                                                    ),
+                                                  ),
+                                                ),
+                                                DataCell(Text(doctor[
+                                                        'DOCTOR_CONTACT_NUMBER'] ??
+                                                    'N/A')),
+                                                DataCell(Text(doctor[
+                                                        'DOCTOR_HOSPITAL_NAME'] ??
+                                                    'N/A')),
+                                                DataCell(
+                                                  Row(
+                                                    children: [
+                                                      IconButton(
+                                                        icon: const Icon(
+                                                            Icons.edit,
                                                             color:
-                                                                Colors.white),
+                                                                Colors.green),
+                                                        onPressed: () {
+                                                          _editDoctor(doctor);
+                                                        },
                                                       ),
-                                                    ),
+                                                      IconButton(
+                                                        icon: const Icon(
+                                                            Icons.delete,
+                                                            color: Colors.red),
+                                                        onPressed: () {
+                                                          _showDeleteConfirmationDialog(
+                                                              doctor[
+                                                                  'DOCTOR_ID']);
+                                                        },
+                                                      ),
+                                                    ],
                                                   ),
-                                                  DataCell(Text(doctor[
-                                                          'DOCTOR_CONTACT_NUMBER'] ??
-                                                      'N/A')),
-                                                  DataCell(Text(doctor[
-                                                          'DOCTOR_HOSPITAL_NAME'] ??
-                                                      'N/A')),
-                                                  DataCell(
-                                                    Row(
-                                                      children: [
-                                                        IconButton(
-                                                          icon: const Icon(
-                                                              Icons.edit,
-                                                              color:
-                                                                  Colors.green),
-                                                          onPressed: () {
-                                                            _editDoctor(doctor);
-                                                          },
-                                                        ),
-                                                        IconButton(
-                                                          icon: const Icon(
-                                                              Icons.delete,
-                                                              color:
-                                                                  Colors.red),
-                                                          onPressed: () {
-                                                            _showDeleteConfirmationDialog(
-                                                                doctor[
-                                                                    'DOCTOR_ID']);
-                                                          },
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ]);
-                                              }).toList(),
-                                            ),
+                                                ),
+                                              ]);
+                                            }).toList(),
                                           ),
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                      );
-                    },
-                  ),
-          ],
-        ),
+                            ),
+                    );
+                  },
+                ),
+        ],
       ),
     );
   }
@@ -898,7 +694,7 @@ class _DoctorTableState extends State<DoctorTable> {
         _showErrorDialog("Server returned an error: ${response.statusCode}");
       }
     } catch (e) {
-      print("Exception occurred: $e"); // Print exception details for debugging
+      print("Exception occurred: $e");
       _showErrorDialog("An error occurred: $e");
     } finally {
       setState(() {
@@ -989,7 +785,7 @@ class _DoctorTableState extends State<DoctorTable> {
               children: [
                 Container(
                   decoration: const BoxDecoration(
-                    color: Colors.red, // Red color
+                    color: Colors.red,
                     shape: BoxShape.circle,
                   ),
                   padding: const EdgeInsets.all(16),
@@ -1036,43 +832,6 @@ class _DoctorTableState extends State<DoctorTable> {
         );
       },
     );
-  }
-
-  void _showClearFormDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Clear Form Confirmation"),
-          content: const Text("Are you sure you want to clear the form?"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("No"),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _clearForm();
-              },
-              child: const Text("Yes"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _clearForm() {
-    doctorNameController.clear();
-    doctorContactNumberController.clear();
-    doctorHospitalNameController.clear();
-
-    setState(() {
-      doctorSpecialization = null;
-    });
   }
 
   Widget buildDropdownField(
@@ -1154,8 +913,7 @@ class _DoctorTableState extends State<DoctorTable> {
     Color borderColor = const Color(0xFFCFD8DC),
     Color labelColor = const Color(0xFF78909C),
     Color focusedBorderColor = const Color(0xFF607D8B),
-    Color selectedColor =
-        const Color.fromARGB(255, 5, 101, 180), // Blue color for selection
+    Color selectedColor = const Color.fromARGB(255, 5, 101, 180),
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -1249,7 +1007,6 @@ class _DoctorTableState extends State<DoctorTable> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Input field
           AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
@@ -1274,21 +1031,13 @@ class _DoctorTableState extends State<DoctorTable> {
                   vertical: 12.0,
                   horizontal: 10.0,
                 ),
-                // Show error message if exists
                 errorText: errorMessage,
               ),
               keyboardType: keyboardType,
               validator: validator,
-              // validator: (value) {
-              //   if (value == null || value.isEmpty) {
-              //     return "Please enter $label.";
-              //   }
-              //   return null;
-              // },
             ),
           ),
           const SizedBox(height: 8),
-          // Label with optional red * for mandatory fields
         ],
       ),
     );
@@ -1419,51 +1168,42 @@ class _DoctorTableState extends State<DoctorTable> {
         recordDetails["doctor_id"] = doctorId.toString();
       }
 
-      // Debug print for the record details
       print('Doctor Record Details: $recordDetails');
 
       try {
-        // Sending HTTP POST request
         final response = await http.post(
           Uri.parse("${Config.baseUrl}doctor.php"),
           headers: {"Content-Type": "application/x-www-form-urlencoded"},
           body: recordDetails,
         );
 
-        // Debug print for response body
         print('Response when updating: ${response.body}');
 
         if (response.statusCode == 200) {
-          // Parse the response
           final jsonResponse = jsonDecode(response.body);
 
-          // Debug print for parsed JSON response
           print('Parsed JSON Response: $jsonResponse');
 
           if (jsonResponse['status'] == 'success') {
             final updatedDoctorId = jsonResponse['doctor_id'];
-            // Debug print for successful update
+
             print('Updated Doctor ID: $updatedDoctorId');
             _showSuccessDialog(
                 'Doctor details updated successfully\nDoctor ID: $updatedDoctorId',
                 updatedDoctorId);
             _fetchAddedRecords();
           } else {
-            // Error message from the server
             _showErrorDialog(
                 jsonResponse['message'] ?? "An unknown error occurred.");
           }
         } else {
-          // Server returned an error
           _showErrorDialog("Server returned an error: ${response.statusCode}");
         }
       } catch (e) {
-        // Exception occurred
         _showErrorDialog("An error occurred: $e");
         print("Error: $e");
       }
     } else {
-      // Form is invalid
       print('Form is invalid. Please check the input fields.');
     }
   }
@@ -1503,99 +1243,5 @@ Color _getSpecializationColor(String specialization) {
       return Colors.blueGrey;
     default:
       return Colors.orange;
-  }
-}
-
-class AnimatedWavesBackground extends StatefulWidget {
-  final Widget child;
-  const AnimatedWavesBackground({Key? key, required this.child})
-      : super(key: key);
-
-  @override
-  _AnimatedWavesBackgroundState createState() =>
-      _AnimatedWavesBackgroundState();
-}
-
-class _AnimatedWavesBackgroundState extends State<AnimatedWavesBackground>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 8), // Slow and smooth animation
-    )..repeat(reverse: true);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) {
-              return CustomPaint(
-                painter: WavePainter(_controller.value),
-              );
-            },
-          ),
-        ),
-        widget.child,
-      ],
-    );
-  }
-}
-
-class WavePainter extends CustomPainter {
-  final double animationValue;
-  WavePainter(this.animationValue);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    Paint wavePaint = Paint()
-      ..style = PaintingStyle.fill
-      ..color = Colors.purple.withOpacity(0.2);
-    _drawWave(canvas, size, wavePaint, 1.0, 20, 0);
-    _drawWave(canvas, size, wavePaint..color = Colors.blue.withOpacity(0.15),
-        0.8, 15, pi / 2);
-    _drawWave(canvas, size, wavePaint..color = Colors.blue.withOpacity(0.1),
-        0.6, 10, pi);
-  }
-
-  void _drawWave(Canvas canvas, Size size, Paint paint, double amplitude,
-      double waveHeight, double phaseShift) {
-    Path path = Path();
-    double waveFrequency = 2.0 * pi / size.width; // Controls wave length
-    double yOffset = size.height * 0.8; // Adjust wave height position
-
-    path.moveTo(0, yOffset);
-
-    for (double x = 0; x <= size.width; x++) {
-      double y = yOffset +
-          sin((x * waveFrequency) + (animationValue * 2 * pi) + phaseShift) *
-              waveHeight *
-              amplitude;
-      path.lineTo(x, y);
-    }
-
-    path.lineTo(size.width, size.height);
-    path.lineTo(0, size.height);
-    path.close();
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(WavePainter oldDelegate) {
-    return oldDelegate.animationValue != animationValue;
   }
 }
