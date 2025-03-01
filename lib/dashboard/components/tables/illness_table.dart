@@ -465,7 +465,8 @@ class _IllnessTableState extends State<IllnessTable> {
                                                       IconButton(
                                                         icon: const Icon(
                                                             Icons.edit,
-                                                            color: Colors.blue),
+                                                            color:
+                                                                Colors.green),
                                                         onPressed: () {
                                                           _editIllness(illness);
                                                         },
@@ -920,8 +921,6 @@ class _IllnessTableState extends State<IllnessTable> {
             _showSuccessDialog(
                 'Illness record added successfully\nIllness ID: $illnessId',
                 illnessId);
-
-            widget.onIllnessAdded();
 
             _fetchAddedRecords();
           } else {

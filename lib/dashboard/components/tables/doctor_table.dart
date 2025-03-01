@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_project_hayleys/dashboard/components/tables/illness_table.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_project_hayleys/config.dart';
@@ -56,17 +57,6 @@ class _DoctorTableState extends State<DoctorTable> {
   List<Map<String, dynamic>> _doctorsData = [];
 
   int doctorsCount = 0;
-
-  Future<void> _refreshData() async {
-    setState(() {
-      doctorNameController.clear();
-      doctorContactNumberController.clear();
-      doctorHospitalNameController.clear();
-
-      doctorSpecialization = null;
-    });
-    await Future.delayed(const Duration(seconds: 1));
-  }
 
   @override
   void initState() {
@@ -437,13 +427,29 @@ class _DoctorTableState extends State<DoctorTable> {
                                                           'DOCTOR_HOSPITAL_NAME'] ??
                                                       'N/A')),
                                                   DataCell(
-                                                    IconButton(
-                                                      icon: const Icon(
-                                                          Icons.more_vert),
-                                                      onPressed: () {
-                                                        _showOptionsDialog(
-                                                            doctor);
-                                                      },
+                                                    Row(
+                                                      children: [
+                                                        IconButton(
+                                                          icon: const Icon(
+                                                              Icons.edit,
+                                                              color:
+                                                                  Colors.green),
+                                                          onPressed: () {
+                                                            _editDoctor(doctor);
+                                                          },
+                                                        ),
+                                                        IconButton(
+                                                          icon: const Icon(
+                                                              Icons.delete,
+                                                              color:
+                                                                  Colors.red),
+                                                          onPressed: () {
+                                                            _showDeleteConfirmationDialog(
+                                                                doctor[
+                                                                    'DOCTOR_ID']);
+                                                          },
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
                                                 ]);
@@ -465,37 +471,9 @@ class _DoctorTableState extends State<DoctorTable> {
     );
   }
 
-  void _showOptionsDialog(Map<String, dynamic> doctor) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Wrap(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text('Edit'),
-              onTap: () {
-                Navigator.pop(context);
-                _editDoctor(doctor);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text('Delete', style: TextStyle(color: Colors.red)),
-              onTap: () {
-                Navigator.pop(context);
-                _showDeleteConfirmationDialog(doctor['DOCTOR_ID']);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   void _editDoctor(Map<String, dynamic> doctor) {
     print(
-        "Edit button pressed for doctor Id: ${doctor['DOCTOR_ID']} customers_id=${widget.customerId} ");
+        "Edit button pressed for doctor Id: ${doctor['DOCTOR_ID']} customers_id=${widget.customerId} illness_id: ${doctor['ILLNESS_ID']}");
 
     print("Updating doctor details: $doctor");
 
@@ -645,7 +623,8 @@ class _DoctorTableState extends State<DoctorTable> {
                                   child: MaterialButton(
                                     onPressed: () {
                                       _showConfirmationDialog(
-                                          doctor['DOCTOR_ID']);
+                                          doctor['DOCTOR_ID'],
+                                          doctor['ILLNESS_ID']);
                                     },
                                     height: 50,
                                     minWidth:
@@ -1330,7 +1309,9 @@ class _DoctorTableState extends State<DoctorTable> {
     );
   }
 
-  Future<void> _showConfirmationDialog(int doctorId) async {
+  Future<void> _showConfirmationDialog(int doctorId, int illnessId) async {
+    print(
+        "Confirm for updating doctor id: $doctorId for illness id: $illnessId");
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -1401,7 +1382,7 @@ class _DoctorTableState extends State<DoctorTable> {
                         ),
                         onPressed: () {
                           Navigator.of(context).pop();
-                          _saveDetails(doctorId);
+                          _saveDetails(doctorId, illnessId);
                         },
                         child: const Text(
                           "Yes",
@@ -1419,7 +1400,8 @@ class _DoctorTableState extends State<DoctorTable> {
     );
   }
 
-  Future<void> _saveDetails(int? doctorId) async {
+  Future<void> _saveDetails(int? doctorId, int illnessId) async {
+    print("Save updates for doctor id: $doctorId for illness id: $illnessId");
     if (_formKey.currentState!.validate()) {
       // Debug print for form validation
       print('Form is valid. Proceeding with saving doctor details.');
@@ -1430,7 +1412,7 @@ class _DoctorTableState extends State<DoctorTable> {
         "doctor_specialization": doctorSpecialization,
         "doctor_contact_number": doctorContactNumberController.text,
         "doctor_hospital_name": doctorHospitalNameController.text,
-        "illness_id": widget.illnessId.toString(),
+        "illness_id": illnessId.toString(),
       };
 
       if (doctorId != null) {
