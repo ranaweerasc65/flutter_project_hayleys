@@ -4,7 +4,7 @@ import 'package:flutter_project_hayleys/dashboard/components/bottom_navbar.dart'
 import 'package:flutter_project_hayleys/dashboard/components/tab_view.dart';
 import '../config.dart';
 import '../insurance/insurance_card.dart';
-import './claim/submit_claim.dart';
+import 'claim/claim_screen.dart';
 import '../profile/profile.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -57,7 +57,7 @@ class _DashboardState extends State<Dashboard>
       ),
       ProfilePage(customerId: widget.customerId),
       InsuranceCardPage(customerId: widget.customerId, phoneNo: widget.phoneNo),
-      SubmitClaim(customerId: widget.customerId),
+      ClaimScreen(customerId: widget.customerId),
     ];
   }
 

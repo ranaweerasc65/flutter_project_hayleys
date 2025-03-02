@@ -125,10 +125,10 @@ class _TabViewState extends State<TabView> {
         );
       case 'Reports':
         return ReportsTable(
-            // customerId: widget.customerId,
-            // illnessId: selectedIllnessId,
-            // onReportAdded: widget.onDataUpdated,
-            );
+          customerId: widget.customerId,
+          illnessId: selectedIllnessId,
+          onReportAdded: widget.onDataUpdated,
+        );
       case 'Bills':
         return BillsTable(
           customerId: widget.customerId,
@@ -137,10 +137,10 @@ class _TabViewState extends State<TabView> {
         );
       case 'Others':
         return OthersTable(
-            // customerId: widget.customerId,
-            // illnessId: selectedIllnessId,
-            // onOtherAdded: widget.onDataUpdated,
-            );
+          customerId: widget.customerId,
+          illnessId: selectedIllnessId,
+          onOtherAdded: widget.onDataUpdated,
+        );
       default:
         return Container();
     }

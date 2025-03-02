@@ -188,34 +188,6 @@ class _PrescriptionsTableState extends State<PrescriptionsTable> {
     );
   }
 
-  void _showOptionsDialog(Map<String, dynamic> doctor) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Wrap(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text('Edit'),
-              onTap: () {
-                Navigator.pop(context);
-                _editDoctor(doctor);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text('Delete', style: TextStyle(color: Colors.red)),
-              onTap: () {
-                Navigator.pop(context);
-                _showDeleteConfirmationDialog(doctor['DOCTOR_ID']);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   void _editDoctor(Map<String, dynamic> doctor) {
     print(
         "Edit button pressed for doctor Id: ${doctor['DOCTOR_ID']} customers_id=${widget.customerId} ");
