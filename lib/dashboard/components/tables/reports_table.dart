@@ -47,13 +47,13 @@ class _PrescriptionsTableState extends State<ReportsTable> {
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          Opacity(
-            opacity: 0.2,
-            child: Image.asset(
-              'assets/background_img.jpg',
-              fit: BoxFit.cover,
-              width: double.infinity,
-              height: double.infinity,
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                opacity: 0.1,
+                image: AssetImage("assets/background_img.webp"),
+                repeat: ImageRepeat.repeat,
+              ),
             ),
           ),
           _isLoading

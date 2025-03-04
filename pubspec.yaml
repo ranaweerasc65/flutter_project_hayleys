@@ -82,12 +82,20 @@ flutter:
   assets:
     - assets/app_logo.png
     - assets/background_img.jpg
+    - assets/background_img.webp
+    - assets/reports_background.webp
+    - assets/doctor_background.jpg
+    - assets/prescription_background.jpg
     - assets/background_img.png
     - assets/claim_img.jpg
     - assets/app_icon.png
     - assets/new_app_logo.png
+    - assets/quick_access.jpg
+    - assets/quick_access.avif
+    - assets/quick_access.webp
     - assets/shape.png
     - assets/user.png
+    - assets/background_pattern.jpg
     - assets/sick.png
     - assets/bills.png
     - assets/prescriptions.png

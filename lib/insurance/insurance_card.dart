@@ -422,16 +422,6 @@ class _InsuranceCardPageState extends State<InsuranceCardPage> {
     );
   }
 
-  Future<void> _refreshForm() async {
-    setState(() {
-      membershipNoController.clear();
-      policyNoController.clear();
-      cardHolderNameController.clear();
-      insuranceCompanyNameController.clear();
-    });
-    await Future.delayed(const Duration(seconds: 1));
-  }
-
   Future<void> _fetchAddedCards() async {
     setState(() {
       _isLoading = true;

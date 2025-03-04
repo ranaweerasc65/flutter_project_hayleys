@@ -1,13 +1,9 @@
 import 'dart:convert';
-import 'package:flutter_project_hayleys/dashboard/components/tab_view.dart';
-import 'package:flutter_project_hayleys/dashboard/components/tables/doctor_table.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_project_hayleys/config.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'dart:math';
-import 'dart:ui';
 
 import '../options.dart';
 
@@ -44,18 +40,6 @@ class _IllnessTableState extends State<IllnessTable> {
   List<Map<String, dynamic>> _illnessData = [];
 
   int illnessCount = 0;
-
-  Future<void> _refreshData() async {
-    setState(() {
-      nameController.clear();
-      symptomsController.clear();
-      diagnosisDateController.clear();
-      nextFollowUpDateController.clear();
-
-      status = null;
-    });
-    await Future.delayed(const Duration(seconds: 1));
-  }
 
   @override
   void initState() {
@@ -286,13 +270,13 @@ class _IllnessTableState extends State<IllnessTable> {
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          Opacity(
-            opacity: 0.2,
-            child: Image.asset(
-              'assets/background_img.jpg',
-              fit: BoxFit.cover,
-              width: double.infinity,
-              height: double.infinity,
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                opacity: 0.1,
+                image: AssetImage("assets/background_img.webp"),
+                repeat: ImageRepeat.repeat,
+              ),
             ),
           ),
           _isLoading

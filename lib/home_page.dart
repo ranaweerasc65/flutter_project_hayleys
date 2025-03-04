@@ -44,9 +44,16 @@ class _HomeScreenState extends State<HomeScreen> {
     fetchConnections();
   }
 
+  // Refresh function for pull-to-refresh
+  Future<void> _refreshData() async {
+    await fetchConnections(); // Re-fetch connections
+    await fetchEmployeeId(); // Optionally re-fetch employee ID if needed
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       drawer: Drawer(
         child: Column(
           children: [
@@ -155,174 +162,295 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      body: Column(
-        children: [
-          // Gradient Header
-          Container(
-            padding: const EdgeInsets.only(bottom: 20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.blue.shade900,
-                  Colors.blue.shade800,
-                  Colors.blue.shade400,
-                ],
-              ),
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20),
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                AppBar(
-                  elevation: 0,
-                  backgroundColor: Colors.transparent,
-                  automaticallyImplyLeading: false,
-                  leading: Builder(
-                    builder: (context) => IconButton(
-                      icon: const Icon(Icons.menu, color: Colors.white),
-                      onPressed: () {
-                        Scaffold.of(context).openDrawer();
-                      },
-                    ),
-                  ),
-                  actions: [
-                    // Notification Button
-                    IconButton(
-                      icon:
-                          const Icon(Icons.notifications, color: Colors.white),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text("Notifications"),
-                              content: const Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  ListTile(
-                                    leading: Icon(Icons.medical_services,
-                                        color: Colors.blue),
-                                    title: Text(
-                                        "Your latest medical bill has been updated."),
-                                  ),
-                                  Divider(),
-                                  ListTile(
-                                    leading: Icon(Icons.attach_money,
-                                        color: Colors.green),
-                                    title: Text(
-                                        "Insurance claim processed successfully."),
-                                  ),
-                                  Divider(),
-                                  ListTile(
-                                    leading:
-                                        Icon(Icons.warning, color: Colors.red),
-                                    title: Text("Pending payment due soon!"),
-                                  ),
-                                ],
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text("Close"),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                    ),
-
-                    // // Logout Button
-                    // IconButton(
-                    //   icon: const Icon(Icons.logout, color: Colors.white),
-                    //   onPressed: () => _showLogoutConfirmationDialog(context),
-                    // ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Row(
-                    children: [
-                      // Profile Image - Circular
-                      ClipOval(
-                        child: Image.asset(
-                          'assets/user.png',
-                          fit: BoxFit.cover,
-                          width: 80, // Adjust size as needed
-                          height: 80,
-                        ),
-                      ),
-                      const SizedBox(
-                          width: 15), // Spacing between image and text
-
-                      // Text Section
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Welcome!",
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 196, 222, 241),
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            widget.userName,
-                            style: const TextStyle(
-                              color: Color.fromARGB(255, 223, 234, 242),
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          const Text(
-                            "How is it going today?",
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Color.fromARGB(255, 234, 232, 232),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                )
-              ],
+      body: Stack(children: [
+        Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              opacity: 0.05,
+              image: AssetImage("assets/background_pattern.jpg"),
+              repeat: ImageRepeat.repeat,
             ),
           ),
+        ),
+        Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.blue.shade900,
+                    Colors.blue.shade800,
+                    Colors.blue.shade400,
+                  ],
+                ),
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AppBar(
+                    elevation: 0,
+                    backgroundColor: Colors.transparent,
+                    automaticallyImplyLeading: false,
+                    leading: Builder(
+                      builder: (context) => IconButton(
+                        icon: const Icon(Icons.menu, color: Colors.white),
+                        onPressed: () {
+                          Scaffold.of(context).openDrawer();
+                        },
+                      ),
+                    ),
+                    actions: [
+                      IconButton(
+                        icon: const Icon(Icons.notifications,
+                            color: Colors.white),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text("Notifications"),
+                                content: const Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ListTile(
+                                      leading: Icon(Icons.medical_services,
+                                          color: Colors.blue),
+                                      title: Text(
+                                          "Your latest medical bill has been updated."),
+                                    ),
+                                    Divider(),
+                                    ListTile(
+                                      leading: Icon(Icons.attach_money,
+                                          color: Colors.green),
+                                      title: Text(
+                                          "Insurance claim processed successfully."),
+                                    ),
+                                    Divider(),
+                                    ListTile(
+                                      leading: Icon(Icons.warning,
+                                          color: Colors.red),
+                                      title: Text("Pending payment due soon!"),
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text("Close"),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
 
-          // Show loading animation while fetching connections
-          _isLoading
-              ? Center(
-                  child: LoadingAnimationWidget.halfTriangleDot(
-                    //horizontalRotatingDots
-                    color: const Color.fromARGB(255, 243, 107, 33),
-                    size: 30,
+                      // // Logout Button
+                      // IconButton(
+                      //   icon: const Icon(Icons.logout, color: Colors.white),
+                      //   onPressed: () => _showLogoutConfirmationDialog(context),
+                      // ),
+                    ],
                   ),
-                )
-              :
-
-              // Main Content (Employee details & connections)
-              Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment
+                          .spaceBetween, // Added to space items
                       children: [
-                        // Employee Details Section
-                        Center(
-                          child: GestureDetector(
-                            onTap: () async {
-                              await fetchEmployeeId();
-                              print('Fetched Employee Id: $customerId');
-                              if (customerId != null) {
+                        // Text Section
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Welcome!",
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 196, 222, 241),
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              widget.userName,
+                              style: const TextStyle(
+                                color: Color.fromARGB(255, 223, 234, 242),
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            const Text(
+                              "How is it going today?",
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Color.fromARGB(255, 234, 232, 232),
+                              ),
+                            ),
+                          ],
+                        ),
+                        // Image Section
+                        Image.asset(
+                          'assets/quick_access.webp',
+                          width: 150, // Adjust size as needed
+                          height: 150, // Adjust size as needed
+                          fit: BoxFit.cover, // Adjust how the image fits
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: _refreshData, // Callback for pull-to-refresh
+                color: Colors.blue.shade900, // Refresh indicator color
+                backgroundColor: Colors.white, // Background of the indicator
+                child: _isLoading
+                    ? Center(
+                        child: LoadingAnimationWidget.halfTriangleDot(
+                          color: const Color.fromARGB(255, 5, 101, 185),
+                          size: 30,
+                        ),
+                      )
+                    : Expanded(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Primary User Section
+                              Center(
+                                child: _buildPrimaryUserCard(),
+                              ),
+                              const SizedBox(height: 20),
+
+                              // My Connections Section
+                              _buildSectionTitle("My Connections"),
+                              const SizedBox(height: 20),
+                              _buildConnectionsList(),
+                            ],
+                          ),
+                        ),
+                      ),
+              ),
+            )
+          ],
+        ),
+      ]),
+    );
+  }
+
+  Widget _buildPrimaryUserCard() {
+    return GestureDetector(
+      onTap: () async {
+        await fetchEmployeeId();
+        print('Fetched Employee Id: $customerId');
+        if (customerId != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Dashboard(
+                phoneNo: widget.phoneNo,
+                userName: widget.userName,
+                customerId: customerId!,
+              ),
+            ),
+          );
+        } else {
+          showError('Please enter the primary user details first');
+        }
+      },
+      child: Card(
+        elevation: 5,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        child: Stack(
+          children: [
+            Container(
+              padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.04),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.blue.shade100, Colors.white],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.8,
+                minWidth: MediaQuery.of(context).size.width * 0.6,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ClipOval(
+                    child: Image.asset(
+                      'assets/user.png',
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      height: MediaQuery.of(context).size.width * 0.1,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.03),
+                  Container(
+                    width: 1,
+                    height: MediaQuery.of(context).size.height * 0.15,
+                    color: Colors.blue.shade300,
+                  ),
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.03),
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+
+                      //Text(
+                      //'${connection['CUSTOMERS_FIRST_NAME']} ${connection['CUSTOMERS_LAST_NAME']}',
+                      children: [
+                        Text(
+                          widget.userName,
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blueAccent,
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                        SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.005),
+                        Text(
+                          "ID: ${customerId ?? 'N/A'}",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                        SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.015),
+                        Text(
+                          "Quick Access",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                        SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.005),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildQuickAccessButton(
+                              label: "Dashboard",
+                              color: Colors.blue.shade800,
+                              onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -333,295 +461,317 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ),
                                 );
-                              } else {
-                                showError('Employee ID is null');
-                              }
-                            },
-                            child: Stack(
-                              children: [
-                                Container(
-                                  width: 120,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color:
-                                            Color.fromRGBO(27, 86, 225, 0.298),
-                                        blurRadius: 20,
-                                        offset: Offset(0, 10),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Container(
-                                        height: 100,
-                                        width: 100,
-                                        margin: const EdgeInsets.only(top: 16),
-                                        child: ClipOval(
-                                          child: Image.asset(
-                                            'assets/user.png',
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 10),
-                                    ],
-                                  ),
-                                ),
-                                Positioned(
-                                  top: 5,
-                                  right: 5,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              PrimaryUserDetails(
-                                            phoneNo: widget.phoneNo,
-                                            userName: widget.userName,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.all(5),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.7),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Icon(
-                                        Icons.edit,
-                                        size: 20,
-                                        color: Color.fromARGB(255, 243, 33, 89),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              },
                             ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                          child: const Text(
-                            "My Connections",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        SizedBox(
-                          height: 160,
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: [
-                              ...connections.map((connection) {
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12),
-                                  child: Stack(
-                                    children: [
-                                      // Main Container
-                                      Container(
-                                        width: 120,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          boxShadow: const [
-                                            BoxShadow(
-                                              color: Color.fromRGBO(
-                                                  27, 86, 225, 0.298),
-                                              blurRadius: 20,
-                                              offset: Offset(0, 10),
-                                            ),
-                                          ],
-                                        ),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            GestureDetector(
-                                              onTap: () {
-                                                print(
-                                                    '${connection['CUSTOMERS_FIRST_NAME']} ${connection['CUSTOMERS_LAST_NAME']}');
-                                                // Navigate to the Dashboard page
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        Dashboard(
-                                                      phoneNo: widget.phoneNo,
-                                                      userName: widget.userName,
-                                                      customerId: connection[
-                                                          'CUSTOMERS_ID'],
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                              child: Container(
-                                                height: 100,
-                                                width: 100,
-                                                margin: const EdgeInsets.only(
-                                                    top: 16),
-                                                child: ClipOval(
-                                                  child: Image.asset(
-                                                    'assets/user.png',
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(height: 10),
-                                            Column(
-                                              children: [
-                                                Text(
-                                                  '${connection['CUSTOMERS_FIRST_NAME']} ${connection['CUSTOMERS_LAST_NAME']}',
-                                                  textAlign: TextAlign.center,
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  'ID: ${connection['CUSTOMERS_ID']}',
-                                                  textAlign: TextAlign.center,
-                                                  style: const TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w400,
-                                                    color: Color.fromARGB(
-                                                        255, 102, 99, 99),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      // Edit Button
-                                      Positioned(
-                                        top: 5,
-                                        right: 5,
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            // Navigate to the EditUserDetails screen and pass the customer details
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    EditUserDetails(
-                                                  phoneNo: widget.phoneNo,
-                                                  userName: widget.userName,
-                                                  customerId: connection[
-                                                      'CUSTOMERS_ID'],
-                                                ),
-                                              ),
-                                            ).then((updatedConnection) {
-                                              // Handle the updated connection data
-                                              if (updatedConnection != null) {
-                                                setState(() {
-                                                  connection[
-                                                          'CUSTOMERS_FIRST_NAME'] =
-                                                      updatedConnection[
-                                                          "first_name"];
-                                                  connection[
-                                                          'CUSTOMERS_LAST_NAME'] =
-                                                      updatedConnection[
-                                                          "last_name"];
-                                                });
-                                              }
-                                            });
-                                          },
-                                          child: Container(
-                                            padding: const EdgeInsets.all(5),
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  Colors.white.withOpacity(0.7),
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: const Icon(
-                                              Icons.edit,
-                                              size: 20,
-                                              color: Color.fromARGB(
-                                                  255, 243, 33, 89),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                            _buildQuickAccessButton(
+                              label: "Insurance Cards",
+                              color: Colors.blue.shade800,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const ApprovalsPage()), // Replace with Insurance page
                                 );
-                              }),
-
-                              // Add New Connection Button
-                              GestureDetector(
-                                onTap: () async {
-                                  final updatedConnections =
-                                      await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => UserDetails(
-                                        phoneNo: widget.phoneNo,
-                                        userName: widget.userName,
-                                      ),
-                                    ),
-                                  );
-
-                                  if (updatedConnections != null) {
-                                    // Update the Connections list with the new data
-                                    setState(() {
-                                      // Connections = updatedConnections;
-                                    });
-                                  }
-                                },
-                                child: Container(
-                                  width: 120,
-                                  height: 120,
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 12),
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                        255, 255, 255, 255),
-                                    borderRadius: BorderRadius.circular(10),
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color:
-                                            Color.fromRGBO(27, 86, 225, 0.298),
-                                        blurRadius: 20,
-                                        offset: Offset(0, 10),
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.add,
-                                        size: 50,
-                                        color: Colors.orange,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                              },
+                            ),
+                            _buildQuickAccessButton(
+                              label: "Claims",
+                              color: Colors.blue.shade800,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const ApprovalsPage()), // Replace with Claims page
+                                );
+                              },
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
+                ],
+              ),
+            ),
+            // Edit Button
+            Positioned(
+              top: 5,
+              right: 5,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PrimaryUserDetails(
+                        phoneNo: widget.phoneNo,
+                        userName: widget.userName,
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.7),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.edit,
+                    size: 25,
+                    color: Color.fromARGB(255, 243, 33, 89),
+                  ),
                 ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+// Enhanced Quick Access Button
+  Widget _buildQuickAccessButton({
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width * 0.05,
+          vertical: MediaQuery.of(context).size.height * 0.008,
+        ),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: color.withOpacity(0.5), width: 1),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: MediaQuery.of(context).size.width * 0.015,
+            fontWeight: FontWeight.w600,
+            color: color,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+          color: Colors.black87,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildConnectionsList() {
+    return SizedBox(
+      height: 159,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          ...connections.map((connection) => _buildConnectionCard(connection)),
+          _buildAddConnectionCard(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildConnectionCard(Map<String, dynamic> connection) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: GestureDetector(
+        onTap: () {
+          print(
+              '${connection['CUSTOMERS_FIRST_NAME']} ${connection['CUSTOMERS_LAST_NAME']}');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Dashboard(
+                phoneNo: widget.phoneNo,
+                userName: widget.userName,
+                customerId: connection['CUSTOMERS_ID'],
+              ),
+            ),
+          );
+        },
+        child: Card(
+          elevation: 5,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          child: Stack(
+            children: [
+              Container(
+                width: 130,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color.fromARGB(255, 126, 191, 245),
+                      blurRadius: 10,
+                      offset: Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ClipOval(
+                      child: Image.asset(
+                        'assets/user.png',
+                        width: 70,
+                        height: 70,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      '${connection['CUSTOMERS_FIRST_NAME']} ${connection['CUSTOMERS_LAST_NAME']}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      'ID: ${connection['CUSTOMERS_ID']}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                top: 8,
+                right: 8,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditUserDetails(
+                          phoneNo: widget.phoneNo,
+                          userName: widget.userName,
+                          customerId: connection['CUSTOMERS_ID'],
+                        ),
+                      ),
+                    ).then((updatedConnection) {
+                      if (updatedConnection != null) {
+                        setState(() {
+                          connection['CUSTOMERS_FIRST_NAME'] =
+                              updatedConnection["first_name"];
+                          connection['CUSTOMERS_LAST_NAME'] =
+                              updatedConnection["last_name"];
+                        });
+                      }
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 5,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.edit,
+                      size: 18,
+                      color: Colors.redAccent,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAddConnectionCard() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: GestureDetector(
+        onTap: () async {
+          final updatedConnections = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => UserDetails(
+                phoneNo: widget.phoneNo,
+                userName: widget.userName,
+              ),
+            ),
+          );
+          if (updatedConnections != null) {
+            setState(() {
+              // Update logic here if needed, e.g., fetchConnections()
+            });
+          }
+        },
+        child: Card(
+          elevation: 5,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          child: Container(
+            width: 130,
+            height: 130,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color.fromARGB(31, 225, 133, 20),
+                  blurRadius: 10,
+                  offset: Offset(0, 5),
+                ),
+              ],
+            ),
+            child: const Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.add_circle_outline,
+                  size: 50,
+                  color: Colors.orange,
+                ),
+                SizedBox(height: 10),
+                Text(
+                  "Add New",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -734,7 +884,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> fetchEmployeeId() async {
     final url = Uri.parse(
         "${Config.baseUrl}fetch_primary_user_details.php?phone_no=${widget.phoneNo}");
-//172.16.200.79
+
     try {
       final response = await http.get(url);
 
@@ -814,3 +964,7 @@ String getGreeting() {
     return 'Good Evening';
   }
 }
+
+
+
+////// home page worked 
