@@ -1,9 +1,10 @@
-// options.dart
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_project_hayleys/dashboard/claim/claim_screen.dart';
 import 'package:flutter_project_hayleys/config.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class OptionsDialog extends StatelessWidget {
   final Map<String, dynamic> illness;
@@ -534,17 +535,55 @@ class OptionsDialog extends StatelessWidget {
   }
 
   void _showAddPrescriptionForm(BuildContext parentContext) {
-    // File? _prescriptionImage; // To store the selected image
+    File? _prescriptionImage; // To store the selected image
     final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-    // final ImagePicker _picker = ImagePicker();
+    final ImagePicker _picker = ImagePicker();
 
-    Future<void> _pickImage() async {
-      // final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-      // if (image != null) {
-      //   _prescriptionImage = File(image.path);
-      //   // Trigger a rebuild to show the selected image
-      //   (parentContext as StatefulElement).state.setState(() {});
-      // }
+    // Future<void> _pickImage() async {
+    //   final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    //   if (image != null) {
+    //     _prescriptionImage = File(image.path);
+    //     // Trigger a rebuild to show the selected image
+    //     (parentContext as StatefulElement).state.setState(() {});
+    //   }
+    // }
+
+    Future<void> _pickImage(
+        void Function(void Function()) dialogSetState) async {
+      // Request permission based on platform
+      PermissionStatus status;
+      if (Platform.isAndroid) {
+        status = await Permission.photos.request();
+      } else {
+        status = await Permission.photos.request();
+      }
+
+      if (status.isGranted) {
+        try {
+          final XFile? image =
+              await _picker.pickImage(source: ImageSource.gallery);
+          if (image != null) {
+            dialogSetState(() {
+              _prescriptionImage = File(image.path);
+            });
+          }
+        } catch (e) {
+          print('Error picking image: $e');
+          ScaffoldMessenger.of(parentContext).showSnackBar(
+            SnackBar(content: Text('Failed to pick image: $e')),
+          );
+        }
+      } else if (status.isDenied) {
+        ScaffoldMessenger.of(parentContext).showSnackBar(
+          const SnackBar(content: Text('Gallery access denied')),
+        );
+      } else if (status.isPermanentlyDenied) {
+        ScaffoldMessenger.of(parentContext).showSnackBar(
+          const SnackBar(
+              content: Text('Please enable gallery access in settings')),
+        );
+        openAppSettings();
+      }
     }
 
     Future<void> _addPrescription(BuildContext dialogContext) async {
@@ -562,12 +601,12 @@ class OptionsDialog extends StatelessWidget {
         request.fields['illness_id'] = illness['ILLNESS_ID'].toString();
 
         // Add image file if selected
-        // if (_prescriptionImage != null) {
-        //   request.files.add(await http.MultipartFile.fromPath(
-        //     'prescription_image',
-        //     _prescriptionImage!.path,
-        //   ));
-        // }
+        if (_prescriptionImage != null) {
+          request.files.add(await http.MultipartFile.fromPath(
+            'prescription_image',
+            _prescriptionImage!.path,
+          ));
+        }
 
         print('Request Details: ${request.fields}');
 
@@ -592,7 +631,7 @@ class OptionsDialog extends StatelessWidget {
                 customerId,
               );
 
-              // _prescriptionImage = null;
+              _prescriptionImage = null;
             } else {
               print('Server Response Error: ${jsonResponse['message']}');
               _showErrorDialog(
@@ -677,32 +716,32 @@ class OptionsDialog extends StatelessWidget {
                           children: [
                             const SizedBox(height: 16),
                             _buildLabel("Upload Prescription Document"),
-                            // GestureDetector(
-                            //   onTap: _pickImage,
-                            //   child: Container(
-                            //     height: 150,
-                            //     width: double.infinity,
-                            //     decoration: BoxDecoration(
-                            //       border: Border.all(color: Colors.grey),
-                            //       borderRadius: BorderRadius.circular(8),
-                            //     ),
-                            //     child: _prescriptionImage == null
-                            //         ? const Center(
-                            //             child: Column(
-                            //               mainAxisAlignment:
-                            //                   MainAxisAlignment.center,
-                            //               children: [
-                            //                 Icon(Icons.upload_file,
-                            //                     size: 40, color: Colors.grey),
-                            //                 SizedBox(height: 8),
-                            //                 Text("Tap to upload from gallery"),
-                            //               ],
-                            //             ),
-                            //           )
-                            //         : Image.file(_prescriptionImage!,
-                            //             fit: BoxFit.cover),
-                            //   ),
-                            // ),
+                            GestureDetector(
+                              onTap: () => _pickImage(setState),
+                              child: Container(
+                                height: 150,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: _prescriptionImage == null
+                                    ? const Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(Icons.upload_file,
+                                                size: 40, color: Colors.grey),
+                                            SizedBox(height: 8),
+                                            Text("Tap to upload from gallery"),
+                                          ],
+                                        ),
+                                      )
+                                    : Image.file(_prescriptionImage!,
+                                        fit: BoxFit.cover),
+                              ),
+                            ),
                             const SizedBox(height: 16),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

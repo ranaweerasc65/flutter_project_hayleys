@@ -1,0 +1,1 @@
+C:\xampp\htdocs\flutter_project_hayleys\build\app\intermediates\cxx\Debug\192i2w46\obj\armeabi-v7a
