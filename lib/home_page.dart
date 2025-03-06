@@ -9,6 +9,8 @@ import 'package:http/http.dart' as http;
 import 'edit_user_details.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'config.dart';
+import 'dart:async';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 class HomeScreen extends StatefulWidget {
   final String userName;
@@ -28,6 +30,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   //List<String> Connections = [];
   List<Map<String, dynamic>> connections = [];
+  //late Timer _timer;
+
+  // Health tips list
+  final List<String> healthTips = [
+    "Drink at least 8 glasses of water daily.",
+    "Get 7-8 hours of sleep for better health.",
+    "Eat a balanced diet rich in fruits and veggies.",
+    "Exercise for 30 minutes most days of the week.",
+    "Take short breaks to stretch during work.",
+  ];
+  int _currentTipIndex = 0; // Track the current tip
+  //late Timer _tipsTimer; // Timer for rotating tips
 
   @override
   void initState() {
@@ -42,13 +56,33 @@ class _HomeScreenState extends State<HomeScreen> {
     // Print the username to the terminal
     print('Logged in user Username (home_page.dart): ${widget.userName}');
     fetchConnections();
+
+    // Set up the timer to refresh every 5 seconds
+    // _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    //   _refreshData();
+    // });
+
+    // Start the tips rotation timer
+    // _tipsTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
+    //   setState(() {
+    //     _currentTipIndex = (_currentTipIndex + 1) % healthTips.length;
+    //   });
+    // });
   }
 
   // Refresh function for pull-to-refresh
   Future<void> _refreshData() async {
+    print("refreshinggg");
     await fetchConnections(); // Re-fetch connections
     await fetchEmployeeId(); // Optionally re-fetch employee ID if needed
   }
+
+  @override
+  // void dispose() {
+  //   _timer.cancel(); // Existing timer for refresh data
+  //   _tipsTimer.cancel(); // Cancel tips timer
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -175,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
         Column(
           children: [
             Container(
-              padding: const EdgeInsets.only(bottom: 20),
+              //padding: const EdgeInsets.only(top: 20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
@@ -260,60 +294,139 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment
-                          .spaceBetween, // Added to space items
+                    padding: const EdgeInsets.fromLTRB(40.0, 10.0, 40.0, 10.0),
+                    child: Column(
+                      // Changed from Row to Column to stack tips below
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Text Section
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              "Welcome!",
-                              style: TextStyle(
-                                color: Color.fromARGB(255, 196, 222, 241),
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "Welcome!",
+                                  style: TextStyle(
+                                    color: Color.fromARGB(255, 196, 222, 241),
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  widget.userName,
+                                  style: const TextStyle(
+                                    color: Color.fromARGB(255, 223, 234, 242),
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                const Text(
+                                  "How is it going today?",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Color.fromARGB(255, 234, 232, 232),
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 5),
-                            Text(
-                              widget.userName,
-                              style: const TextStyle(
-                                color: Color.fromARGB(255, 223, 234, 242),
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                            const Text(
-                              "How is it going today?",
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Color.fromARGB(255, 234, 232, 232),
-                              ),
+                            Image.asset(
+                              'assets/quick_access.webp',
+                              width: 150,
+                              height: 150,
+                              fit: BoxFit.cover,
                             ),
                           ],
                         ),
-                        // Image Section
-                        Image.asset(
-                          'assets/quick_access.webp',
-                          width: 150, // Adjust size as needed
-                          height: 150, // Adjust size as needed
-                          fit: BoxFit.cover, // Adjust how the image fits
+                        const SizedBox(height: 10), // Space before tips
+                        // Health Tips Section
+                        // Health Tips Section
+// Health Tips Section
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 4.0),
+                          margin: const EdgeInsets.symmetric(horizontal: 10.0),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                spreadRadius: 2,
+                                blurRadius: 8,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.chevron_left,
+                                    color: Colors.white),
+                                onPressed: () {
+                                  setState(() {
+                                    _currentTipIndex = (_currentTipIndex -
+                                            1 +
+                                            healthTips.length) %
+                                        healthTips.length;
+                                  });
+                                },
+                              ),
+                              Expanded(
+                                child: AnimatedTextKit(
+                                  key: ValueKey(
+                                      _currentTipIndex), // Ensures animation restarts on tip change
+                                  animatedTexts: [
+                                    TypewriterAnimatedText(
+                                      healthTips[_currentTipIndex],
+                                      textStyle: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      speed: const Duration(
+                                          milliseconds:
+                                              100), // Typing speed per character
+                                    ),
+                                  ],
+                                  totalRepeatCount:
+                                      1, // Play animation once per tip change
+                                  pause: const Duration(
+                                      milliseconds: 1000), // Pause after typing
+                                  displayFullTextOnTap:
+                                      true, // Optional: Show full text if tapped
+                                  stopPauseOnTap:
+                                      true, // Optional: Pause animation on tap
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.chevron_right,
+                                    color: Colors.white),
+                                onPressed: () {
+                                  setState(() {
+                                    _currentTipIndex = (_currentTipIndex + 1) %
+                                        healthTips.length;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
             Expanded(
               child: RefreshIndicator(
-                onRefresh: _refreshData, // Callback for pull-to-refresh
-                color: Colors.blue.shade900, // Refresh indicator color
-                backgroundColor: Colors.white, // Background of the indicator
+                onRefresh: _refreshData,
+                color: Colors.blue.shade900,
+                backgroundColor: Colors.white,
                 child: _isLoading
                     ? Center(
                         child: LoadingAnimationWidget.halfTriangleDot(
@@ -322,18 +435,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       )
                     : Expanded(
+                        // This inner Expanded is the issue
                         child: SingleChildScrollView(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Primary User Section
                               Center(
                                 child: _buildPrimaryUserCard(),
                               ),
                               const SizedBox(height: 20),
-
-                              // My Connections Section
                               _buildSectionTitle("My Connections"),
                               const SizedBox(height: 20),
                               _buildConnectionsList(),
@@ -450,17 +561,24 @@ class _HomeScreenState extends State<HomeScreen> {
                             _buildQuickAccessButton(
                               label: "Dashboard",
                               color: Colors.blue.shade800,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Dashboard(
-                                      phoneNo: widget.phoneNo,
-                                      userName: widget.userName,
-                                      customerId: customerId!,
+                              onTap: () async {
+                                await fetchEmployeeId();
+                                print('Fetched Employee Id: $customerId');
+                                if (customerId != null) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Dashboard(
+                                        phoneNo: widget.phoneNo,
+                                        userName: widget.userName,
+                                        customerId: customerId!,
+                                      ),
                                     ),
-                                  ),
-                                );
+                                  );
+                                } else {
+                                  showError(
+                                      'Please enter the primary user details first');
+                                }
                               },
                             ),
                             _buildQuickAccessButton(
@@ -899,10 +1017,10 @@ class _HomeScreenState extends State<HomeScreen> {
           showError(responseData['message']);
         }
       } else {
-        showError('Failed to fetch customer data');
+        // showError('Failed to fetch customer data');
       }
     } catch (e) {
-      showError('Error occurred: $e');
+      //showError('Error occurred: $e');
     }
   }
 
